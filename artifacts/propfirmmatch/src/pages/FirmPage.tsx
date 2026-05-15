@@ -7,6 +7,8 @@ import { countryZh, medianZh, programZh } from "../data/i18nZh";
 import { reviewsForFirm } from "../data/reviews";
 import { payoutsForFirm } from "../data/payouts";
 import { useFirmOverride } from "../contexts/FirmsOverridesContext";
+import { useFavorites } from "../store/favs";
+import FirmDetailSectionTabs from "../components/FirmDetailSectionTabs";
 
 function Stars({ rating }: { rating: number }) {
   const full = Math.round(rating);
@@ -40,7 +42,8 @@ export default function FirmPage() {
   const f = findFirm(slug || "");
   const zh = f ? findFirmZh(f.slug) : undefined;
   const override = useFirmOverride(slug || "");
-  const [tab, setTab] = useState<"overview" | "challenges" | "reviews" | "offers" | "payouts">("overview");
+  const favorites = useFavorites();
+  const isFav = f ? favorites.has(f.slug) : false;
   const [summaryExpanded, setSummaryExpanded] = useState(false);
   const enrichedChallenges = useMemo(
     () => (f?.challenges ?? []).map(c => enrichChallenge(c, f?.promoCode)),
@@ -100,7 +103,15 @@ export default function FirmPage() {
           <span>{f.name}</span>
           <span style={{ color: "var(--text-dim)" }}>▾</span>
         </div>
-        <button className="fav-pill">♡ 加入收藏</button>
+        <button
+          type="button"
+          className={`fav-pill${isFav ? " is-active" : ""}`}
+          aria-pressed={isFav}
+          aria-label={isFav ? "移除收藏" : "加入收藏"}
+          onClick={() => favorites.toggle(f.slug)}
+        >
+          {isFav ? "♥ 已收藏" : "♡ 加入收藏"}
+        </button>
         <div className="detail-actions">
           <button className="btn-outline">写一条评价</button>
           <BuyButton />
@@ -172,21 +183,15 @@ export default function FirmPage() {
         </div>
       )}
 
-      <div className="detail-tabs">
-        <button className={tab === "overview" ? "active" : ""} onClick={() => setTab("overview")}>概览</button>
-        <button className={tab === "challenges" ? "active" : ""} onClick={() => setTab("challenges")}>
-          挑战赛 <span className="count-pill">{f.challenges?.length ?? 12}</span>
-        </button>
-        <button className={tab === "reviews" ? "active" : ""} onClick={() => setTab("reviews")}>
-          用户评价 <span className="count-pill">{f.reviews}</span>
-        </button>
-        <button className={tab === "offers" ? "active" : ""} onClick={() => setTab("offers")}>
-          专属优惠 <span className="count-pill">{promoPercent > 0 ? 2 : 0}</span>
-        </button>
-        <button className={tab === "payouts" ? "active" : ""} onClick={() => setTab("payouts")}>
-          出金记录 <span className="count-pill" style={{ background: "rgba(168,85,247,0.15)", color: "var(--purple)" }}>新</span>
-        </button>
-      </div>
+      <FirmDetailSectionTabs
+        tabs={[
+          { id: "firm-overview", label: "概览" },
+          { id: "firm-challenges", label: "挑战赛", count: f.challenges?.length ?? 12 },
+          { id: "firm-reviews", label: "评价", count: f.reviews },
+          { id: "firm-offers", label: "优惠", count: promoPercent > 0 ? 2 : 0 },
+          { id: "firm-payouts", label: "出金", count: "新", countTone: "purple" },
+        ]}
+      />
 
       <h2 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 6px" }}>{f.name} 期货自营公司详情</h2>
       <hr style={{ border: "none", borderTop: "1px solid var(--border)", margin: "16px 0 24px" }} />
@@ -202,9 +207,8 @@ export default function FirmPage() {
         </aside>
 
         <div>
-          {tab === "overview" && (
-            <>
-              <div className="ai-summary-card">
+          <section id="firm-overview" className="firm-anchor-section">
+            <div className="ai-summary-card">
                 <span className="ai-tag">✨ AI 简介</span>
                 <h3>{f.name} 公司速览</h3>
                 <p>
@@ -224,7 +228,7 @@ export default function FirmPage() {
                 )}
               </div>
 
-              <section className="detail-section" id="firm-overview">
+              <section className="detail-section" id="firm-overview-info">
                 <h2>公司概览</h2>
                 {f.brokers && (
                   <div className="kv-block">
@@ -301,28 +305,9 @@ export default function FirmPage() {
                 </p>
               </section>
 
-              {f.challenges && (
-                <section className="detail-section" id="challenges-section">
-                  <h2>挑战赛列表</h2>
-                  {f.challenges.map((c, i) => (
-                    <div key={i} className="challenge-row">
-                      {affiliateUrl ? (
-                        <a href={affiliateUrl} target="_blank" rel="noopener sponsored nofollow" className="name">
-                          {programZh(c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`)}
-                        </a>
-                      ) : (
-                        <span className="name">{programZh(c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`)}</span>
-                      )}
-                      {c.original && <span className="original">{c.original}</span>}
-                      <span className="price">{c.price}</span>
-                    </div>
-                  ))}
-                </section>
-              )}
-            </>
-          )}
+          </section>
 
-          {tab === "challenges" && (
+          <section id="firm-challenges" className="firm-anchor-section">
             <section className="detail-section" style={{ borderTop: "none", marginTop: 0, paddingTop: 0 }}>
               <h2>{f.name} 挑战赛</h2>
               {enrichedChallenges.length > 0 ? (
@@ -359,9 +344,9 @@ export default function FirmPage() {
                 <p style={{ color: "var(--text-dim)" }}>{f.name} 暂未上架挑战赛。</p>
               )}
             </section>
-          )}
+          </section>
 
-          {tab === "reviews" && (
+          <section id="firm-reviews" className="firm-anchor-section">
             <section className="detail-section" style={{ borderTop: "none", marginTop: 0, paddingTop: 0 }}>
               <h2>{f.name} 用户评价（{f.reviews}）</h2>
               {reviewAgg ? (
@@ -398,9 +383,9 @@ export default function FirmPage() {
                 </p>
               )}
             </section>
-          )}
+          </section>
 
-          {tab === "offers" && (
+          <section id="firm-offers" className="firm-anchor-section">
             <section className="detail-section" style={{ borderTop: "none", marginTop: 0, paddingTop: 0 }}>
               <h2>{f.name} 专属优惠</h2>
               {promoPercent > 0 ? (
@@ -417,9 +402,9 @@ export default function FirmPage() {
                 <p style={{ color: "var(--text-dim)" }}>{f.name} 当前暂无优惠活动。</p>
               )}
             </section>
-          )}
+          </section>
 
-          {tab === "payouts" && (
+          <section id="firm-payouts" className="firm-anchor-section">
             <section className="detail-section" style={{ borderTop: "none", marginTop: 0, paddingTop: 0 }}>
               <h2>{f.name} 出金记录</h2>
               {payoutAgg ? (
@@ -436,7 +421,7 @@ export default function FirmPage() {
                 </p>
               )}
             </section>
-          )}
+          </section>
         </div>
       </div>
     </main>

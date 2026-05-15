@@ -511,6 +511,25 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 999px;
   padding: 6px 14px;
   font-size: 13px;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.fav-pill:hover { border-color: rgba(255,106,61,0.5); color: var(--orange); }
+.fav-pill.is-active {
+  color: var(--orange);
+  border-color: rgba(255,106,61,0.6);
+  background: rgba(255,106,61,0.08);
+}
+.firm-anchor-section { scroll-margin-top: 96px; }
+.detail-tabs--sticky {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bg);
+  backdrop-filter: blur(8px);
+  margin-left: -24px;
+  margin-right: -24px;
+  padding-left: 24px;
+  padding-right: 24px;
 }
 .detail-actions { margin-left: auto; display: flex; gap: 10px; }
 .btn-outline {

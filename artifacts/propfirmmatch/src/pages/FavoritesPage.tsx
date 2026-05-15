@@ -1,25 +1,10 @@
-import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { firms } from "../data/firms";
 import { getBrandZh } from "../data/brandZh";
-
-const KEY = "pfm-favorites";
+import { useFavorites } from "../store/favs";
 
 export default function FavoritesPage() {
-  const [favs, setFavs] = useState<string[]>([]);
-
-  useEffect(() => {
-    try { setFavs(JSON.parse(localStorage.getItem(KEY) || "[]")); } catch { /* noop */ }
-  }, []);
-
-  const toggle = (slug: string) => {
-    setFavs(prev => {
-      const next = prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug].slice(0, 3);
-      try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* noop */ }
-      return next;
-    });
-  };
-
+  const { favs, toggle } = useFavorites();
   const favFirms = firms.filter(f => favs.includes(f.slug));
 
   return (
