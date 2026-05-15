@@ -236,6 +236,20 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .offer-rating { font-size: 12px; color: var(--text-dim); }
 .offer-rating .stars { color: var(--orange); }
+.offer-price-row {
+  margin-top: 6px;
+  display: flex; align-items: baseline; gap: 8px;
+}
+.offer-price-row .original {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  font-size: 12px;
+}
+.offer-price-row .price {
+  color: var(--orange);
+  font-weight: 700;
+  font-size: 16px;
+}
 .offer-discount {
   margin-top: 10px;
   display: flex; align-items: center; gap: 6px;
@@ -602,6 +616,20 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: linear-gradient(90deg, var(--orange), var(--purple));
   -webkit-background-clip: text; background-clip: text;
   color: transparent;
+}
+.offer-banner .hero-price-row {
+  display: inline-flex; align-items: baseline; gap: 8px;
+  margin-left: 4px;
+}
+.offer-banner .hero-price-row .original {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  font-size: 13px;
+}
+.offer-banner .hero-price-row .price {
+  color: var(--orange);
+  font-weight: 700;
+  font-size: 18px;
 }
 .offer-banner .firm-mini {
   display: flex; align-items: center; gap: 10px;

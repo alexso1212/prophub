@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { useMemo, useState } from "react";
-import { firms, Firm } from "../data/firms";
+import { firms, Firm, getDiscountedPrices, formatUsd } from "../data/firms";
 import { findFirmZh } from "../data/firms.zh";
 import { getBrandZh } from "../data/brandZh";
 import { countryZh } from "../data/i18nZh";
@@ -51,6 +51,15 @@ function OfferCard({ f }: { f: Firm }) {
       {promoPercent > 0 && (
         <>
           <div className="offer-discount">{promoPercent}% 折扣</div>
+          {(() => {
+            const prices = getDiscountedPrices(f, promoPercent);
+            return prices ? (
+              <div className="offer-price-row">
+                <span className="original">{formatUsd(prices.original)}</span>
+                <span className="price">{formatUsd(prices.discounted)}</span>
+              </div>
+            ) : null;
+          })()}
           <div className="offer-code">优惠码 <strong>{promoCode}</strong></div>
           {zh?.offerDescriptionZh && (
             <div style={{ marginTop: 8, fontSize: 11, color: "var(--text-muted)", lineHeight: 1.4 }}>

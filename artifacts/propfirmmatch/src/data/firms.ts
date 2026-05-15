@@ -22,6 +22,36 @@ const SIZE_TARGETS: Record<string, { target: string; dd: string; reset: string }
   "150K": { target: "$9,000",  dd: "$5,000",  reset: "$148" },
 };
 
+function parsePrice(s?: string): number | null {
+  if (!s) return null;
+  const n = parseFloat(s.replace(/[^0-9.]/g, ""));
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+export function formatUsd(n: number): string {
+  return n % 1 === 0 ? `$${n}` : `$${n.toFixed(2)}`;
+}
+
+export function getFirmStartingPrice(f: Firm): number | null {
+  if (!f.challenges?.length) return null;
+  const candidates = f.challenges
+    .map(c => parsePrice(c.original) ?? parsePrice(c.price))
+    .filter((n): n is number => n != null);
+  if (!candidates.length) return null;
+  return Math.min(...candidates);
+}
+
+export function getDiscountedPrices(
+  f: Firm,
+  effectivePercent: number
+): { original: number; discounted: number } | null {
+  const original = getFirmStartingPrice(f);
+  if (original == null) return null;
+  const pct = Math.max(0, Math.min(100, effectivePercent));
+  const discounted = original * (1 - pct / 100);
+  return { original, discounted };
+}
+
 export function enrichChallenge(c: ChallengeProgram, promoCode?: string): ChallengeProgram {
   if (c.accountSize && c.programType) return c;
   const name = c.name.toLowerCase();

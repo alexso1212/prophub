@@ -1,6 +1,6 @@
 import { Link, useParams } from "wouter";
 import { useState, useMemo } from "react";
-import { findFirm, Firm, enrichChallenge } from "../data/firms";
+import { findFirm, Firm, enrichChallenge, getDiscountedPrices, formatUsd } from "../data/firms";
 import { findFirmZh } from "../data/firms.zh";
 import { getBrandZh } from "../data/brandZh";
 import { countryZh, medianZh, programZh } from "../data/i18nZh";
@@ -132,6 +132,15 @@ export default function FirmPage() {
           <div className="left">
             <span className="badge">🔥 限时优惠</span>
             <span className="pct">{promoPercent}% 折扣</span>
+            {(() => {
+              const prices = getDiscountedPrices(f, promoPercent);
+              return prices ? (
+                <span className="hero-price-row">
+                  <span className="original">{formatUsd(prices.original)}</span>
+                  <span className="price">{formatUsd(prices.discounted)}</span>
+                </span>
+              ) : null;
+            })()}
           </div>
           <div className="firm-mini">
             <div className="firm-logo-sm" style={{ width: 40, height: 40 }}>
