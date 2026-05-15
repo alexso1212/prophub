@@ -333,13 +333,19 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .live-tag {
   margin-left: auto;
   font-size: 11px;
-  color: var(--text-muted);
-  display: flex; align-items: center; gap: 6px;
+  color: var(--text-dim);
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(16,185,129,0.35);
+  background: rgba(16,185,129,0.08);
+  white-space: nowrap;
 }
 .live-tag::before {
   content: ''; width: 7px; height: 7px;
   border-radius: 50%; background: var(--green);
   display: inline-block;
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.18);
   animation: pulse 1.5s infinite;
 }
 @keyframes pulse {
@@ -974,7 +980,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 /* ============== Mobile (≤768) — hamburger menu kicks in ============== */
 @media (max-width: 768px) {
-  .hamburger { display: flex; }
+  /* Legacy subnav hamburger replaced by side drawer; subnav itself is a
+     horizontal scroll strip on mobile so no toggle needed. */
+  .hamburger { display: none; }
   .header { padding: 10px 12px; gap: 8px; flex-wrap: wrap; }
   .logo-text { display: none; }
   .apps-icon { display: none; }
@@ -1575,4 +1583,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .header-right .btn-pill.hide-on-mobile { display: none !important; }
   .header-right { margin-left: auto; gap: 6px; }
   .header .search { order: 99; flex-basis: 100%; max-width: none; }
+  /* Normalize input font-size on mobile so iOS doesn't auto-zoom and
+     so all placeholders read at the same scale across the app. */
+  input, textarea, select {
+    font-size: 16px;
+  }
+  .search input { font-size: 14px; }
+  .search input::placeholder { font-size: 13px; }
 }
