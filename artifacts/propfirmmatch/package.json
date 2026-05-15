@@ -21,5 +21,9 @@
     "react-dom": "catalog:",
     "vite": "catalog:",
     "wouter": "^3.3.5"
+  },
+  "dependencies": {
+    "@clerk/react": "^6.6.2",
+    "@clerk/themes": "^2.4.57"
   }
 }

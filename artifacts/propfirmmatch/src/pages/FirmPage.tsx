@@ -6,6 +6,7 @@ import { getBrandZh } from "../data/brandZh";
 import { countryZh, medianZh, programZh } from "../data/i18nZh";
 import { reviewsForFirm } from "../data/reviews";
 import { payoutsForFirm } from "../data/payouts";
+import { useFirmOverride } from "../contexts/FirmsOverridesContext";
 
 function Stars({ rating }: { rating: number }) {
   const full = Math.round(rating);
@@ -38,6 +39,7 @@ export default function FirmPage() {
   const { slug } = useParams();
   const f = findFirm(slug || "");
   const zh = f ? findFirmZh(f.slug) : undefined;
+  const override = useFirmOverride(slug || "");
   const [tab, setTab] = useState<"overview" | "challenges" | "reviews" | "offers" | "payouts">("overview");
   const enrichedChallenges = useMemo(
     () => (f?.challenges ?? []).map(c => enrichChallenge(c, f?.promoCode)),
@@ -61,6 +63,22 @@ export default function FirmPage() {
   const leverageZh = zh?.leverageZh && zh.leverageZh.length > 0 ? zh.leverageZh : f.leverage;
   const consistencyZh = zh?.consistencyRulesZh && zh.consistencyRulesZh.length > 0 ? zh.consistencyRulesZh : f.consistencyRules;
 
+  const affiliateUrl = override?.affiliateUrl;
+  const promoCode = override?.promoCode ?? f.promoCode;
+  const promoPercent = override?.promoPercent ?? f.promoPercent;
+  const promoLabel = override?.promoLabel ?? f.promoLabel;
+
+  const BuyButton = ({ className }: { className?: string }) => {
+    if (affiliateUrl) {
+      return (
+        <a href={affiliateUrl} target="_blank" rel="noopener sponsored nofollow" className={className ?? "btn-buy"}>
+          立即购买
+        </a>
+      );
+    }
+    return <button className={className ?? "btn-buy"}>立即购买</button>;
+  };
+
   return (
     <main className="container">
       <div className="detail-top">
@@ -73,7 +91,7 @@ export default function FirmPage() {
         <button className="fav-pill">♡ 加入收藏</button>
         <div className="detail-actions">
           <button className="btn-outline">写一条评价</button>
-          <button className="btn-buy">立即购买</button>
+          <BuyButton />
         </div>
       </div>
 
@@ -109,11 +127,11 @@ export default function FirmPage() {
         )}
       </div>
 
-      {f.promoPercent > 0 && (
+      {promoPercent > 0 && (
         <div className="offer-banner">
           <div className="left">
             <span className="badge">🔥 限时优惠</span>
-            <span className="pct">{f.promoPercent}% 折扣</span>
+            <span className="pct">{promoPercent}% 折扣</span>
           </div>
           <div className="firm-mini">
             <div className="firm-logo-sm" style={{ width: 40, height: 40 }}>
@@ -126,7 +144,10 @@ export default function FirmPage() {
             </div>
           </div>
           <div className="desc">{offerDescZh}</div>
-          <div className="code-pill">优惠码 <strong>{f.promoCode} 📋</strong></div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {promoLabel && <span className="code-pill" style={{ background: "rgba(168,85,247,0.15)", color: "var(--purple)" }}>{promoLabel}</span>}
+            <div className="code-pill">优惠码 <strong>{promoCode} 📋</strong></div>
+          </div>
         </div>
       )}
 
@@ -139,7 +160,7 @@ export default function FirmPage() {
           用户评价 <span className="count-pill">{f.reviews}</span>
         </button>
         <button className={tab === "offers" ? "active" : ""} onClick={() => setTab("offers")}>
-          专属优惠 <span className="count-pill">{f.promoPercent > 0 && f.promoCode ? 1 : 0}</span>
+          专属优惠 <span className="count-pill">{promoPercent > 0 ? 2 : 0}</span>
         </button>
         <button className={tab === "payouts" ? "active" : ""} onClick={() => setTab("payouts")}>
           出金记录 <span className="count-pill" style={{ background: "rgba(168,85,247,0.15)", color: "var(--purple)" }}>新</span>
@@ -251,7 +272,13 @@ export default function FirmPage() {
                   <h2>挑战赛列表</h2>
                   {f.challenges.map((c, i) => (
                     <div key={i} className="challenge-row">
-                      <span className="name">{programZh(c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`)}</span>
+                      {affiliateUrl ? (
+                        <a href={affiliateUrl} target="_blank" rel="noopener sponsored nofollow" className="name">
+                          {programZh(c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`)}
+                        </a>
+                      ) : (
+                        <a href="#" className="name">{programZh(c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`)}</a>
+                      )}
                       {c.original && <span className="original">{c.original}</span>}
                       <span className="price">{c.price}</span>
                     </div>
@@ -269,7 +296,15 @@ export default function FirmPage() {
                   {enrichedChallenges.map((c, i) => (
                     <div key={i} className="challenge-card">
                       <div className="cc-head">
-                        <div className="cc-title">{programZh(c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`)}</div>
+                        <div className="cc-title">
+                          {affiliateUrl ? (
+                            <a href={affiliateUrl} target="_blank" rel="noopener sponsored nofollow" style={{color:"inherit",textDecoration:"none"}}>
+                              {programZh(c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`)}
+                            </a>
+                          ) : (
+                            programZh(c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`)
+                          )}
+                        </div>
                         <div className="cc-prices">
                           {c.original && <span className="original">{c.original}</span>}
                           <span className="price">{c.price}</span>
@@ -334,14 +369,14 @@ export default function FirmPage() {
           {tab === "offers" && (
             <section className="detail-section" style={{ borderTop: "none", marginTop: 0, paddingTop: 0 }}>
               <h2>{f.name} 专属优惠</h2>
-              {f.promoPercent > 0 && f.promoCode ? (
+              {promoPercent > 0 ? (
                 <div className="offer-row active">
-                  <div className="of-pct">{f.promoPercent}% 折扣</div>
+                  <div className="of-pct">{promoPercent}% 折扣</div>
                   <div className="of-body">
                     <div className="of-desc">{offerDescZh}</div>
                     <div className="of-meta">活动进行中 · 结账时输入优惠码</div>
                   </div>
-                  <div className="of-code">优惠码 <strong>{f.promoCode}</strong></div>
+                  <div className="of-code">优惠码 <strong>{promoCode}</strong></div>
                   <span className="of-status active">进行中</span>
                 </div>
               ) : (
