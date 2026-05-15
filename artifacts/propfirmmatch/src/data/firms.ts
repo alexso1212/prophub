@@ -3,6 +3,50 @@ export interface Platform {
   icon?: string;
 }
 
+export interface ChallengeProgram {
+  name: string;
+  price: string;
+  original?: string;
+  accountSize?: string;   // e.g. "$25K"
+  programType?: string;   // e.g. "1-Step", "2-Step", "Instant"
+  drawdown?: string;      // e.g. "$1,500" trailing
+  profitTarget?: string;  // e.g. "$1,500"
+  resetPrice?: string;    // e.g. "$80"
+  promoCode?: string;
+}
+
+const SIZE_TARGETS: Record<string, { target: string; dd: string; reset: string }> = {
+  "25K":  { target: "$1,500",  dd: "$1,500",  reset: "$80"  },
+  "50K":  { target: "$3,000",  dd: "$2,500",  reset: "$98"  },
+  "100K": { target: "$6,000",  dd: "$3,000",  reset: "$120" },
+  "150K": { target: "$9,000",  dd: "$5,000",  reset: "$148" },
+};
+
+export function enrichChallenge(c: ChallengeProgram, promoCode?: string): ChallengeProgram {
+  if (c.accountSize && c.programType) return c;
+  const name = c.name.toLowerCase();
+  const sizeMatch = name.match(/(\d{2,3})k\b/);
+  const accountSize = sizeMatch ? `$${sizeMatch[1]}K` : undefined;
+  let programType: string | undefined;
+  if (/instant/.test(name)) programType = "Instant";
+  else if (/2[-\s]?step/.test(name)) programType = "2-Step";
+  else if (/1[-\s]?step/.test(name)) programType = "1-Step";
+  else if (/express/.test(name)) programType = "Express";
+  else if (/combine/.test(name)) programType = "Combine";
+  else if (/eval/.test(name)) programType = "Evaluation";
+  const sizeKey = sizeMatch?.[1] ? `${sizeMatch[1]}K` : null;
+  const defaults = sizeKey ? SIZE_TARGETS[sizeKey] : undefined;
+  return {
+    ...c,
+    accountSize,
+    programType,
+    profitTarget: c.profitTarget ?? defaults?.target,
+    drawdown: c.drawdown ?? defaults?.dd,
+    resetPrice: c.resetPrice ?? defaults?.reset,
+    promoCode: c.promoCode ?? promoCode,
+  };
+}
+
 export interface Firm {
   slug: string;
   name: string;
@@ -35,7 +79,7 @@ export interface Firm {
   rules?: string[];
   consistencyRules?: { program: string; rule: string }[];
   leverage?: string[];
-  challenges?: { name: string; price: string; original?: string }[];
+  challenges?: ChallengeProgram[];
   offerDescription: string;
 }
 

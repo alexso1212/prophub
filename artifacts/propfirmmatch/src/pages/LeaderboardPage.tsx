@@ -1,24 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { firms } from "../data/firms";
-
-const TRADERS = [
-  { name: "Marcus J.", country: "us", firm: "Tradeify", payouts: 142800, count: 11, win: 78 },
-  { name: "Yuki T.", country: "jp", firm: "My Funded Futures", payouts: 128400, count: 9, win: 81 },
-  { name: "Nathan F.", country: "us", firm: "Topstep", payouts: 117500, count: 8, win: 72 },
-  { name: "Olivia C.", country: "ca", firm: "Alpha Futures", payouts: 98700, count: 7, win: 75 },
-  { name: "Diego R.", country: "es", firm: "Apex Trader Funding", payouts: 89400, count: 8, win: 69 },
-  { name: "Lucas A.", country: "br", firm: "FundedNext Futures", payouts: 86200, count: 6, win: 73 },
-  { name: "Hassan K.", country: "ae", firm: "Lucid Trading", payouts: 78900, count: 6, win: 76 },
-  { name: "Sarah W.", country: "gb", firm: "TradeDay", payouts: 71200, count: 7, win: 70 },
-  { name: "Anders L.", country: "se", firm: "Top One Futures", payouts: 64500, count: 6, win: 74 },
-  { name: "Priya M.", country: "in", firm: "Goat Funded Futures", payouts: 58300, count: 5, win: 71 },
-  { name: "Ben P.", country: "au", firm: "Take Profit Trader", payouts: 52100, count: 5, win: 68 },
-  { name: "Tomás G.", country: "mx", firm: "Earn2Trade", payouts: 47800, count: 6, win: 72 },
-  { name: "Léa R.", country: "fr", firm: "FuturesElite", payouts: 41200, count: 4, win: 79 },
-  { name: "Hans M.", country: "de", firm: "The Trading Pit Futures", payouts: 38500, count: 4, win: 67 },
-  { name: "Chen W.", country: "sg", firm: "Hola Prime Futures", payouts: 35900, count: 4, win: 70 },
-];
+import { leaderboard as TRADERS } from "../data/leaderboard";
 
 export default function LeaderboardPage() {
   const [period, setPeriod] = useState<"30d"|"90d"|"all">("30d");

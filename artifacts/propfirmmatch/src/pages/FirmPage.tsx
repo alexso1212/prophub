@@ -1,6 +1,9 @@
 import { Link, useParams } from "wouter";
-import { useState } from "react";
-import { findFirm, Firm } from "../data/firms";
+import { useState, useMemo } from "react";
+import { findFirm, Firm, enrichChallenge } from "../data/firms";
+import { reviewsForFirm } from "../data/reviews";
+import { offersForFirm } from "../data/offers";
+import { payoutsForFirm } from "../data/payouts";
 
 function Stars({ rating }: { rating: number }) {
   const full = Math.round(rating);
@@ -33,6 +36,13 @@ export default function FirmPage() {
   const { slug } = useParams();
   const f = findFirm(slug || "");
   const [tab, setTab] = useState<"overview" | "challenges" | "reviews" | "offers" | "payouts">("overview");
+  const enrichedChallenges = useMemo(
+    () => (f?.challenges ?? []).map(c => enrichChallenge(c, f?.promoCode)),
+    [f]
+  );
+  const reviewList = useMemo(() => f ? reviewsForFirm(f.slug) : [], [f]);
+  const offerList  = useMemo(() => f ? offersForFirm(f.slug)  : [], [f]);
+  const payoutList = useMemo(() => f ? payoutsForFirm(f.name) : [], [f]);
 
   if (!f) {
     return (
@@ -247,14 +257,29 @@ export default function FirmPage() {
           {tab === "challenges" && (
             <section className="detail-section" style={{ borderTop: "none", marginTop: 0, paddingTop: 0 }}>
               <h2>{f.name} Challenges</h2>
-              {(f.challenges && f.challenges.length > 0 ? f.challenges : []).map((c, i) => (
-                <div key={i} className="challenge-row">
-                  <span className="name">{c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`}</span>
-                  {c.original && <span className="original">{c.original}</span>}
-                  <span className="price">{c.price}</span>
+              {enrichedChallenges.length > 0 ? (
+                <div className="challenge-grid">
+                  {enrichedChallenges.map((c, i) => (
+                    <div key={i} className="challenge-card">
+                      <div className="cc-head">
+                        <div className="cc-title">{c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`}</div>
+                        <div className="cc-prices">
+                          {c.original && <span className="original">{c.original}</span>}
+                          <span className="price">{c.price}</span>
+                        </div>
+                      </div>
+                      <div className="cc-grid">
+                        <div><label>Account size</label><span>{c.accountSize ?? "—"}</span></div>
+                        <div><label>Program</label><span>{c.programType ?? "—"}</span></div>
+                        <div><label>Profit target</label><span>{c.profitTarget ?? "—"}</span></div>
+                        <div><label>Drawdown</label><span>{c.drawdown ?? "—"}</span></div>
+                        <div><label>Reset</label><span>{c.resetPrice ?? "—"}</span></div>
+                        <div><label>Promo code</label><span>{c.promoCode ?? "—"}</span></div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-              {(!f.challenges || f.challenges.length === 0) && (
+              ) : (
                 <p style={{ color: "var(--text-dim)" }}>No challenges listed for {f.name} yet.</p>
               )}
             </section>
@@ -263,36 +288,76 @@ export default function FirmPage() {
           {tab === "reviews" && (
             <section className="detail-section" style={{ borderTop: "none", marginTop: 0, paddingTop: 0 }}>
               <h2>{f.name} Reviews ({f.reviews})</h2>
-              <p style={{ color: "var(--text-dim)" }}>
-                {f.reviews > 0
-                  ? `${f.name} has ${f.reviews} verified reviews with an average rating of ${f.rating}/5. Login to leave your own review.`
-                  : `${f.name} has fewer than 10 reviews. Be among the first to leave one.`}
-              </p>
+              {reviewList.length > 0 ? (
+                <div className="review-list">
+                  {reviewList.map((r, i) => (
+                    <article key={i} className="review-item">
+                      <div className="ri-head">
+                        <Stars rating={r.rating} />
+                        <span className="ri-meta">{r.author} · {r.country.toUpperCase()} · {r.date}</span>
+                        {r.verifiedPayout && <span className="ri-verified">Verified payout</span>}
+                      </div>
+                      <h3 className="ri-title">{r.title}</h3>
+                      <p className="ri-body">{r.body}</p>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <p style={{ color: "var(--text-dim)" }}>No reviews yet — be the first to leave one.</p>
+              )}
             </section>
           )}
 
           {tab === "offers" && (
             <section className="detail-section" style={{ borderTop: "none", marginTop: 0, paddingTop: 0 }}>
               <h2>{f.name} Offers</h2>
-              {f.promoPercent > 0 ? (
-                <div className="offer-banner" style={{ margin: 0 }}>
-                  <div className="left">
-                    <span className="badge">🔥 NEW OFFER</span>
-                    <span className="pct">{f.promoPercent}% OFF</span>
-                  </div>
-                  <div className="desc">{f.offerDescription}</div>
-                  <div className="code-pill">Code <strong>{f.promoCode}</strong></div>
+              {offerList.length > 0 ? (
+                <div className="offer-list">
+                  {offerList.map((o, i) => (
+                    <div key={i} className={`offer-row ${o.status}`}>
+                      <div className="of-pct">{o.percent}% OFF</div>
+                      <div className="of-body">
+                        <div className="of-desc">{o.description}</div>
+                        <div className="of-meta">
+                          {o.startDate}{o.endDate ? ` → ${o.endDate}` : " · Active"}
+                        </div>
+                      </div>
+                      <div className="of-code">Code <strong>{o.code}</strong></div>
+                      <span className={`of-status ${o.status}`}>{o.status === "active" ? "Active" : "Expired"}</span>
+                    </div>
+                  ))}
                 </div>
-              ) : <p style={{ color: "var(--text-dim)" }}>No active offers right now.</p>}
+              ) : <p style={{ color: "var(--text-dim)" }}>No offers on record for {f.name}.</p>}
             </section>
           )}
 
           {tab === "payouts" && (
             <section className="detail-section" style={{ borderTop: "none", marginTop: 0, paddingTop: 0 }}>
               <h2>{f.name} Payouts</h2>
-              <p style={{ color: "var(--text-dim)" }}>
-                Verified payout reports from real {f.name} traders. Payout data is updated as traders submit proof of withdrawal.
-              </p>
+              {payoutList.length > 0 ? (
+                <div className="table-wrap">
+                  <table className="firms-table">
+                    <thead>
+                      <tr><th>Trader</th><th>Country</th><th>Account</th><th>Days</th><th>Method</th><th>Date</th><th style={{ textAlign: "right" }}>Amount</th></tr>
+                    </thead>
+                    <tbody>
+                      {payoutList.map((p, i) => (
+                        <tr key={i}>
+                          <td>{p.trader}</td>
+                          <td>{p.country.toUpperCase()}</td>
+                          <td>{p.account}</td>
+                          <td>{p.days}d</td>
+                          <td>{p.method ?? "—"}</td>
+                          <td>{p.date}</td>
+                          <td style={{ textAlign: "right", fontWeight: 700, color: "var(--orange)" }}>${p.amount.toLocaleString()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p style={{ color: "var(--text-dim)" }}>No verified payouts have been submitted for {f.name} yet.</p>
+              )}
             </section>
           )}
         </div>
