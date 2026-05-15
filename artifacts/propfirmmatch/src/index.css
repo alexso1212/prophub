@@ -1529,10 +1529,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 /* ============== Header drawer toggle visibility ============== */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .header-drawer-toggle { display: flex; }
 }
-@media (min-width: 641px) {
+@media (min-width: 769px) {
   .side-drawer, .drawer-mask { display: none !important; }
 }
 
@@ -1570,7 +1570,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 /* ============== Tighten header on small screens ============== */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .header { padding: 10px 12px 10px 14px; }
   .header-right .btn-pill.hide-on-mobile { display: none !important; }
   .header-right { margin-left: auto; gap: 6px; }
