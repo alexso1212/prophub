@@ -33,7 +33,7 @@ const BRAND_TOKENS_PRESERVE = [
   "Take Profit Trader", "Topstep", "TopOne Futures", "Top One Futures",
   "Lucid Trading", "LucidDirect", "Tradeify", "TradeDay", "Earn2Trade",
   "Apex Trader Funding", "Alpha Futures", "Aquafutures", "Blueberry Futures",
-  "Blue Guardian Futures", "E8 Futures", "FutureSelite", "Hola Prime Futures",
+  "Blue Guardian Futures", "E8 Futures", "FuturesElite", "FutureSelite", "Hola Prime Futures",
   "The Trading Pit", "Traders Launch", "FundingPips",
 ];
 
