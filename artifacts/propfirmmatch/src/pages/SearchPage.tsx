@@ -69,7 +69,7 @@ export default function SearchPage() {
     if (!query) return [];
     const q = query.toLowerCase();
     const hits: SearchHit[] = [];
-    for (const cat of ["futures", "forex"] as const) {
+    for (const cat of ["futures", "forex", "crypto"] as const) {
       for (const f of firmsForCategory(cat)) {
         const matches =
           f.name.toLowerCase().includes(q)

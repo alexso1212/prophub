@@ -1,6 +1,7 @@
 import { createContext, useContext, ReactNode } from "react";
 import { firms, type Firm } from "../data/firms";
 import { firmsForex } from "../data/firmsForex";
+import { firmsCrypto } from "../data/firmsCrypto";
 
 export type Category = "forex" | "futures" | "crypto";
 
@@ -16,7 +17,7 @@ export function useCategory(): Category {
 
 export function firmsForCategory(c: Category): Firm[] {
   if (c === "forex") return firmsForex;
-  if (c === "crypto") return [];
+  if (c === "crypto") return firmsCrypto;
   return firms;
 }
 
@@ -29,7 +30,7 @@ export function findFirmInCategory(slug: string, c: Category): Firm | undefined 
 }
 
 export function findFirmAnyCategory(slug: string): { firm: Firm; category: Category } | undefined {
-  for (const c of ["futures", "forex"] as const) {
+  for (const c of ["futures", "forex", "crypto"] as const) {
     const f = firmsForCategory(c).find(x => x.slug === slug);
     if (f) return { firm: f, category: c };
   }

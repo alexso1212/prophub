@@ -17,7 +17,6 @@ import BrokersPage from "./pages/BrokersPage";
 import NewsPage from "./pages/NewsPage";
 import SearchPage from "./pages/SearchPage";
 import SimplePage from "./pages/SimplePage";
-import CategoryComingSoonPage from "./pages/CategoryComingSoonPage";
 import AdminFirmsPage from "./pages/AdminFirmsPage";
 import { FirmsOverridesProvider } from "./contexts/FirmsOverridesContext";
 import { CategoryProvider, type Category } from "./contexts/CategoryContext";
@@ -175,9 +174,27 @@ function Router({ clerkEnabled }: { clerkEnabled: boolean }) {
         <Route path="/forex/brokers" component={BrokersPage} />
         <Route path="/forex/news" component={NewsPage} />
 
-        <Route path="/search" component={SearchPage} />
+        {/* ======================== 加密板块 ======================== */}
+        <Route path="/crypto" component={HomePage} />
+        <Route path="/crypto/all-prop-firms" component={HomePage} />
+        <Route path="/crypto/prop-firms/:slug" component={FirmPage} />
+        <Route path="/crypto/exclusive-offers" component={OffersPage} />
+        <Route path="/crypto/offers" component={OffersPage} />
+        <Route path="/crypto/prop-firm-challenges" component={ChallengesPage} />
+        <Route path="/crypto/challenges" component={ChallengesPage} />
+        <Route path="/crypto/best-sellers" component={BestSellersPage} />
+        <Route path="/crypto/prop-firm-reviews" component={ReviewsPage} />
+        <Route path="/crypto/reviews" component={ReviewsPage} />
+        <Route path="/crypto/favorite-firms" component={FavoritesPage} />
+        <Route path="/crypto/favorites" component={FavoritesPage} />
+        <Route path="/crypto/prop-firm-rules" component={RulesPage} />
+        <Route path="/crypto/payouts" component={PayoutsPage} />
+        <Route path="/crypto/payouts-leaderboard" component={LeaderboardPage} />
+        <Route path="/crypto/leaderboard" component={LeaderboardPage} />
+        <Route path="/crypto/brokers" component={BrokersPage} />
+        <Route path="/crypto/news" component={NewsPage} />
 
-        <Route path="/crypto/:rest*">{() => <CategoryComingSoonPage category="crypto" />}</Route>
+        <Route path="/search" component={SearchPage} />
 
         <Route>
           <SimplePage title="页面未找到" body="你访问的页面不存在，请返回首页继续浏览。" />

@@ -112,7 +112,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         ))}
       </nav>
 
-      {activeCategory === "forex" && (
+      {activeCategory !== "futures" && (
         <div
           role="status"
           style={{
@@ -125,7 +125,9 @@ export default function Layout({ children }: { children: ReactNode }) {
             letterSpacing: ".02em",
           }}
         >
-          📊 外汇版本目前为<strong style={{ margin: "0 4px", color: "var(--orange)" }}>演示数据</strong>，真实公司接入中，结构与功能与期货版完全一致。
+          {activeCategory === "forex" ? "📊" : "₿"} {activeCategory === "forex" ? "外汇" : "加密"}版本目前为
+          <strong style={{ margin: "0 4px", color: "var(--orange)" }}>演示数据</strong>
+          ，真实公司接入中，结构与功能与期货版完全一致。
         </div>
       )}
 
