@@ -28,14 +28,39 @@ export function medianZh(s: string): string {
   return out;
 }
 
+const BRAND_TOKENS_PRESERVE = [
+  "FundedNext", "My Funded Futures", "Funded Futures Family", "Goat Funded Futures",
+  "Take Profit Trader", "Topstep", "TopOne Futures", "Top One Futures",
+  "Lucid Trading", "LucidDirect", "Tradeify", "TradeDay", "Earn2Trade",
+  "Apex Trader Funding", "Alpha Futures", "Aquafutures", "Blueberry Futures",
+  "Blue Guardian Futures", "E8 Futures", "FutureSelite", "Hola Prime Futures",
+  "The Trading Pit", "Traders Launch", "FundingPips",
+];
+
 export function programZh(name: string): string {
   if (!name) return name;
-  return name
+  const placeholders: string[] = [];
+  let working = name;
+  for (const brand of BRAND_TOKENS_PRESERVE) {
+    const re = new RegExp(brand.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
+    working = working.replace(re, () => {
+      const token = `\u0001${placeholders.length}\u0001`;
+      placeholders.push(brand);
+      return token;
+    });
+  }
+  working = working
     .replace(/\b1-?Step\b/gi, "一阶段")
     .replace(/\b2-?Step\b/gi, "两阶段")
     .replace(/\b3-?Step\b/gi, "三阶段")
     .replace(/\bInstant\b/gi, "即时入金")
     .replace(/\bEvaluation\b/gi, "评估")
+    .replace(/\bExpress\b/gi, "极速")
+    .replace(/\bCombine\b/gi, "组合")
+    .replace(/\bAccount\b/gi, "账户")
+    .replace(/\bPlan\b/gi, "方案")
     .replace(/\bChallenge\b/gi, "挑战赛")
-    .replace(/\bFunded\b/gi, "签约");
+    .replace(/\bPro\b/gi, "专业版")
+    .replace(/\bStandard\b/gi, "标准版");
+  return working.replace(/\u0001(\d+)\u0001/g, (_m, i) => placeholders[Number(i)]);
 }
