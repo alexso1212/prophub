@@ -109,19 +109,23 @@ router.post("/firms/:slug/reviews", requireUser, async (req: any, res) => {
 });
 
 router.patch("/firms/:slug/reviews/:id", requireUser, async (req: any, res) => {
+  const { slug } = req.params;
   const id = Number(req.params.id);
   if (!Number.isInteger(id)) { res.status(400).json({ error: "invalid id" }); return; }
   const v = validate(req.body);
   if (typeof v === "string") { res.status(400).json({ error: v }); return; }
 
   try {
-    const [existing] = await db.select().from(firmReviewsTable).where(eq(firmReviewsTable.id, id));
+    const [existing] = await db
+      .select()
+      .from(firmReviewsTable)
+      .where(and(eq(firmReviewsTable.id, id), eq(firmReviewsTable.slug, slug)));
     if (!existing) { res.status(404).json({ error: "not found" }); return; }
     if (existing.userId !== req.authUser.id) { res.status(403).json({ error: "forbidden" }); return; }
     const [updated] = await db
       .update(firmReviewsTable)
       .set({ rating: v.rating, title: v.title, body: v.text, updatedAt: new Date() })
-      .where(eq(firmReviewsTable.id, id))
+      .where(and(eq(firmReviewsTable.id, id), eq(firmReviewsTable.slug, slug)))
       .returning();
     res.json(updated);
   } catch (err) {
@@ -130,13 +134,19 @@ router.patch("/firms/:slug/reviews/:id", requireUser, async (req: any, res) => {
 });
 
 router.delete("/firms/:slug/reviews/:id", requireUser, async (req: any, res) => {
+  const { slug } = req.params;
   const id = Number(req.params.id);
   if (!Number.isInteger(id)) { res.status(400).json({ error: "invalid id" }); return; }
   try {
-    const [existing] = await db.select().from(firmReviewsTable).where(eq(firmReviewsTable.id, id));
+    const [existing] = await db
+      .select()
+      .from(firmReviewsTable)
+      .where(and(eq(firmReviewsTable.id, id), eq(firmReviewsTable.slug, slug)));
     if (!existing) { res.status(404).json({ error: "not found" }); return; }
     if (existing.userId !== req.authUser.id) { res.status(403).json({ error: "forbidden" }); return; }
-    await db.delete(firmReviewsTable).where(eq(firmReviewsTable.id, id));
+    await db
+      .delete(firmReviewsTable)
+      .where(and(eq(firmReviewsTable.id, id), eq(firmReviewsTable.slug, slug)));
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ error: "Failed to delete review" });

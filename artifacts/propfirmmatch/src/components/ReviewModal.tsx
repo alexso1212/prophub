@@ -184,7 +184,13 @@ interface TriggerProps {
   onReviewsChanged?: () => void;
 }
 
-export function ReviewButton({ slug, firmName, className, onReviewsChanged }: TriggerProps) {
+export function ReviewButton(props: TriggerProps) {
+  const clerkEnabled = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
+  if (!clerkEnabled) return null;
+  return <ReviewButtonInner {...props} />;
+}
+
+function ReviewButtonInner({ slug, firmName, className, onReviewsChanged }: TriggerProps) {
   const { isSignedIn } = useUser();
   const [open, setOpen] = useState(false);
   const [existing, setExisting] = useState<UserReview | null>(null);
