@@ -1,6 +1,6 @@
 import { Link, useParams } from "wouter";
 import { useState, useMemo } from "react";
-import { findFirm, Firm, enrichChallenge, getDiscountedPrices, formatUsd } from "../data/firms";
+import { Firm, enrichChallenge, getDiscountedPrices, formatUsd } from "../data/firms";
 import { findFirmZh } from "../data/firms.zh";
 import { getBrandZh } from "../data/brandZh";
 import { countryZh, medianZh, programZh } from "../data/i18nZh";
@@ -11,6 +11,7 @@ import { useFavorites } from "../store/favs";
 import FirmDetailSectionTabs from "../components/FirmDetailSectionTabs";
 import { ReviewButton } from "../components/ReviewModal";
 import { useFirmReviews, formatRelativeZh } from "../hooks/useFirmReviews";
+import { useCategory, useCategoryFirms, useCategoryMeta } from "../contexts/CategoryContext";
 
 function Stars({ rating }: { rating: number }) {
   const full = Math.round(rating);
@@ -41,7 +42,11 @@ function ReviewBars({ f }: { f: Firm }) {
 
 export default function FirmPage() {
   const { slug } = useParams();
-  const f = findFirm(slug || "");
+  const category = useCategory();
+  const meta = useCategoryMeta();
+  const firms = useCategoryFirms();
+  const prefix = `/${category}`;
+  const f = firms.find(x => x.slug === slug);
   const zh = f ? findFirmZh(f.slug) : undefined;
   const override = useFirmOverride(slug || "");
   const favorites = useFavorites();
@@ -76,8 +81,8 @@ export default function FirmPage() {
     return (
       <main className="simple-page">
         <h1>未找到该公司</h1>
-        <p>你查找的自营公司不存在。</p>
-        <Link href="/" className="btn-buy" style={{ display: "inline-block", marginTop: 20 }}>返回全部公司</Link>
+        <p>你查找的{meta.label}自营公司不存在。</p>
+        <Link href={`${prefix}/all-prop-firms`} className="btn-buy" style={{ display: "inline-block", marginTop: 20 }}>返回全部公司</Link>
       </main>
     );
   }
@@ -114,7 +119,7 @@ export default function FirmPage() {
             if (typeof window !== "undefined" && window.history.length > 1) {
               window.history.back();
             } else {
-              window.location.href = `${import.meta.env.BASE_URL}futures/all-prop-firms`;
+              window.location.href = `${import.meta.env.BASE_URL}${category}/all-prop-firms`;
             }
           }}
         >←</button>
@@ -224,7 +229,7 @@ export default function FirmPage() {
         ]}
       />
 
-      <h2 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 6px" }}>{f.name} 期货自营公司详情</h2>
+      <h2 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 6px" }}>{f.name} {meta.label}自营公司详情</h2>
       <hr style={{ border: "none", borderTop: "1px solid var(--border)", margin: "16px 0 24px" }} />
 
       <div className="detail-grid">
@@ -279,6 +284,12 @@ export default function FirmPage() {
                     ))}
                   </div>
                 </div>
+                {f.spreadType && (
+                  <div className="kv-block"><div className="k">点差类型：</div><div className="v"><span className="kv-chip">{f.spreadType}</span></div></div>
+                )}
+                {f.swapPolicy && (
+                  <div className="kv-block"><div className="k">隔夜利息：</div><div className="v"><span className="kv-chip">{f.swapPolicy}</span></div></div>
+                )}
                 {f.paymentMethods && (
                   <div className="kv-block">
                     <div className="k">支付方式：</div>
@@ -303,14 +314,17 @@ export default function FirmPage() {
 
               <section className="detail-section" id="instruments">
                 <h2>交易品种</h2>
-                <div className="kv-block"><div className="k">品种类型：</div><div className="v"><span className="kv-chip">期货</span></div></div>
-                <div className="kv-block"><div className="k">可交易资产：</div><div className="v"><span className="kv-chip">期货</span></div></div>
+                <div className="kv-block"><div className="k">品种类型：</div><div className="v"><span className="kv-chip">{meta.label}</span></div></div>
+                <div className="kv-block"><div className="k">可交易资产：</div><div className="v"><span className="kv-chip">{meta.assetWord}</span>{f.currencyPairs && <span className="kv-chip">{f.currencyPairs} 个货币对</span>}</div></div>
               </section>
 
               {leverageZh && leverageZh.length > 0 && (
                 <section className="detail-section" id="leverage">
                   <h2>杠杆与合约</h2>
-                  <div style={{ fontWeight: 600, marginBottom: 8 }}>各档位最大合约手数</div>
+                  <div style={{ fontWeight: 600, marginBottom: 8 }}>
+                    {category === "forex" ? "杠杆上限与品种" : "各档位最大合约手数"}
+                    {f.maxLeverage && <span className="kv-chip" style={{ marginLeft: 12 }}>最大杠杆 {f.maxLeverage}</span>}
+                  </div>
                   <ul className="bullet-list">
                     {leverageZh.map((l, i) => <li key={i}>{l}</li>)}
                   </ul>
@@ -331,9 +345,15 @@ export default function FirmPage() {
 
               <section className="detail-section" id="rules">
                 <h2>公司规则</h2>
-                <p style={{ color: "var(--text-dim)" }}>
-                  完整规则请以 {f.name} 官方页面为准。{f.name} 沿用业内通行的自营交易规则，包括一致性要求、禁止行为（高频、对冲、套利等）以及账户长时间未交易的处理方式。
-                </p>
+                {f.rules && f.rules.length > 0 ? (
+                  <ul className="bullet-list">
+                    {f.rules.map((r, i) => <li key={i}>{r}</li>)}
+                  </ul>
+                ) : (
+                  <p style={{ color: "var(--text-dim)" }}>
+                    完整规则请以 {f.name} 官方页面为准。{f.name} 沿用业内通行的自营交易规则，包括一致性要求、禁止行为（高频、对冲、套利等）以及账户长时间未交易的处理方式。
+                  </p>
+                )}
               </section>
 
           </section>
@@ -348,7 +368,7 @@ export default function FirmPage() {
                       <div className="cc-head">
                         <div className="cc-title">
                           {affiliateUrl ? (
-                            <a href={affiliateUrl} target="_blank" rel="noopener sponsored nofollow" style={{color:"inherit",textDecoration:"none"}}>
+                            <a href={affiliateUrl} target="_blank" rel="noopener sponsored nofollow" style={{ color: "inherit", textDecoration: "none" }}>
                               {programZh(c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`)}
                             </a>
                           ) : (

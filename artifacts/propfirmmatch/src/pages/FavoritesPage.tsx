@@ -1,9 +1,12 @@
 import { Link } from "wouter";
-import { firms } from "../data/firms";
 import { getBrandZh } from "../data/brandZh";
 import { useFavorites } from "../store/favs";
+import { useCategory, useCategoryFirms } from "../contexts/CategoryContext";
 
 export default function FavoritesPage() {
+  const category = useCategory();
+  const firms = useCategoryFirms();
+  const prefix = `/${category}`;
   const { favs, toggle } = useFavorites();
   const favFirms = firms.filter(f => favs.includes(f.slug));
 
@@ -23,8 +26,8 @@ export default function FavoritesPage() {
         <div className="popular-row" style={{ marginBottom: 30 }}>
           {favFirms.map((f, i) => (
             <div key={f.slug} className="popular-card">
-              <div className="trophy">{["★","★","★"][i]}</div>
-              <Link href={`/futures/prop-firms/${f.slug}`}>
+              <div className="trophy">{["★", "★", "★"][i]}</div>
+              <Link href={`${prefix}/prop-firms/${f.slug}`}>
                 <div className="logo-wrap"><img src={f.logo} alt={f.name} /></div>
                 <div className="name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
               </Link>
@@ -51,7 +54,7 @@ export default function FavoritesPage() {
               >
                 {on ? "♥" : "♡"}
               </button>
-              <Link href={`/futures/prop-firms/${f.slug}`}>
+              <Link href={`${prefix}/prop-firms/${f.slug}`}>
                 <div className="offer-logo"><img src={f.logo} alt={f.name} /></div>
                 <div className="offer-name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
                 <div className="offer-rating">

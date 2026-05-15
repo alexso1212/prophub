@@ -1,19 +1,23 @@
 import { Link, useLocation } from "wouter";
 import { ReactNode, useEffect, useState, FormEvent } from "react";
+import type { Category } from "../contexts/CategoryContext";
 
-const NAV = [
-  { to: "/futures/all-prop-firms", label: "首页" },
-  { to: "/futures/exclusive-offers", label: "限时优惠" },
-  { to: "/futures/prop-firm-challenges", label: "挑战赛" },
-  { to: "/futures/best-sellers", label: "热销榜" },
-  { to: "/futures/prop-firm-reviews", label: "用户评价" },
-  { to: "/futures/favorite-firms", label: "我的收藏" },
-  { to: "/futures/prop-firm-rules", label: "规则手册" },
-  { to: "/futures/payouts", label: "出金记录" },
-  { to: "/futures/payouts-leaderboard", label: "出金排行" },
-  { to: "/futures/brokers", label: "合作经纪" },
-  { to: "/futures/news", label: "行业新闻" },
-];
+function buildNav(cat: Category) {
+  const p = `/${cat}`;
+  return [
+    { to: `${p}/all-prop-firms`,        label: "首页" },
+    { to: `${p}/exclusive-offers`,      label: "限时优惠" },
+    { to: `${p}/prop-firm-challenges`,  label: "挑战赛" },
+    { to: `${p}/best-sellers`,          label: "热销榜" },
+    { to: `${p}/prop-firm-reviews`,     label: "用户评价" },
+    { to: `${p}/favorite-firms`,        label: "我的收藏" },
+    { to: `${p}/prop-firm-rules`,       label: "规则手册" },
+    { to: `${p}/payouts`,               label: "出金记录" },
+    { to: `${p}/payouts-leaderboard`,   label: "出金排行" },
+    { to: `${p}/brokers`,               label: "合作经纪" },
+    { to: `${p}/news`,                  label: "行业新闻" },
+  ];
+}
 
 export default function Layout({ children }: { children: ReactNode }) {
   const [path, setLocation] = useLocation();
@@ -29,15 +33,18 @@ export default function Layout({ children }: { children: ReactNode }) {
     setLocation(`/search?q=${encodeURIComponent(q)}`);
   };
 
-  const isActive = (to: string) => {
-    if (to === "/futures/all-prop-firms") return path === to || path === "/";
-    return path === to;
-  };
-
-  const activeCategory: "forex" | "futures" | "crypto" =
+  const activeCategory: Category =
     path.startsWith("/forex") ? "forex"
     : path.startsWith("/crypto") ? "crypto"
     : "futures";
+
+  const NAV = buildNav(activeCategory);
+  const homePath = `/${activeCategory}/all-prop-firms`;
+
+  const isActive = (to: string) => {
+    if (to === homePath) return path === to || path === "/" || path === `/${activeCategory}`;
+    return path === to;
+  };
 
   return (
     <>
@@ -53,7 +60,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       </div>
 
       <header className="header">
-        <Link href="/futures/all-prop-firms" className="logo" aria-label="Prop Firm Match 首页">
+        <Link href={homePath} className="logo" aria-label="Prop Firm Match 首页">
           <span className="logo-mark">P</span>
           <span className="logo-text">Prop Firm Match<span className="logo-sub">自营公司大全</span></span>
         </Link>
@@ -105,6 +112,23 @@ export default function Layout({ children }: { children: ReactNode }) {
         ))}
       </nav>
 
+      {activeCategory === "forex" && (
+        <div
+          role="status"
+          style={{
+            background: "linear-gradient(90deg, rgba(168,85,247,0.18), rgba(255,106,61,0.18))",
+            borderBottom: "1px solid rgba(168,85,247,0.35)",
+            color: "var(--text)",
+            padding: "10px 20px",
+            fontSize: 13,
+            textAlign: "center",
+            letterSpacing: ".02em",
+          }}
+        >
+          📊 外汇版本目前为<strong style={{ margin: "0 4px", color: "var(--orange)" }}>演示数据</strong>，真实公司接入中，结构与功能与期货版完全一致。
+        </div>
+      )}
+
       {children}
 
       <footer className="site-footer">
@@ -120,19 +144,19 @@ export default function Layout({ children }: { children: ReactNode }) {
           </div>
           <div className="footer-col">
             <h4>自营公司</h4>
-            <Link href="/futures/all-prop-firms">全部公司</Link>
-            <Link href="/futures/best-sellers">热销榜</Link>
-            <Link href="/futures/exclusive-offers">限时优惠</Link>
-            <Link href="/futures/prop-firm-challenges">挑战赛</Link>
-            <Link href="/futures/payouts">出金记录</Link>
+            <Link href={`/${activeCategory}/all-prop-firms`}>全部公司</Link>
+            <Link href={`/${activeCategory}/best-sellers`}>热销榜</Link>
+            <Link href={`/${activeCategory}/exclusive-offers`}>限时优惠</Link>
+            <Link href={`/${activeCategory}/prop-firm-challenges`}>挑战赛</Link>
+            <Link href={`/${activeCategory}/payouts`}>出金记录</Link>
           </div>
           <div className="footer-col">
             <h4>资源中心</h4>
-            <Link href="/futures/prop-firm-reviews">用户评价</Link>
-            <Link href="/futures/prop-firm-rules">规则手册</Link>
-            <Link href="/futures/brokers">合作经纪</Link>
-            <Link href="/futures/payouts-leaderboard">出金排行</Link>
-            <Link href="/futures/favorite-firms">我的收藏</Link>
+            <Link href={`/${activeCategory}/prop-firm-reviews`}>用户评价</Link>
+            <Link href={`/${activeCategory}/prop-firm-rules`}>规则手册</Link>
+            <Link href={`/${activeCategory}/brokers`}>合作经纪</Link>
+            <Link href={`/${activeCategory}/payouts-leaderboard`}>出金排行</Link>
+            <Link href={`/${activeCategory}/favorite-firms`}>我的收藏</Link>
           </div>
           <div className="footer-col">
             <h4>关于我们</h4>

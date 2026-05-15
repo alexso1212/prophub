@@ -1,10 +1,13 @@
 import { Link } from "wouter";
-import { firms } from "../data/firms";
 import { findFirmZh } from "../data/firms.zh";
 import { getBrandZh } from "../data/brandZh";
 import { countryZh } from "../data/i18nZh";
+import { useCategory, useCategoryFirms } from "../contexts/CategoryContext";
 
 export default function RulesPage() {
+  const category = useCategory();
+  const firms = useCategoryFirms();
+  const prefix = `/${category}`;
   return (
     <main className="container">
       <div className="section-title">📜 规则手册</div>
@@ -20,18 +23,27 @@ export default function RulesPage() {
           return (
             <div key={f.slug} className="rule-card">
               <div className="rule-card-head">
-                <Link href={`/futures/prop-firms/${f.slug}`} className="firm-logo-sm" style={{ width: 48, height: 48 }}>
+                <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-logo-sm" style={{ width: 48, height: 48 }}>
                   <img src={f.logo} alt={f.name} />
                 </Link>
                 <div style={{ flex: 1 }}>
-                  <Link href={`/futures/prop-firms/${f.slug}`} className="firm-name-link" style={{ fontSize: 16 }}>{f.name}</Link>{getBrandZh(f.slug) && <span className="brand-zh-inline">· {getBrandZh(f.slug)}</span>}
+                  <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-name-link" style={{ fontSize: 16 }}>{f.name}</Link>{getBrandZh(f.slug) && <span className="brand-zh-inline">· {getBrandZh(f.slug)}</span>}
                   <div style={{ color: "var(--text-dim)", fontSize: 12 }}>
                     {countryZh(f.countryCode?.toUpperCase() || "", f.country)} · {f.dateCreated || `经营 ${f.yearsInOperation} 年`}
                     {f.trustPilot && ` · Trustpilot ${f.trustPilot}`}
                   </div>
                 </div>
-                <Link href={`/futures/prop-firms/${f.slug}`} className="btn-firm">完整规则</Link>
+                <Link href={`${prefix}/prop-firms/${f.slug}`} className="btn-firm">完整规则</Link>
               </div>
+
+              {f.rules && f.rules.length > 0 && (
+                <div style={{ marginTop: 12 }}>
+                  <div style={{ fontSize: 12, color: "var(--text-muted)", letterSpacing: ".04em", marginBottom: 6 }}>核心规则</div>
+                  <ul className="bullet-list" style={{ marginTop: 4 }}>
+                    {f.rules.slice(0, 5).map((r, i) => <li key={i}>{r}</li>)}
+                  </ul>
+                </div>
+              )}
 
               {consistency && consistency.length > 0 && (
                 <div style={{ marginTop: 12 }}>

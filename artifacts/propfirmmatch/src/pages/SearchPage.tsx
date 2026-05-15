@@ -1,24 +1,33 @@
 import { Link, useLocation } from "wouter";
 import { useMemo } from "react";
-import { firms, Firm, getDiscountedPrices, formatUsd } from "../data/firms";
+import { Firm, getDiscountedPrices, formatUsd } from "../data/firms";
 import { findFirmZh } from "../data/firms.zh";
 import { getBrandZh } from "../data/brandZh";
+import { firmsForCategory, type Category } from "../contexts/CategoryContext";
+
+interface SearchHit {
+  firm: Firm;
+  category: Category;
+}
 
 function Stars({ rating }: { rating: number }) {
   const full = Math.round(rating);
   return <span className="stars">{"★".repeat(full)}{"☆".repeat(5 - full)}</span>;
 }
 
-function ResultCard({ f }: { f: Firm }) {
+function ResultCard({ hit }: { hit: SearchHit }) {
+  const f = hit.firm;
   const zh = findFirmZh(f.slug);
+  const catLabel = hit.category === "forex" ? "外汇" : hit.category === "crypto" ? "加密" : "期货";
   return (
-    <Link href={`/futures/prop-firms/${f.slug}`} className="offer-card">
+    <Link href={`/${hit.category}/prop-firms/${f.slug}`} className="offer-card">
       {f.isNew && <span className="offer-new-pill">新</span>}
       <div className="offer-logo"><img src={f.logo} alt={f.name} /></div>
       <div className="offer-name">
         {f.name}
         {getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}
       </div>
+      <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>{catLabel}板块</div>
       <div className="offer-rating">
         {f.rating ? <><Stars rating={f.rating} /> <span>{f.rating}</span></> : <span>评价不足 10 条</span>}
       </div>
@@ -54,16 +63,20 @@ export default function SearchPage() {
     return (params.get("q") ?? "").trim();
   }, [path]);
 
-  const results = useMemo(() => {
+  const results = useMemo<SearchHit[]>(() => {
     if (!query) return [];
     const q = query.toLowerCase();
-    return firms.filter(f => {
-      if (f.name.toLowerCase().includes(q)) return true;
-      if (f.slug.toLowerCase().includes(q)) return true;
-      const brand = getBrandZh(f.slug);
-      if (brand && brand.includes(query)) return true;
-      return false;
-    });
+    const hits: SearchHit[] = [];
+    for (const cat of ["futures", "forex"] as const) {
+      for (const f of firmsForCategory(cat)) {
+        const matches =
+          f.name.toLowerCase().includes(q)
+          || f.slug.toLowerCase().includes(q)
+          || (() => { const b = getBrandZh(f.slug); return !!(b && b.includes(query)); })();
+        if (matches) hits.push({ firm: f, category: cat });
+      }
+    }
+    return hits;
   }, [query]);
 
   return (
@@ -71,7 +84,7 @@ export default function SearchPage() {
       <div className="section-title">搜索结果</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 18, maxWidth: 720 }}>
         {query
-          ? <>关键词 <strong style={{ color: "var(--text)" }}>“{query}”</strong> 共匹配到 {results.length} 家自营公司。</>
+          ? <>关键词 <strong style={{ color: "var(--text)" }}>"{query}"</strong> 共匹配到 {results.length} 家自营公司。</>
           : "请在顶部搜索框输入公司名称、拼音或中文品牌进行搜索。"}
       </p>
 
@@ -83,7 +96,7 @@ export default function SearchPage() {
 
       {results.length > 0 && (
         <div className="offers-carousel">
-          {results.map(f => <ResultCard key={f.slug} f={f} />)}
+          {results.map(h => <ResultCard key={`${h.category}-${h.firm.slug}`} hit={h} />)}
         </div>
       )}
     </main>

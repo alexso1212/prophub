@@ -111,6 +111,11 @@ export interface Firm {
   leverage?: string[];
   challenges?: ChallengeProgram[];
   offerDescription: string;
+  // 外汇板块专属（演示数据，期货公司可不填）
+  spreadType?: string;             // "ECN" / "Raw" / "Standard"
+  currencyPairs?: number | string; // 主流货币对数量
+  maxLeverage?: string;            // "1:100"
+  swapPolicy?: string;             // "Swap Free" / "标准 Swap"
 }
 
 const PLATFORM_ICONS = {

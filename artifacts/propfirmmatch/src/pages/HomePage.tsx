@@ -1,22 +1,24 @@
 import { Link } from "wouter";
 import { useMemo, useState } from "react";
-import { firms, Firm, getDiscountedPrices, formatUsd } from "../data/firms";
+import { Firm, getDiscountedPrices, formatUsd } from "../data/firms";
 import { findFirmZh } from "../data/firms.zh";
 import { getBrandZh } from "../data/brandZh";
 import { countryZh } from "../data/i18nZh";
 import NewsFeed from "../components/NewsFeed";
 import { useFirmsOverrides } from "../contexts/FirmsOverridesContext";
+import { useCategory, useCategoryFirms, useCategoryMeta } from "../contexts/CategoryContext";
 
 function Stars({ rating }: { rating: number }) {
   const full = Math.round(rating);
   return <span className="stars">{"★".repeat(full)}{"☆".repeat(5 - full)}</span>;
 }
 
-function CtaButton({ f, overrideUrl, className, children }: {
+function CtaButton({ f, overrideUrl, className, children, prefix }: {
   f: Firm;
   overrideUrl?: string | null;
   className?: string;
   children: React.ReactNode;
+  prefix: string;
 }) {
   if (overrideUrl) {
     return (
@@ -26,13 +28,13 @@ function CtaButton({ f, overrideUrl, className, children }: {
     );
   }
   return (
-    <Link href={`/futures/prop-firms/${f.slug}`} className={className}>
+    <Link href={`${prefix}/prop-firms/${f.slug}`} className={className}>
       {children}
     </Link>
   );
 }
 
-function OfferCard({ f }: { f: Firm }) {
+function OfferCard({ f, prefix }: { f: Firm; prefix: string }) {
   const zh = findFirmZh(f.slug);
   const overrides = useFirmsOverrides();
   const ov = overrides[f.slug];
@@ -41,7 +43,7 @@ function OfferCard({ f }: { f: Firm }) {
   const affiliateUrl = ov?.affiliateUrl;
 
   return (
-    <CtaButton f={f} overrideUrl={affiliateUrl} className="offer-card">
+    <CtaButton f={f} overrideUrl={affiliateUrl} className="offer-card" prefix={prefix}>
       {f.isNew && <span className="offer-new-pill">新</span>}
       <div className="offer-logo"><img src={f.logo} alt={f.name} /></div>
       <div className="offer-name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
@@ -72,7 +74,7 @@ function OfferCard({ f }: { f: Firm }) {
   );
 }
 
-function PopularCard({ f, place }: { f: Firm; place: 1 | 2 | 3 }) {
+function PopularCard({ f, place, prefix }: { f: Firm; place: 1 | 2 | 3; prefix: string }) {
   const overrides = useFirmsOverrides();
   const ov = overrides[f.slug];
   const promoCode = ov?.promoCode ?? f.promoCode;
@@ -81,7 +83,7 @@ function PopularCard({ f, place }: { f: Firm; place: 1 | 2 | 3 }) {
   return (
     <div className="popular-card">
       <div className="trophy">{trophy}</div>
-      <Link href={`/futures/prop-firms/${f.slug}`}>
+      <Link href={`${prefix}/prop-firms/${f.slug}`}>
         <div className="logo-wrap"><img src={f.logo} alt={f.name} /></div>
         <div className="name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
       </Link>
@@ -111,6 +113,10 @@ export default function HomePage() {
   const [filter, setFilter] = useState<"popular" | "new" | "all" | "favorite">("all");
   const [favorites] = useState<string[]>([]);
   const overrides = useFirmsOverrides();
+  const category = useCategory();
+  const meta = useCategoryMeta();
+  const firms = useCategoryFirms();
+  const prefix = `/${category}`;
 
   const sorted = useMemo(() => {
     const arr = [...firms];
@@ -118,28 +124,31 @@ export default function HomePage() {
     if (filter === "favorite") return arr.filter(f => favorites.includes(f.slug));
     if (filter === "popular") return arr.sort((a, b) => (a.rank ?? a.popularRank ?? 99) - (b.rank ?? b.popularRank ?? 99));
     return arr;
-  }, [filter, favorites]);
+  }, [filter, favorites, firms]);
 
-  const top3 = [...firms].sort((a, b) => (a.popularRank ?? 99) - (b.popularRank ?? 99)).slice(0, 3);
+  const top3 = useMemo(
+    () => [...firms].sort((a, b) => (a.popularRank ?? 99) - (b.popularRank ?? 99)).slice(0, 3),
+    [firms]
+  );
 
   return (
     <main className="container">
       <div className="section-title">
-        <span className="icon">✨</span> 本月期货专属优惠
+        <span className="icon">✨</span> 本月{meta.label}专属优惠
       </div>
       <div className="offers-carousel">
         {firms.filter(f => {
           const ov = overrides[f.slug];
           const pct = ov?.discountPercent ?? ov?.promoPercent ?? f.promoPercent;
           return pct > 0;
-        }).slice(0, 8).map(f => <OfferCard key={f.slug} f={f} />)}
+        }).slice(0, 8).map(f => <OfferCard key={f.slug} f={f} prefix={prefix} />)}
       </div>
 
       <div className="section-title" style={{ marginTop: 50 }}>
-        最受欢迎的期货自营公司 <span style={{ background: "var(--orange)", padding: "2px 8px", borderRadius: 4, fontSize: 11, marginLeft: 8 }}>期货</span>
+        最受欢迎的{meta.label}自营公司 <span style={{ background: "var(--orange)", padding: "2px 8px", borderRadius: 4, fontSize: 11, marginLeft: 8 }}>{meta.shortLabel}</span>
       </div>
       <div className="popular-row">
-        {top3.map((f, i) => <PopularCard key={f.slug} f={f} place={(i + 1) as 1 | 2 | 3} />)}
+        {top3.map((f, i) => <PopularCard key={f.slug} f={f} place={(i + 1) as 1 | 2 | 3} prefix={prefix} />)}
       </div>
 
       <div className="filter-bar">
@@ -152,7 +161,7 @@ export default function HomePage() {
       </div>
 
       <div className="firms-count">
-        全部期货自营公司 <span className="num">{sorted.length}</span>
+        全部{meta.label}自营公司 <span className="num">{sorted.length}</span>
       </div>
 
       <div className="table-wrap">
@@ -163,7 +172,7 @@ export default function HomePage() {
               <th>评分 / 评价</th>
               <th>国家</th>
               <th>经营年数</th>
-              <th>品种数</th>
+              <th>{category === "forex" ? "货币对" : "品种数"}</th>
               <th>交易平台</th>
               <th>最大资金</th>
               <th>优惠</th>
@@ -181,12 +190,12 @@ export default function HomePage() {
                   <td>
                     <div className="cell-firm">
                       {idx < 15 && <span className="rank-num">{idx + 1}</span>}
-                      <Link href={`/futures/prop-firms/${f.slug}`} className="firm-logo-sm">
+                      <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-logo-sm">
                         {f.isNew && <span className="new-tag-overlay">新</span>}
                         <img src={f.logo} alt={f.name} />
                       </Link>
                       <div>
-                        <Link href={`/futures/prop-firms/${f.slug}`} className="firm-name-link">{f.name}</Link>
+                        <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-name-link">{f.name}</Link>
                         {getBrandZh(f.slug) && <div className="brand-zh-sub">{getBrandZh(f.slug)}</div>}
                         <div className="firm-id">{f.trackingId}</div>
                       </div>
@@ -208,7 +217,7 @@ export default function HomePage() {
                     </div>
                   </td>
                   <td>{f.yearsInOperation} 年</td>
-                  <td>{f.numAssets}</td>
+                  <td>{category === "forex" ? (f.currencyPairs ?? f.numAssets) : f.numAssets}</td>
                   <td><PlatformIcons f={f} /></td>
                   <td style={{ fontWeight: 600 }}>{f.maxAllocation}</td>
                   <td>
@@ -223,19 +232,24 @@ export default function HomePage() {
                     {affiliateUrl ? (
                       <a href={affiliateUrl} target="_blank" rel="noopener sponsored nofollow" className="btn-firm">Firm</a>
                     ) : (
-                      <Link href={`/futures/prop-firms/${f.slug}`} className="btn-firm">详情</Link>
+                      <Link href={`${prefix}/prop-firms/${f.slug}`} className="btn-firm">详情</Link>
                     )}
                   </td>
                 </tr>
               );
             })}
+            {sorted.length === 0 && (
+              <tr><td colSpan={9} style={{ textAlign: "center", color: "var(--text-dim)", padding: 32 }}>
+                {meta.label}板块暂无符合条件的公司。
+              </td></tr>
+            )}
           </tbody>
         </table>
-        <div className="view-more"><Link href="/futures/all-prop-firms" className="btn-firm">查看更多</Link></div>
+        <div className="view-more"><Link href={`${prefix}/all-prop-firms`} className="btn-firm">查看更多</Link></div>
       </div>
 
       <p className="page-footer-text">
-        本页汇总 <span>Prop Firm Match</span> 收录的全部自营公司最新数据，便于你快速找到适合自己交易风格的合作伙伴。可对比评分、评价数、注册地、经营年数、交易平台、可交易品种和最大资金额度，点击任意公司即可查看完整规则、专属优惠和真实交易员反馈。
+        本页汇总 <span>Prop Firm Match</span> 收录的全部{meta.label}自营公司最新数据，便于你快速找到适合自己交易风格的合作伙伴。可对比评分、评价数、注册地、经营年数、交易平台、可交易品种和最大资金额度，点击任意公司即可查看完整规则、专属优惠和真实交易员反馈。
       </p>
 
       <NewsFeed limit={6} />

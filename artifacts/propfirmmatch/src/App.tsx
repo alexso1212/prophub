@@ -20,6 +20,7 @@ import SimplePage from "./pages/SimplePage";
 import CategoryComingSoonPage from "./pages/CategoryComingSoonPage";
 import AdminFirmsPage from "./pages/AdminFirmsPage";
 import { FirmsOverridesProvider } from "./contexts/FirmsOverridesContext";
+import { CategoryProvider, type Category } from "./contexts/CategoryContext";
 
 const rawClerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
 const clerkPubKey = rawClerkKey
@@ -114,53 +115,75 @@ function AdminRouteWithClerk() {
   );
 }
 
+function detectCategory(path: string): Category {
+  if (path.startsWith("/forex")) return "forex";
+  if (path.startsWith("/crypto")) return "crypto";
+  return "futures";
+}
+
 function Router({ clerkEnabled }: { clerkEnabled: boolean }) {
+  const [path] = useLocation();
+  const category = detectCategory(path);
+
   return (
-    <Switch>
-      <Route path="/" component={HomePage} />
-      <Route path="/futures" component={HomePage} />
-      <Route path="/futures/all-prop-firms" component={HomePage} />
-      <Route path="/futures/prop-firms/:slug" component={FirmPage} />
-      <Route path="/sign-in/*?" component={SignInPage} />
-      <Route path="/sign-up/*?" component={SignUpPage} />
-      <Route path="/admin/firms">
-        {clerkEnabled ? <AdminRouteWithClerk /> : <AdminFirmsPage clerkEnabled={false} />}
-      </Route>
+    <CategoryProvider value={category}>
+      <Switch>
+        <Route path="/" component={HomePage} />
+        <Route path="/sign-in/*?" component={SignInPage} />
+        <Route path="/sign-up/*?" component={SignUpPage} />
+        <Route path="/admin/firms">
+          {clerkEnabled ? <AdminRouteWithClerk /> : <AdminFirmsPage clerkEnabled={false} />}
+        </Route>
 
-      <Route path="/futures/exclusive-offers" component={OffersPage} />
-      <Route path="/futures/offers" component={OffersPage} />
+        {/* ======================== 期货板块 ======================== */}
+        <Route path="/futures" component={HomePage} />
+        <Route path="/futures/all-prop-firms" component={HomePage} />
+        <Route path="/futures/prop-firms/:slug" component={FirmPage} />
+        <Route path="/futures/exclusive-offers" component={OffersPage} />
+        <Route path="/futures/offers" component={OffersPage} />
+        <Route path="/futures/prop-firm-challenges" component={ChallengesPage} />
+        <Route path="/futures/challenges" component={ChallengesPage} />
+        <Route path="/futures/best-sellers" component={BestSellersPage} />
+        <Route path="/futures/prop-firm-reviews" component={ReviewsPage} />
+        <Route path="/futures/reviews" component={ReviewsPage} />
+        <Route path="/futures/favorite-firms" component={FavoritesPage} />
+        <Route path="/futures/favorites" component={FavoritesPage} />
+        <Route path="/futures/prop-firm-rules" component={RulesPage} />
+        <Route path="/futures/payouts" component={PayoutsPage} />
+        <Route path="/futures/payouts-leaderboard" component={LeaderboardPage} />
+        <Route path="/futures/leaderboard" component={LeaderboardPage} />
+        <Route path="/futures/brokers" component={BrokersPage} />
+        <Route path="/futures/news" component={NewsPage} />
 
-      <Route path="/futures/prop-firm-challenges" component={ChallengesPage} />
-      <Route path="/futures/challenges" component={ChallengesPage} />
+        {/* ======================== 外汇板块 ======================== */}
+        <Route path="/forex" component={HomePage} />
+        <Route path="/forex/all-prop-firms" component={HomePage} />
+        <Route path="/forex/prop-firms/:slug" component={FirmPage} />
+        <Route path="/forex/exclusive-offers" component={OffersPage} />
+        <Route path="/forex/offers" component={OffersPage} />
+        <Route path="/forex/prop-firm-challenges" component={ChallengesPage} />
+        <Route path="/forex/challenges" component={ChallengesPage} />
+        <Route path="/forex/best-sellers" component={BestSellersPage} />
+        <Route path="/forex/prop-firm-reviews" component={ReviewsPage} />
+        <Route path="/forex/reviews" component={ReviewsPage} />
+        <Route path="/forex/favorite-firms" component={FavoritesPage} />
+        <Route path="/forex/favorites" component={FavoritesPage} />
+        <Route path="/forex/prop-firm-rules" component={RulesPage} />
+        <Route path="/forex/payouts" component={PayoutsPage} />
+        <Route path="/forex/payouts-leaderboard" component={LeaderboardPage} />
+        <Route path="/forex/leaderboard" component={LeaderboardPage} />
+        <Route path="/forex/brokers" component={BrokersPage} />
+        <Route path="/forex/news" component={NewsPage} />
 
-      <Route path="/futures/best-sellers" component={BestSellersPage} />
+        <Route path="/search" component={SearchPage} />
 
-      <Route path="/futures/prop-firm-reviews" component={ReviewsPage} />
-      <Route path="/futures/reviews" component={ReviewsPage} />
+        <Route path="/crypto/:rest*">{() => <CategoryComingSoonPage category="crypto" />}</Route>
 
-      <Route path="/futures/favorite-firms" component={FavoritesPage} />
-      <Route path="/futures/favorites" component={FavoritesPage} />
-
-      <Route path="/futures/prop-firm-rules" component={RulesPage} />
-
-      <Route path="/futures/payouts" component={PayoutsPage} />
-
-      <Route path="/futures/payouts-leaderboard" component={LeaderboardPage} />
-      <Route path="/futures/leaderboard" component={LeaderboardPage} />
-
-      <Route path="/futures/brokers" component={BrokersPage} />
-
-      <Route path="/futures/news" component={NewsPage} />
-
-      <Route path="/search" component={SearchPage} />
-
-      <Route path="/forex/:rest*">{() => <CategoryComingSoonPage category="forex" />}</Route>
-      <Route path="/crypto/:rest*">{() => <CategoryComingSoonPage category="crypto" />}</Route>
-
-      <Route>
-        <SimplePage title="页面未找到" body="你访问的页面不存在，请返回首页继续浏览。" />
-      </Route>
-    </Switch>
+        <Route>
+          <SimplePage title="页面未找到" body="你访问的页面不存在，请返回首页继续浏览。" />
+        </Route>
+      </Switch>
+    </CategoryProvider>
   );
 }
 

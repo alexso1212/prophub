@@ -1,9 +1,12 @@
 import { Link } from "wouter";
-import { firms } from "../data/firms";
 import { getBrandZh } from "../data/brandZh";
 import { countryZh } from "../data/i18nZh";
+import { useCategory, useCategoryFirms } from "../contexts/CategoryContext";
 
 export default function ReviewsPage() {
+  const category = useCategory();
+  const firms = useCategoryFirms();
+  const prefix = `/${category}`;
   const sorted = [...firms].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
   return (
     <main className="container">
@@ -16,7 +19,7 @@ export default function ReviewsPage() {
         {sorted.map(f => {
           const total = f.reviewsBreakdown?.reduce((a, b) => a + b.count, 0) || f.totalReviews || 0;
           return (
-            <Link key={f.slug} href={`/futures/prop-firms/${f.slug}`} className="review-row-card">
+            <Link key={f.slug} href={`${prefix}/prop-firms/${f.slug}`} className="review-row-card">
               <div className="firm-logo-sm" style={{ width: 56, height: 56 }}>
                 <img src={f.logo} alt={f.name} />
               </div>

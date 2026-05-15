@@ -1,20 +1,28 @@
 import { Link } from "wouter";
-import { firms } from "../data/firms";
 import { LEADERBOARD } from "../data/leaderboard";
 import { getBrandZh } from "../data/brandZh";
 import { medianZh } from "../data/i18nZh";
+import { useCategory, useCategoryFirms, useCategoryMeta } from "../contexts/CategoryContext";
 
 export default function LeaderboardPage() {
+  const category = useCategory();
+  const meta = useCategoryMeta();
+  const firms = useCategoryFirms();
+  const prefix = `/${category}`;
+  const isFutures = category === "futures";
+  const rows = isFutures ? LEADERBOARD : [];
+
   return (
     <main className="container">
       <div className="section-title">🏅 自营公司出金排行</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 18, maxWidth: 720 }}>
-        按累计出金额度排序的自营公司榜单，数据来自公开出金记录表。
-        源站 /futures/payouts-leaderboard 上的"个人交易员排行"需要登录账号才能访问，因此这里改为展示公司维度排行。
+        {isFutures
+          ? <>按累计出金额度排序的自营公司榜单，数据来自公开出金记录表。源站 /futures/payouts-leaderboard 上的"个人交易员排行"需要登录账号才能访问，因此这里改为展示公司维度排行。</>
+          : <>{meta.label}板块出金排行正在接入中，下方为页面结构演示。</>}
       </p>
 
       <div className="popular-row" style={{ marginBottom: 30 }}>
-        {LEADERBOARD.slice(0, 3).map((t, i) => {
+        {rows.slice(0, 3).map((t, i) => {
           const f = firms.find(x => x.slug === t.slug || x.name === t.name);
           const trophy = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
           return (
@@ -51,7 +59,7 @@ export default function LeaderboardPage() {
             </tr>
           </thead>
           <tbody>
-            {LEADERBOARD.map((t, i) => {
+            {rows.map((t, i) => {
               const f = firms.find(x => x.slug === t.slug || x.name === t.name);
               return (
                 <tr key={t.slug}>
@@ -59,11 +67,11 @@ export default function LeaderboardPage() {
                   <td>
                     {f ? (
                       <div className="cell-firm">
-                        <Link href={`/futures/prop-firms/${f.slug}`} className="firm-logo-sm">
+                        <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-logo-sm">
                           <img src={f.logo} alt={f.name} />
                         </Link>
                         <div>
-                          <Link href={`/futures/prop-firms/${f.slug}`} className="firm-name-link">{f.name}</Link>
+                          <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-name-link">{f.name}</Link>
                           {getBrandZh(f.slug) && <div className="brand-zh-sub">{getBrandZh(f.slug)}</div>}
                         </div>
                       </div>
@@ -77,6 +85,11 @@ export default function LeaderboardPage() {
                 </tr>
               );
             })}
+            {rows.length === 0 && (
+              <tr><td colSpan={7} style={{ textAlign: "center", color: "var(--text-dim)", padding: 32 }}>
+                {meta.label}板块排行数据接入中。
+              </td></tr>
+            )}
           </tbody>
         </table>
       </div>
