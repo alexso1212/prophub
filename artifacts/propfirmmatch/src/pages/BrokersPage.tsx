@@ -17,9 +17,9 @@ export default function BrokersPage() {
 
   return (
     <main className="container">
-      <div className="section-title">🏦 Brokers</div>
+      <div className="section-title">🏦 合作经纪</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 24, maxWidth: 720 }}>
-        The brokers powering each prop firm. See which clearing brokers, data providers and execution platforms each firm uses.
+        各家自营公司背后的清算经纪、行情数据与执行平台一览。
       </p>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
@@ -31,7 +31,7 @@ export default function BrokersPage() {
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 700, fontSize: 16 }}>{b.name}</div>
-                <div style={{ color: "var(--text-dim)", fontSize: 12 }}>{b.firms.length} firm{b.firms.length>1?"s":""} use this broker</div>
+                <div style={{ color: "var(--text-dim)", fontSize: 12 }}>{b.firms.length} 家公司在使用</div>
               </div>
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
@@ -45,7 +45,7 @@ export default function BrokersPage() {
           </div>
         ))}
         {brokers.length === 0 && (
-          <div style={{ color: "var(--text-dim)", padding: 20, textAlign: "center" }}>No broker data available yet.</div>
+          <div style={{ color: "var(--text-dim)", padding: 20, textAlign: "center" }}>暂无经纪商数据。</div>
         )}
       </div>
     </main>

@@ -8,9 +8,9 @@ export default function BestSellersPage() {
 
   return (
     <main className="container">
-      <div className="section-title">🏆 Best Sellers</div>
+      <div className="section-title">🏆 热销榜</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 24, maxWidth: 720 }}>
-        The most popular challenges purchased by traders this month, ranked by sales volume on Prop Firm Match.
+        本月交易员购买最多的挑战赛排行，按 Prop Firm Match 销售量排序。
       </p>
       <div className="popular-row" style={{ marginBottom: 24 }}>
         {ranked.slice(0, 3).map((f, i) => {
@@ -24,9 +24,9 @@ export default function BestSellersPage() {
               </Link>
               <div className="meta">
                 {f.rating && <span>★ {f.rating}</span>}
-                <span>{f.reviews} reviews</span>
+                <span>{f.reviews} 条评价</span>
               </div>
-              {f.promoPercent > 0 && <div className="discount">{f.promoPercent}% OFF — {f.promoCode}</div>}
+              {f.promoPercent > 0 && <div className="discount">{f.promoPercent}% 折扣 — {f.promoCode}</div>}
             </div>
           );
         })}
@@ -36,12 +36,12 @@ export default function BestSellersPage() {
         <table className="firms-table">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Firm</th>
-              <th>Rating</th>
-              <th>Top Challenge</th>
-              <th>Price</th>
-              <th>Promo</th>
+              <th>排名</th>
+              <th>公司</th>
+              <th>评分</th>
+              <th>热门挑战</th>
+              <th>价格</th>
+              <th>优惠</th>
               <th></th>
             </tr>
           </thead>
@@ -62,8 +62,8 @@ export default function BestSellersPage() {
                   <td><span className="num">{f.rating ?? "—"}</span></td>
                   <td>{top?.name || "—"}</td>
                   <td style={{ color: "var(--orange)", fontWeight: 700 }}>{top?.price || "—"}</td>
-                  <td>{f.promoPercent > 0 ? <span className="promo-discount">{f.promoPercent}% OFF</span> : "—"}</td>
-                  <td><Link href={`/futures/prop-firms/${f.slug}`} className="btn-firm">View</Link></td>
+                  <td>{f.promoPercent > 0 ? <span className="promo-discount">{f.promoPercent}% 折扣</span> : "—"}</td>
+                  <td><Link href={`/futures/prop-firms/${f.slug}`} className="btn-firm">查看</Link></td>
                 </tr>
               );
             })}

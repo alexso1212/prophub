@@ -76,6 +76,15 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: grid; place-items: center;
   color: white; font-weight: 800;
 }
+.logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+.logo-sub {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
 .apps-icon {
   width: 36px; height: 36px;
   border-radius: 8px;
@@ -147,7 +156,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 /* ============== Sub Nav ============== */
 .subnav {
-  display: flex; gap: 28px;
+  display: flex; gap: 22px;
   padding: 14px 24px;
   border-bottom: 1px solid var(--border);
   overflow-x: auto;
@@ -155,7 +164,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .subnav a {
   color: var(--text-dim);
-  font-size: 13px;
+  font-size: 13.5px;
   padding: 6px 0;
   white-space: nowrap;
   border-bottom: 2px solid transparent;
@@ -335,9 +344,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .firms-table thead th {
   text-align: left;
   padding: 14px 12px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: .04em;
+  font-size: 12px;
+  letter-spacing: .02em;
   color: var(--text-muted);
   font-weight: 600;
   border-bottom: 1px solid var(--border);

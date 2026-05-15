@@ -5,9 +5,9 @@ export default function ReviewsPage() {
   const sorted = [...firms].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
   return (
     <main className="container">
-      <div className="section-title">⭐ Prop Firm Reviews</div>
+      <div className="section-title">⭐ 自营公司用户评价</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 24, maxWidth: 720 }}>
-        Verified reviews from real funded traders. Browse rating breakdowns across all {firms.length} prop firms.
+        来自真实签约交易员的已验证评价。一站浏览全部 {firms.length} 家自营公司的星级分布。
       </p>
 
       <div style={{ display: "grid", gap: 14 }}>
@@ -21,12 +21,12 @@ export default function ReviewsPage() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>{f.name}</div>
                 <div style={{ color: "var(--text-dim)", fontSize: 12 }}>
-                  {f.country} · {f.yearsInOperation} years · {f.dateCreated || ""}
+                  {f.country} · 经营 {f.yearsInOperation} 年 · {f.dateCreated || ""}
                 </div>
               </div>
               <div style={{ textAlign: "center", minWidth: 80 }}>
                 <div style={{ fontSize: 28, fontWeight: 700, color: "var(--orange)" }}>{f.rating ?? "—"}</div>
-                <div style={{ fontSize: 11, color: "var(--text-dim)" }}>{total || f.reviews} reviews</div>
+                <div style={{ fontSize: 11, color: "var(--text-dim)" }}>{total || f.reviews} 条评价</div>
               </div>
               {f.reviewsBreakdown && (
                 <div className="review-bars" style={{ minWidth: 200, flex: "0 0 200px" }}>

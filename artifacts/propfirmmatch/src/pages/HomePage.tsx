@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { useMemo, useState } from "react";
 import { firms, Firm } from "../data/firms";
+import { findFirmZh } from "../data/firms.zh";
 import NewsFeed from "../components/NewsFeed";
 
 function Stars({ rating }: { rating: number }) {
@@ -9,18 +10,24 @@ function Stars({ rating }: { rating: number }) {
 }
 
 function OfferCard({ f }: { f: Firm }) {
+  const zh = findFirmZh(f.slug);
   return (
     <Link href={`/futures/prop-firms/${f.slug}`} className="offer-card">
-      {f.isNew && <span className="offer-new-pill">new</span>}
+      {f.isNew && <span className="offer-new-pill">新</span>}
       <div className="offer-logo"><img src={f.logo} alt={f.name} /></div>
       <div className="offer-name">{f.name}</div>
       <div className="offer-rating">
-        {f.rating ? <><Stars rating={f.rating} /> <span>{f.rating}</span></> : <span>Less than 10 reviews</span>}
+        {f.rating ? <><Stars rating={f.rating} /> <span>{f.rating}</span></> : <span>评价不足 10 条</span>}
       </div>
       {f.promoPercent > 0 && (
         <>
-          <div className="offer-discount">{f.promoPercent}% OFF</div>
-          <div className="offer-code">Code <strong>{f.promoCode}</strong></div>
+          <div className="offer-discount">{f.promoPercent}% 折扣</div>
+          <div className="offer-code">优惠码 <strong>{f.promoCode}</strong></div>
+          {zh?.offerDescriptionZh && (
+            <div style={{ marginTop: 8, fontSize: 11, color: "var(--text-muted)", lineHeight: 1.4 }}>
+              {zh.offerDescriptionZh.slice(0, 40)}
+            </div>
+          )}
         </>
       )}
     </Link>
@@ -38,9 +45,9 @@ function PopularCard({ f, place }: { f: Firm; place: 1 | 2 | 3 }) {
       </Link>
       <div className="meta">
         {f.rating && <span>★ {f.rating}</span>}
-        <span>{f.reviews} reviews</span>
+        <span>{f.reviews} 条评价</span>
       </div>
-      {f.promoPercent > 0 && <div className="discount">{f.promoPercent}% OFF — {f.promoCode}</div>}
+      {f.promoPercent > 0 && <div className="discount">{f.promoPercent}% 折扣 — {f.promoCode}</div>}
     </div>
   );
 }
@@ -53,7 +60,7 @@ function PlatformIcons({ f }: { f: Firm }) {
           {p.icon ? <img src={p.icon} alt={p.name} /> : <span style={{fontSize:9}}>{p.name.slice(0,2)}</span>}
         </span>
       ))}
-      {f.morePlatforms ? <span className="platform-more">+ {f.morePlatforms}</span> : null}
+      {f.morePlatforms ? <span className="platform-more">+{f.morePlatforms}</span> : null}
     </div>
   );
 }
@@ -77,45 +84,45 @@ export default function HomePage() {
       <NewsFeed limit={8} />
 
       <div className="section-title">
-        <span className="icon">✨</span> Exclusive May Futures Offers
+        <span className="icon">✨</span> 本月期货专属优惠
       </div>
       <div className="offers-carousel">
         {firms.filter(f => f.promoPercent > 0).slice(0, 8).map(f => <OfferCard key={f.slug} f={f} />)}
       </div>
 
       <div className="section-title" style={{ marginTop: 50 }}>
-        Most Popular Futures Prop Firms <span style={{ background: "var(--orange)", padding: "2px 8px", borderRadius: 4, fontSize: 11, marginLeft: 8 }}>FUTURES</span>
+        最受欢迎的期货自营公司 <span style={{ background: "var(--orange)", padding: "2px 8px", borderRadius: 4, fontSize: 11, marginLeft: 8 }}>期货</span>
       </div>
       <div className="popular-row">
         {top3.map((f, i) => <PopularCard key={f.slug} f={f} place={(i + 1) as 1 | 2 | 3} />)}
       </div>
 
       <div className="filter-bar">
-        <button className="filter-pill">⚙ Filter</button>
-        <button className={`filter-pill ${filter === "popular" ? "active" : ""}`} onClick={() => setFilter("popular")}>Popular</button>
-        <button className={`filter-pill ${filter === "favorite" ? "active" : ""}`} onClick={() => setFilter("favorite")}>♡ Favorite {favorites.length}/3</button>
-        <button className={`filter-pill ${filter === "new" ? "active" : ""}`} onClick={() => setFilter("new")}>New</button>
-        <button className={`filter-pill ${filter === "all" ? "active" : ""}`} onClick={() => setFilter("all")}>All</button>
-        <span className="live-tag">Live Data updated 1 min ago</span>
+        <button className="filter-pill">⚙ 筛选</button>
+        <button className={`filter-pill ${filter === "popular" ? "active" : ""}`} onClick={() => setFilter("popular")}>人气</button>
+        <button className={`filter-pill ${filter === "favorite" ? "active" : ""}`} onClick={() => setFilter("favorite")}>♡ 收藏 {favorites.length}/3</button>
+        <button className={`filter-pill ${filter === "new" ? "active" : ""}`} onClick={() => setFilter("new")}>新上线</button>
+        <button className={`filter-pill ${filter === "all" ? "active" : ""}`} onClick={() => setFilter("all")}>全部</button>
+        <span className="live-tag">数据 1 分钟前更新</span>
       </div>
 
       <div className="firms-count">
-        All Futures Prop Firms <span className="num">{sorted.length}</span>
+        全部期货自营公司 <span className="num">{sorted.length}</span>
       </div>
 
       <div className="table-wrap">
         <table className="firms-table">
           <thead>
             <tr>
-              <th>Firm</th>
-              <th>Rank/Reviews</th>
-              <th>Country</th>
-              <th>Years</th>
-              <th>Assets</th>
-              <th>Platforms</th>
-              <th>Max Allocation</th>
-              <th>Promo</th>
-              <th>Actions</th>
+              <th>公司</th>
+              <th>评分 / 评价</th>
+              <th>国家</th>
+              <th>经营年数</th>
+              <th>品种数</th>
+              <th>交易平台</th>
+              <th>最大资金</th>
+              <th>优惠</th>
+              <th>操作</th>
             </tr>
           </thead>
           <tbody>
@@ -125,7 +132,7 @@ export default function HomePage() {
                   <div className="cell-firm">
                     {idx < 15 && <span className="rank-num">{idx + 1}</span>}
                     <Link href={`/futures/prop-firms/${f.slug}`} className="firm-logo-sm">
-                      {f.isNew && <span className="new-tag-overlay">new</span>}
+                      {f.isNew && <span className="new-tag-overlay">新</span>}
                       <img src={f.logo} alt={f.name} />
                     </Link>
                     <div>
@@ -137,9 +144,9 @@ export default function HomePage() {
                 <td>
                   <div className="rating-cell">
                     {f.rating ? (
-                      <><span className="num">{f.rating}</span><span className="reviews">{f.reviews} reviews</span></>
+                      <><span className="num">{f.rating}</span><span className="reviews">{f.reviews} 条评价</span></>
                     ) : (
-                      <span className="reviews">Less than<br />10 reviews</span>
+                      <span className="reviews">少于<br />10 条评价</span>
                     )}
                   </div>
                 </td>
@@ -149,28 +156,28 @@ export default function HomePage() {
                     <span>{f.country}</span>
                   </div>
                 </td>
-                <td>{f.yearsInOperation}</td>
+                <td>{f.yearsInOperation} 年</td>
                 <td>{f.numAssets}</td>
                 <td><PlatformIcons f={f} /></td>
                 <td style={{ fontWeight: 600 }}>{f.maxAllocation}</td>
                 <td>
                   {f.promoPercent > 0 ? (
                     <div className="promo-cell">
-                      <span className="promo-discount">{f.promoPercent}% OFF</span>
+                      <span className="promo-discount">{f.promoPercent}% 折扣</span>
                       <span className="promo-code">{f.promoCode}</span>
                     </div>
                   ) : <span style={{ color: "var(--text-muted)" }}>—</span>}
                 </td>
-                <td><Link href={`/futures/prop-firms/${f.slug}`} className="btn-firm">Firm</Link></td>
+                <td><Link href={`/futures/prop-firms/${f.slug}`} className="btn-firm">详情</Link></td>
               </tr>
             ))}
           </tbody>
         </table>
-        <div className="view-more"><button>View More</button></div>
+        <div className="view-more"><button>查看更多</button></div>
       </div>
 
       <p className="page-footer-text">
-        This page gives you access to accurate, up-to-date details on all prop firms listed on <a href="#">Prop Firm Match</a> to help you find the firm that fits your trading style. Compare ratings, number of reviews, firms' location, years in operation, trading platforms, supported assets, and max allocation. Select any firm to explore its rules, exclusive offers, and verified trader feedback.
+        本页汇总 <a href="#">Prop Firm Match</a> 收录的全部自营公司最新数据，便于你快速找到适合自己交易风格的合作伙伴。可对比评分、评价数、注册地、经营年数、交易平台、可交易品种和最大资金额度，点击任意公司即可查看完整规则、专属优惠和真实交易员反馈。
       </p>
     </main>
   );

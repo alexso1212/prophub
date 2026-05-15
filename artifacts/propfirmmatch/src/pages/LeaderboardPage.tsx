@@ -5,11 +5,10 @@ import { LEADERBOARD } from "../data/leaderboard";
 export default function LeaderboardPage() {
   return (
     <main className="container">
-      <div className="section-title">🏅 Prop Firm Payouts Leaderboard</div>
+      <div className="section-title">🏅 自营公司出金排行</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 18, maxWidth: 720 }}>
-        Firms ranked by total tracked payouts, sourced from the public payouts table.
-        The per-trader leaderboard at /futures/payouts-leaderboard requires a logged-in
-        account on the source site, so this firm-level ranking is shown instead.
+        按累计出金额度排序的自营公司榜单，数据来自公开出金记录表。
+        源站 /futures/payouts-leaderboard 上的"个人交易员排行"需要登录账号才能访问，因此这里改为展示公司维度排行。
       </p>
 
       <div className="popular-row" style={{ marginBottom: 30 }}>
@@ -26,7 +25,7 @@ export default function LeaderboardPage() {
               )}
               <div className="name">{t.name}</div>
               <div className="meta">
-                {t.count.toLocaleString()} payouts · avg ${t.avg.toLocaleString()}
+                {t.count.toLocaleString()} 笔 · 平均 ${t.avg.toLocaleString()}
               </div>
               <div className="discount" style={{ background: "var(--gradient-pp-2)", color: "white" }}>
                 ${t.total.toLocaleString()}
@@ -40,13 +39,13 @@ export default function LeaderboardPage() {
         <table className="firms-table">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Firm</th>
-              <th>Total Payouts</th>
-              <th>No. of Payouts</th>
-              <th>Largest</th>
-              <th>Average</th>
-              <th>Median Time</th>
+              <th>排名</th>
+              <th>公司</th>
+              <th>累计出金</th>
+              <th>出金笔数</th>
+              <th>最大单笔</th>
+              <th>平均金额</th>
+              <th>到账时间中位</th>
             </tr>
           </thead>
           <tbody>

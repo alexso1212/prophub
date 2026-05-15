@@ -25,38 +25,40 @@ export default function ChallengesPage() {
     return true;
   }), [all, size, step]);
 
+  const stepLabel: Record<string, string> = { "all": "全部类型", "1-step": "一阶段", "2-step": "两阶段", "instant": "即时入金" };
+
   return (
     <main className="container">
-      <div className="section-title">Compare All Challenges</div>
+      <div className="section-title">挑战赛全比对</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 18, maxWidth: 720 }}>
-        Every funded challenge across {firms.length} prop firms — {all.length} programs in total. Filter by account size and program type.
+        覆盖 {firms.length} 家自营公司的全部签约挑战 —— 共 {all.length} 套方案。可按账户规模与项目类型筛选。
       </p>
 
       <div className="filter-bar" style={{ flexWrap: "wrap" }}>
-        <span style={{ color: "var(--text-muted)", fontSize: 12 }}>Size:</span>
+        <span style={{ color: "var(--text-muted)", fontSize: 12 }}>账户规模：</span>
         {(["all","25","50","100","150"] as const).map(s => (
           <button key={s} className={`filter-pill ${size===s?"active":""}`} onClick={() => setSize(s)}>
-            {s === "all" ? "All Sizes" : `$${s}K`}
+            {s === "all" ? "全部规模" : `$${s}K`}
           </button>
         ))}
-        <span style={{ color: "var(--text-muted)", fontSize: 12, marginLeft: 12 }}>Type:</span>
+        <span style={{ color: "var(--text-muted)", fontSize: 12, marginLeft: 12 }}>项目类型：</span>
         {(["all","1-step","2-step","instant"] as const).map(s => (
           <button key={s} className={`filter-pill ${step===s?"active":""}`} onClick={() => setStep(s)}>
-            {s === "all" ? "All Types" : s.charAt(0).toUpperCase() + s.slice(1)}
+            {stepLabel[s]}
           </button>
         ))}
       </div>
 
-      <div className="firms-count">Challenges <span className="num">{filtered.length}</span></div>
+      <div className="firms-count">挑战赛 <span className="num">{filtered.length}</span></div>
 
       <div className="table-wrap">
         <table className="firms-table">
           <thead>
             <tr>
-              <th>Firm</th>
-              <th>Challenge</th>
-              <th>Was</th>
-              <th>Price</th>
+              <th>公司</th>
+              <th>挑战赛方案</th>
+              <th>原价</th>
+              <th>现价</th>
               <th></th>
             </tr>
           </thead>
@@ -74,12 +76,12 @@ export default function ChallengesPage() {
                 <td>{c.name}</td>
                 <td><span style={{ color: "var(--text-muted)", textDecoration: "line-through" }}>{c.original || ""}</span></td>
                 <td style={{ color: "var(--orange)", fontWeight: 700 }}>{c.price}</td>
-                <td><Link href={`/futures/prop-firms/${c.firmSlug}`} className="btn-firm">Firm</Link></td>
+                <td><Link href={`/futures/prop-firms/${c.firmSlug}`} className="btn-firm">详情</Link></td>
               </tr>
             ))}
           </tbody>
         </table>
-        {filtered.length > 200 && <div className="view-more"><button>Showing first 200 of {filtered.length}</button></div>}
+        {filtered.length > 200 && <div className="view-more"><button>已显示前 200 / 共 {filtered.length}</button></div>}
       </div>
     </main>
   );

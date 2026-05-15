@@ -48,7 +48,7 @@ function Router() {
       <Route path="/futures/news" component={NewsPage} />
 
       <Route>
-        <SimplePage title="Page not found" body="The page you're looking for doesn't exist." />
+        <SimplePage title="页面未找到" body="你访问的页面不存在，请返回首页继续浏览。" />
       </Route>
     </Switch>
   );
