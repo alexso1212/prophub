@@ -34,6 +34,11 @@ export default function Layout({ children }: { children: ReactNode }) {
     return path === to;
   };
 
+  const activeCategory: "forex" | "futures" | "crypto" =
+    path.startsWith("/forex") ? "forex"
+    : path.startsWith("/crypto") ? "crypto"
+    : "futures";
+
   return (
     <>
       <div className="top-bar">
@@ -79,9 +84,9 @@ export default function Layout({ children }: { children: ReactNode }) {
         </form>
 
         <div className="tabs-pill">
-          <button className="tab">外汇</button>
-          <button className="tab active">期货</button>
-          <button className="tab">加密<span className="badge-new">新</span></button>
+          <Link href="/forex/all-prop-firms" className={`tab ${activeCategory === "forex" ? "active" : ""}`}>外汇</Link>
+          <Link href="/futures/all-prop-firms" className={`tab ${activeCategory === "futures" ? "active" : ""}`}>期货</Link>
+          <Link href="/crypto/all-prop-firms" className={`tab ${activeCategory === "crypto" ? "active" : ""}`}>加密<span className="badge-new">新</span></Link>
         </div>
 
         <div className="header-right">

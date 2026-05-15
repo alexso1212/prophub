@@ -17,6 +17,7 @@ import BrokersPage from "./pages/BrokersPage";
 import NewsPage from "./pages/NewsPage";
 import SearchPage from "./pages/SearchPage";
 import SimplePage from "./pages/SimplePage";
+import CategoryComingSoonPage from "./pages/CategoryComingSoonPage";
 import AdminFirmsPage from "./pages/AdminFirmsPage";
 import { FirmsOverridesProvider } from "./contexts/FirmsOverridesContext";
 
@@ -152,6 +153,9 @@ function Router({ clerkEnabled }: { clerkEnabled: boolean }) {
       <Route path="/futures/news" component={NewsPage} />
 
       <Route path="/search" component={SearchPage} />
+
+      <Route path="/forex/:rest*">{() => <CategoryComingSoonPage category="forex" />}</Route>
+      <Route path="/crypto/:rest*">{() => <CategoryComingSoonPage category="crypto" />}</Route>
 
       <Route>
         <SimplePage title="页面未找到" body="你访问的页面不存在，请返回首页继续浏览。" />
