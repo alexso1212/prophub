@@ -127,7 +127,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         >
           {activeCategory === "forex" ? "📊" : "₿"} {activeCategory === "forex" ? "外汇" : "加密"}版本目前为
           <strong style={{ margin: "0 4px", color: "var(--orange)" }}>演示数据</strong>
-          ，真实公司接入中，结构与功能与期货版完全一致。
+          ，数据持续接入中，结构与功能与期货版完全一致。
         </div>
       )}
 
