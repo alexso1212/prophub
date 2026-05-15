@@ -231,11 +231,11 @@ export default function HomePage() {
             })}
           </tbody>
         </table>
-        <div className="view-more"><button>查看更多</button></div>
+        <div className="view-more"><Link href="/futures/all-prop-firms" className="btn-firm">查看更多</Link></div>
       </div>
 
       <p className="page-footer-text">
-        本页汇总 <a href="#">Prop Firm Match</a> 收录的全部自营公司最新数据，便于你快速找到适合自己交易风格的合作伙伴。可对比评分、评价数、注册地、经营年数、交易平台、可交易品种和最大资金额度，点击任意公司即可查看完整规则、专属优惠和真实交易员反馈。
+        本页汇总 <span>Prop Firm Match</span> 收录的全部自营公司最新数据，便于你快速找到适合自己交易风格的合作伙伴。可对比评分、评价数、注册地、经营年数、交易平台、可交易品种和最大资金额度，点击任意公司即可查看完整规则、专属优惠和真实交易员反馈。
       </p>
 
       <NewsFeed limit={6} />

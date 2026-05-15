@@ -15,6 +15,7 @@ import PayoutsPage from "./pages/PayoutsPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import BrokersPage from "./pages/BrokersPage";
 import NewsPage from "./pages/NewsPage";
+import SearchPage from "./pages/SearchPage";
 import SimplePage from "./pages/SimplePage";
 import AdminFirmsPage from "./pages/AdminFirmsPage";
 import { FirmsOverridesProvider } from "./contexts/FirmsOverridesContext";
@@ -149,6 +150,8 @@ function Router({ clerkEnabled }: { clerkEnabled: boolean }) {
       <Route path="/futures/brokers" component={BrokersPage} />
 
       <Route path="/futures/news" component={NewsPage} />
+
+      <Route path="/search" component={SearchPage} />
 
       <Route>
         <SimplePage title="页面未找到" body="你访问的页面不存在，请返回首页继续浏览。" />

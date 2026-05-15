@@ -86,7 +86,13 @@ export default function ChallengesPage() {
             ))}
           </tbody>
         </table>
-        {filtered.length > 200 && <div className="view-more"><button>已显示前 200 / 共 {filtered.length}</button></div>}
+        {filtered.length > 200 && (
+          <div className="view-more">
+            <span style={{ color: "var(--text-muted)", fontSize: 13 }}>
+              已显示前 200 / 共 {filtered.length}
+            </span>
+          </div>
+        )}
       </div>
     </main>
   );

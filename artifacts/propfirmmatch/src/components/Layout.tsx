@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState, FormEvent } from "react";
 
 const NAV = [
   { to: "/futures/all-prop-firms", label: "首页" },
@@ -16,10 +16,18 @@ const NAV = [
 ];
 
 export default function Layout({ children }: { children: ReactNode }) {
-  const [path] = useLocation();
+  const [path, setLocation] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => { setMobileOpen(false); }, [path]);
+
+  const submitSearch = (e?: FormEvent) => {
+    if (e) e.preventDefault();
+    const q = searchQuery.trim();
+    if (!q) return;
+    setLocation(`/search?q=${encodeURIComponent(q)}`);
+  };
 
   const isActive = (to: string) => {
     if (to === "/futures/all-prop-firms") return path === to || path === "/";
@@ -31,7 +39,12 @@ export default function Layout({ children }: { children: ReactNode }) {
       <div className="top-bar">
         <span aria-hidden>✨</span>
         <span>新一期抽奖活动上线 →</span>
-        <button className="check-now">立即查看</button>
+        <a
+          className="check-now"
+          href="https://propfirmmatch.com/futures/giveaways"
+          target="_blank"
+          rel="noreferrer"
+        >立即查看</a>
       </div>
 
       <header className="header">
@@ -49,11 +62,21 @@ export default function Layout({ children }: { children: ReactNode }) {
           <span /><span /><span />
         </button>
 
-        <div className="search">
-          <span aria-hidden="true">🔍</span>
+        <form className="search" onSubmit={submitSearch} role="search">
+          <button
+            type="submit"
+            aria-label="搜索"
+            style={{ background: "none", border: 0, padding: 0, cursor: "pointer", color: "inherit" }}
+          >🔍</button>
           <label htmlFor="site-search" className="sr-only" style={{position:"absolute",left:-9999}}>搜索自营公司</label>
-          <input id="site-search" placeholder="搜索公司、平台、优惠码" aria-label="搜索自营公司" />
-        </div>
+          <input
+            id="site-search"
+            placeholder="搜索公司、平台、优惠码"
+            aria-label="搜索自营公司"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+          />
+        </form>
 
         <div className="tabs-pill">
           <button className="tab">外汇</button>

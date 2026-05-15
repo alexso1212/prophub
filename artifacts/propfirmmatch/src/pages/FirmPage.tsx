@@ -41,6 +41,7 @@ export default function FirmPage() {
   const zh = f ? findFirmZh(f.slug) : undefined;
   const override = useFirmOverride(slug || "");
   const [tab, setTab] = useState<"overview" | "challenges" | "reviews" | "offers" | "payouts">("overview");
+  const [summaryExpanded, setSummaryExpanded] = useState(false);
   const enrichedChallenges = useMemo(
     () => (f?.challenges ?? []).map(c => enrichChallenge(c, f?.promoCode)),
     [f]
@@ -82,7 +83,18 @@ export default function FirmPage() {
   return (
     <main className="container">
       <div className="detail-top">
-        <Link href="/" className="back-btn">←</Link>
+        <button
+          type="button"
+          className="back-btn"
+          aria-label="返回上一页"
+          onClick={() => {
+            if (typeof window !== "undefined" && window.history.length > 1) {
+              window.history.back();
+            } else {
+              window.location.href = `${import.meta.env.BASE_URL}futures/all-prop-firms`;
+            }
+          }}
+        >←</button>
         <div className="firm-pill">
           <img src={f.logo} alt={f.name} />
           <span>{f.name}</span>
@@ -195,8 +207,21 @@ export default function FirmPage() {
               <div className="ai-summary-card">
                 <span className="ai-tag">✨ AI 简介</span>
                 <h3>{f.name} 公司速览</h3>
-                <p>{summaryZh.slice(0, 380)}{summaryZh.length > 380 && "…"}</p>
-                <button className="show-more-btn">查看更多 ▾</button>
+                <p>
+                  {summaryExpanded || summaryZh.length <= 380
+                    ? summaryZh
+                    : `${summaryZh.slice(0, 380)}…`}
+                </p>
+                {summaryZh.length > 380 && (
+                  <button
+                    type="button"
+                    className="show-more-btn"
+                    onClick={() => setSummaryExpanded(v => !v)}
+                    aria-expanded={summaryExpanded}
+                  >
+                    {summaryExpanded ? "收起 ▴" : "查看更多 ▾"}
+                  </button>
+                )}
               </div>
 
               <section className="detail-section" id="firm-overview">
@@ -286,7 +311,7 @@ export default function FirmPage() {
                           {programZh(c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`)}
                         </a>
                       ) : (
-                        <a href="#" className="name">{programZh(c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`)}</a>
+                        <span className="name">{programZh(c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`)}</span>
                       )}
                       {c.original && <span className="original">{c.original}</span>}
                       <span className="price">{c.price}</span>
