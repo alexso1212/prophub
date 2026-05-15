@@ -51,12 +51,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       <div className="top-bar">
         <span aria-hidden>✨</span>
         <span>新一期抽奖活动上线 →</span>
-        <a
-          className="check-now"
-          href="https://propfirmmatch.com/futures/giveaways"
-          target="_blank"
-          rel="noreferrer"
-        >立即查看</a>
+        <Link className="check-now" href={`/${activeCategory}/giveaways`}>立即查看</Link>
       </div>
 
       <header className="header">
@@ -97,8 +92,8 @@ export default function Layout({ children }: { children: ReactNode }) {
         </div>
 
         <div className="header-right">
-          <a className="btn-pill hide-on-mobile" href="https://propfirmmatch.com/careers" target="_blank" rel="noreferrer"><span className="dot" />招聘中</a>
-          <a className="btn-pill hide-on-mobile" href="https://propfirmmatch.com/tutorials" target="_blank" rel="noreferrer">📚 教程</a>
+          <Link className="btn-pill hide-on-mobile" href="/careers"><span className="dot" />招聘中</Link>
+          <Link className="btn-pill hide-on-mobile" href="/tutorials">📚 教程</Link>
           <Link href="/sign-in" className="btn-pill">登录</Link>
           <Link href="/sign-up" className="btn-pill primary">注册</Link>
         </div>

@@ -17,6 +17,9 @@ import BrokersPage from "./pages/BrokersPage";
 import NewsPage from "./pages/NewsPage";
 import SearchPage from "./pages/SearchPage";
 import SimplePage from "./pages/SimplePage";
+import GiveawaysPage from "./pages/GiveawaysPage";
+import CareersPage from "./pages/CareersPage";
+import TutorialsPage from "./pages/TutorialsPage";
 import AdminFirmsPage from "./pages/AdminFirmsPage";
 import { FirmsOverridesProvider } from "./contexts/FirmsOverridesContext";
 import { CategoryProvider, type Category } from "./contexts/CategoryContext";
@@ -193,6 +196,13 @@ function Router({ clerkEnabled }: { clerkEnabled: boolean }) {
         <Route path="/crypto/leaderboard" component={LeaderboardPage} />
         <Route path="/crypto/brokers" component={BrokersPage} />
         <Route path="/crypto/news" component={NewsPage} />
+
+        <Route path="/giveaways" component={GiveawaysPage} />
+        <Route path="/futures/giveaways" component={GiveawaysPage} />
+        <Route path="/forex/giveaways" component={GiveawaysPage} />
+        <Route path="/crypto/giveaways" component={GiveawaysPage} />
+        <Route path="/careers" component={CareersPage} />
+        <Route path="/tutorials" component={TutorialsPage} />
 
         <Route path="/search" component={SearchPage} />
 
