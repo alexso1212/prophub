@@ -1,5 +1,7 @@
 import { Link } from "wouter";
 import { firms } from "../data/firms";
+import { getBrandZh } from "../data/brandZh";
+import { countryZh } from "../data/i18nZh";
 
 export default function ReviewsPage() {
   const sorted = [...firms].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
@@ -19,9 +21,12 @@ export default function ReviewsPage() {
                 <img src={f.logo} alt={f.name} />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>{f.name}</div>
+                <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>
+                  {f.name}
+                  {getBrandZh(f.slug) && <span className="brand-zh-inline">· {getBrandZh(f.slug)}</span>}
+                </div>
                 <div style={{ color: "var(--text-dim)", fontSize: 12 }}>
-                  {f.country} · 经营 {f.yearsInOperation} 年 · {f.dateCreated || ""}
+                  {countryZh(f.countryCode?.toUpperCase() || "", f.country)} · 经营 {f.yearsInOperation} 年 · {f.dateCreated || ""}
                 </div>
               </div>
               <div style={{ textAlign: "center", minWidth: 80 }}>

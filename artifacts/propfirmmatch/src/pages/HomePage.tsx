@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { firms, Firm } from "../data/firms";
 import { findFirmZh } from "../data/firms.zh";
 import { getBrandZh } from "../data/brandZh";
+import { countryZh } from "../data/i18nZh";
 import NewsFeed from "../components/NewsFeed";
 
 function Stars({ rating }: { rating: number }) {
@@ -155,7 +156,7 @@ export default function HomePage() {
                 <td>
                   <div className="country-cell">
                     <img src={`https://flagcdn.com/w80/${f.countryCode}.png`} alt={f.country} />
-                    <span>{f.country}</span>
+                    <span>{countryZh(f.countryCode?.toUpperCase() || "", f.country)}</span>
                   </div>
                 </td>
                 <td>{f.yearsInOperation} 年</td>

@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Link } from "wouter";
 import { firms } from "../data/firms";
+import { getBrandZh } from "../data/brandZh";
 
 export default function BrokersPage() {
   const brokers = useMemo(() => {
@@ -36,7 +37,7 @@ export default function BrokersPage() {
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
               {b.firms.map(f => (
-                <Link key={f.slug} href={`/futures/prop-firms/${f.slug}`} className="kv-chip">
+                <Link key={f.slug} href={`/futures/prop-firms/${f.slug}`} className="kv-chip" title={getBrandZh(f.slug) || ""}>
                   <img src={f.logo} alt={f.name} style={{ width: 16, height: 16, objectFit: "contain" }} />
                   {f.name}
                 </Link>

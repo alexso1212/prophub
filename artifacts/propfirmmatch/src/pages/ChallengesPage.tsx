@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { Link } from "wouter";
 import { firms } from "../data/firms";
+import { getBrandZh } from "../data/brandZh";
+import { programZh } from "../data/i18nZh";
 
 export default function ChallengesPage() {
   const [size, setSize] = useState<"all"|"25"|"50"|"100"|"150">("all");
@@ -70,10 +72,13 @@ export default function ChallengesPage() {
                     <Link href={`/futures/prop-firms/${c.firmSlug}`} className="firm-logo-sm">
                       <img src={c.logo} alt={c.firmName} />
                     </Link>
-                    <Link href={`/futures/prop-firms/${c.firmSlug}`} className="firm-name-link">{c.firmName}</Link>
+                    <div>
+                      <Link href={`/futures/prop-firms/${c.firmSlug}`} className="firm-name-link">{c.firmName}</Link>
+                      {getBrandZh(c.firmSlug) && <div className="brand-zh-sub">{getBrandZh(c.firmSlug)}</div>}
+                    </div>
                   </div>
                 </td>
-                <td>{c.name}</td>
+                <td>{programZh(c.name)}</td>
                 <td><span style={{ color: "var(--text-muted)", textDecoration: "line-through" }}>{c.original || ""}</span></td>
                 <td style={{ color: "var(--orange)", fontWeight: 700 }}>{c.price}</td>
                 <td><Link href={`/futures/prop-firms/${c.firmSlug}`} className="btn-firm">详情</Link></td>

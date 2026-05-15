@@ -1,6 +1,8 @@
 import { Link } from "wouter";
 import { firms } from "../data/firms";
 import { LEADERBOARD } from "../data/leaderboard";
+import { getBrandZh } from "../data/brandZh";
+import { medianZh } from "../data/i18nZh";
 
 export default function LeaderboardPage() {
   return (
@@ -23,7 +25,7 @@ export default function LeaderboardPage() {
                   <img src={f.logo} alt={f.name} style={{ width: 48, height: 48, objectFit: "contain" }} />
                 </div>
               )}
-              <div className="name">{t.name}</div>
+              <div className="name">{t.name}{f && getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
               <div className="meta">
                 {t.count.toLocaleString()} 笔 · 平均 ${t.avg.toLocaleString()}
               </div>
@@ -60,7 +62,10 @@ export default function LeaderboardPage() {
                         <Link href={`/futures/prop-firms/${f.slug}`} className="firm-logo-sm">
                           <img src={f.logo} alt={f.name} />
                         </Link>
-                        <Link href={`/futures/prop-firms/${f.slug}`} className="firm-name-link">{f.name}</Link>
+                        <div>
+                          <Link href={`/futures/prop-firms/${f.slug}`} className="firm-name-link">{f.name}</Link>
+                          {getBrandZh(f.slug) && <div className="brand-zh-sub">{getBrandZh(f.slug)}</div>}
+                        </div>
                       </div>
                     ) : <span>{t.name}</span>}
                   </td>
@@ -68,7 +73,7 @@ export default function LeaderboardPage() {
                   <td>{t.count.toLocaleString()}</td>
                   <td>${t.largest.toLocaleString()}</td>
                   <td>${t.avg.toLocaleString()}</td>
-                  <td style={{ color: "var(--text-dim)", fontSize: 12 }}>{t.median}</td>
+                  <td style={{ color: "var(--text-dim)", fontSize: 12 }}>{medianZh(t.median)}</td>
                 </tr>
               );
             })}

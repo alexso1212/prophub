@@ -1,6 +1,8 @@
 import { Link } from "wouter";
 import { firms } from "../data/firms";
 import { PAYOUTS, totalTrackedPayouts, totalPayoutCount } from "../data/payouts";
+import { getBrandZh } from "../data/brandZh";
+import { medianZh } from "../data/i18nZh";
 
 const avgAcrossFirms = Math.round(totalTrackedPayouts / totalPayoutCount);
 
@@ -52,7 +54,10 @@ export default function PayoutsPage() {
                         <Link href={`/futures/prop-firms/${f.slug}`} className="firm-logo-sm">
                           <img src={f.logo} alt={f.name} />
                         </Link>
-                        <Link href={`/futures/prop-firms/${f.slug}`} className="firm-name-link">{f.name}</Link>
+                        <div>
+                          <Link href={`/futures/prop-firms/${f.slug}`} className="firm-name-link">{f.name}</Link>
+                          {getBrandZh(f.slug) && <div className="brand-zh-sub">{getBrandZh(f.slug)}</div>}
+                        </div>
                       </div>
                     ) : <span>{p.name}</span>}
                   </td>
@@ -60,7 +65,7 @@ export default function PayoutsPage() {
                   <td>{p.count.toLocaleString()}</td>
                   <td>${p.largest.toLocaleString()}</td>
                   <td>${p.avg.toLocaleString()}</td>
-                  <td style={{ color: "var(--text-dim)", fontSize: 12 }}>{p.median}</td>
+                  <td style={{ color: "var(--text-dim)", fontSize: 12 }}>{medianZh(p.median)}</td>
                 </tr>
               );
             })}

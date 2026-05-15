@@ -3,6 +3,7 @@ import { useState, useMemo } from "react";
 import { findFirm, Firm, enrichChallenge } from "../data/firms";
 import { findFirmZh } from "../data/firms.zh";
 import { getBrandZh } from "../data/brandZh";
+import { countryZh } from "../data/i18nZh";
 import { reviewsForFirm } from "../data/reviews";
 import { payoutsForFirm } from "../data/payouts";
 
@@ -87,7 +88,7 @@ export default function FirmPage() {
           <div className="hero-meta">
             {f.ceo && <div className="item"><div className="label">创始人</div><div className="val">{f.ceo}</div></div>}
             <div className="item"><div className="label">注册地</div>
-              <div className="val"><img src={`https://flagcdn.com/w80/${f.countryCode}.png`} alt="" /> {f.country}</div>
+              <div className="val"><img src={`https://flagcdn.com/w80/${f.countryCode}.png`} alt="" /> {countryZh(f.countryCode?.toUpperCase() || "", f.country)}</div>
             </div>
             {f.trustPilot && <div className="item"><div className="label">Trustpilot 评分</div><div className="val">{f.trustPilot}</div></div>}
             {f.dateCreated && <div className="item"><div className="label">成立时间</div><div className="val">{f.dateCreated}</div></div>}

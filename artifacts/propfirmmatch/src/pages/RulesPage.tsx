@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { firms } from "../data/firms";
 import { findFirmZh } from "../data/firms.zh";
 import { getBrandZh } from "../data/brandZh";
+import { countryZh } from "../data/i18nZh";
 
 export default function RulesPage() {
   return (
@@ -25,7 +26,7 @@ export default function RulesPage() {
                 <div style={{ flex: 1 }}>
                   <Link href={`/futures/prop-firms/${f.slug}`} className="firm-name-link" style={{ fontSize: 16 }}>{f.name}</Link>{getBrandZh(f.slug) && <span className="brand-zh-inline">· {getBrandZh(f.slug)}</span>}
                   <div style={{ color: "var(--text-dim)", fontSize: 12 }}>
-                    {f.country} · {f.dateCreated || `经营 ${f.yearsInOperation} 年`}
+                    {countryZh(f.countryCode?.toUpperCase() || "", f.country)} · {f.dateCreated || `经营 ${f.yearsInOperation} 年`}
                     {f.trustPilot && ` · Trustpilot ${f.trustPilot}`}
                   </div>
                 </div>
