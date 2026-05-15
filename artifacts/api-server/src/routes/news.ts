@@ -16,7 +16,18 @@ router.get("/news", async (req, res) => {
 
   try {
     const raw = await source.fetch({ category, limit });
-    const items = await rewriteAll(raw);
+    const translated = await rewriteAll(raw);
+    const items = translated.map(n => ({
+      id: n.id,
+      publishedAt: n.publishedAt,
+      sourceLabel: n.sourceLabel,
+      category: n.category,
+      tickers: n.tickers,
+      titleZh: n.titleZh,
+      summaryZh: n.summaryZh,
+      takeawaysZh: n.takeawaysZh,
+      originalUrl: n.originalUrl,
+    }));
     res.json({ items });
   } catch (err) {
     logger.error({ err }, "news endpoint failed");

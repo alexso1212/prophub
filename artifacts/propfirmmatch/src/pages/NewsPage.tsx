@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import NewsFeed, { NewsItem, NewsCard, CATEGORY_LABEL } from "../components/NewsFeed";
+import { NewsItem, NewsCard } from "../components/NewsFeed";
 
 type Category = NewsItem["category"] | "all";
 
@@ -32,10 +32,6 @@ export default function NewsPage() {
     if (items) for (const n of items) c[n.category] = (c[n.category] ?? 0) + 1;
     return c;
   }, [items]);
-
-  // Suppress unused export warning — also serves as live import sanity check.
-  void NewsFeed;
-  void CATEGORY_LABEL;
 
   return (
     <main className="container">

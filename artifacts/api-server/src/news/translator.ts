@@ -29,10 +29,15 @@ const SYSTEM_PROMPT = `你是一名资深金融编辑，专为中文交易者重
 6. 任何专有名词（央行/品种/机构名）按行业惯例翻译，例如 ECB → 欧洲央行，BOJ → 日本央行。`;
 
 function fallback(raw: RawNewsItem): Pick<NewsItem, "titleZh" | "summaryZh" | "takeawaysZh"> {
+  const tickers = raw.tickers.join(" / ") || "—";
   return {
-    titleZh: raw.titleEn,
-    summaryZh: raw.bodyEn.slice(0, 120),
-    takeawaysZh: ["新闻已加载，但中文改写暂未就绪", "请稍后刷新查看翻译", `相关品种：${raw.tickers.join(" / ") || "—"}`],
+    titleZh: "中文快讯生成中，请稍后刷新",
+    summaryZh: "AI 翻译服务暂时不可用，正在重试。请稍后刷新页面查看完整中文摘要。",
+    takeawaysZh: [
+      "翻译服务暂时不可用",
+      `相关品种：${tickers}`,
+      "可点击下方「查看原文」阅读英文原稿",
+    ],
   };
 }
 
