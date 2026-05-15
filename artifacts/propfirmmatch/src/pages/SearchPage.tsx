@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { Firm, getDiscountedPrices, formatUsd } from "../data/firms";
 import { findFirmZh } from "../data/firms.zh";
 import { getBrandZh } from "../data/brandZh";
-import { firmsForCategory, type Category } from "../contexts/CategoryContext";
+import { firmsForCategory, useCategory, type Category } from "../contexts/CategoryContext";
 
 interface SearchHit {
   firm: Firm;
@@ -57,6 +57,8 @@ function ResultCard({ hit }: { hit: SearchHit }) {
 
 export default function SearchPage() {
   const [path] = useLocation();
+  const category = useCategory();
+  const fallbackPrefix = `/${category}`;
   const query = useMemo(() => {
     const qs = typeof window !== "undefined" ? window.location.search : "";
     const params = new URLSearchParams(qs);
@@ -90,7 +92,7 @@ export default function SearchPage() {
 
       {query && results.length === 0 && (
         <p style={{ color: "var(--text-muted)" }}>
-          未找到匹配的公司。试试别的关键词，或返回 <Link href="/futures/all-prop-firms" style={{ color: "var(--orange)" }}>全部公司</Link>。
+          未找到匹配的公司。试试别的关键词，或返回 <Link href={`${fallbackPrefix}/all-prop-firms`} style={{ color: "var(--orange)" }}>全部公司</Link>。
         </p>
       )}
 
