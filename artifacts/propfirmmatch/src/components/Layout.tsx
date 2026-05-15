@@ -19,12 +19,25 @@ function buildNav(cat: Category) {
   ];
 }
 
+const LIVE_TEXT: Record<Category, string> = {
+  futures: "直播间正在交易期货",
+  forex: "直播间正在交易外汇",
+  crypto: "直播间正在交易加密",
+};
+
 export default function Layout({ children }: { children: ReactNode }) {
   const [path, setLocation] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [fabToast, setFabToast] = useState(false);
 
-  useEffect(() => { setMobileOpen(false); }, [path]);
+  useEffect(() => { setMobileOpen(false); setDrawerOpen(false); }, [path]);
+  useEffect(() => {
+    if (!fabToast) return;
+    const t = setTimeout(() => setFabToast(false), 2200);
+    return () => clearTimeout(t);
+  }, [fabToast]);
 
   const submitSearch = (e?: FormEvent) => {
     if (e) e.preventDefault();
@@ -52,6 +65,12 @@ export default function Layout({ children }: { children: ReactNode }) {
         <span aria-hidden>✨</span>
         <span>新一期抽奖活动上线 →</span>
         <Link className="check-now" href={`/${activeCategory}/giveaways`}>立即查看</Link>
+      </div>
+
+      <div className="live-bar">
+        <span className="live-pill"><span className="live-dot" />LIVE</span>
+        <span className="live-msg">{LIVE_TEXT[activeCategory]} · 主持人正在解读盘面</span>
+        <Link className="live-cta" href={`/${activeCategory}/live`}>立即观看</Link>
       </div>
 
       <header className="header">
@@ -94,10 +113,55 @@ export default function Layout({ children }: { children: ReactNode }) {
         <div className="header-right">
           <Link className="btn-pill hide-on-mobile" href="/careers"><span className="dot" />招聘中</Link>
           <Link className="btn-pill hide-on-mobile" href="/tutorials">📚 教程</Link>
-          <Link href="/sign-in" className="btn-pill">登录</Link>
+          <Link href="/sign-in" className="btn-pill hide-on-mobile">登录</Link>
           <Link href="/sign-up" className="btn-pill primary">注册</Link>
+          <button
+            type="button"
+            className="header-drawer-toggle"
+            aria-label="打开菜单"
+            aria-expanded={drawerOpen}
+            onClick={() => setDrawerOpen(o => !o)}
+          >
+            <span /><span /><span />
+          </button>
         </div>
       </header>
+
+      {/* mobile underline tab strip duplicated for ≤768 */}
+      <div className="cat-tabs-mobile" aria-hidden={false}>
+        <Link href="/forex/all-prop-firms" className={activeCategory === "forex" ? "active" : ""}>外汇</Link>
+        <Link href="/futures/all-prop-firms" className={activeCategory === "futures" ? "active" : ""}>期货</Link>
+        <Link href="/crypto/all-prop-firms" className={activeCategory === "crypto" ? "active" : ""}>
+          加密<span className="badge-new" style={{ marginLeft: 4 }}>新</span>
+        </Link>
+      </div>
+
+      {drawerOpen && (
+        <>
+          <div className="drawer-mask" onClick={() => setDrawerOpen(false)} />
+          <aside className="side-drawer" aria-label="更多菜单">
+            <div className="side-drawer-head">
+              <span className="logo-mark">P</span>
+              <span style={{ fontWeight: 700 }}>Prop Firm Match</span>
+              <button
+                className="side-drawer-close"
+                aria-label="关闭"
+                onClick={() => setDrawerOpen(false)}
+              >×</button>
+            </div>
+            <Link className="drawer-link" href="/sign-in">登录账户</Link>
+            <Link className="drawer-link" href="/careers"><span className="dot" />招聘中</Link>
+            <Link className="drawer-link" href="/tutorials">📚 教程</Link>
+            <Link className="drawer-link" href={`/${activeCategory}/giveaways`}>🎁 免费抽奖</Link>
+            <Link className="drawer-link" href={`/${activeCategory}/live`}>🎥 直播间</Link>
+            <Link className="drawer-link" href={`/${activeCategory}/favorite-firms`}>♡ 我的收藏</Link>
+            <div className="drawer-section">板块</div>
+            <Link className="drawer-link" href="/forex/all-prop-firms">外汇</Link>
+            <Link className="drawer-link" href="/futures/all-prop-firms">期货</Link>
+            <Link className="drawer-link" href="/crypto/all-prop-firms">加密 <span className="badge-new" style={{ marginLeft: 4 }}>新</span></Link>
+          </aside>
+        </>
+      )}
 
       <nav className={`subnav ${mobileOpen ? "open" : ""}`} aria-label="主导航">
         {NAV.map(n => (
@@ -108,18 +172,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       </nav>
 
       {activeCategory !== "futures" && (
-        <div
-          role="status"
-          style={{
-            background: "linear-gradient(90deg, rgba(168,85,247,0.18), rgba(255,106,61,0.18))",
-            borderBottom: "1px solid rgba(168,85,247,0.35)",
-            color: "var(--text)",
-            padding: "10px 20px",
-            fontSize: 13,
-            textAlign: "center",
-            letterSpacing: ".02em",
-          }}
-        >
+        <div className="demo-banner" role="status">
           {activeCategory === "forex" ? "📊" : "₿"} {activeCategory === "forex" ? "外汇" : "加密"}版本目前为
           <strong style={{ margin: "0 4px", color: "var(--orange)" }}>演示数据</strong>
           ，数据持续接入中，结构与功能与期货版完全一致。
@@ -127,6 +180,18 @@ export default function Layout({ children }: { children: ReactNode }) {
       )}
 
       {children}
+
+      <button
+        type="button"
+        className="fab-help"
+        aria-label="客服助手"
+        onClick={() => setFabToast(true)}
+      >
+        P
+      </button>
+      {fabToast && (
+        <div className="fab-toast" role="status">客服功能即将上线，敬请期待</div>
+      )}
 
       <footer className="site-footer">
         <div className="footer-inner">

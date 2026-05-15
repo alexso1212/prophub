@@ -89,6 +89,7 @@ function PopularCard({ f, place, prefix }: { f: Firm; place: 1 | 2 | 3; prefix: 
 }
 
 function PlatformIcons({ f }: { f: Firm }) {
+  const more = (f.platforms.length > 4 ? f.platforms.length - 4 : 0) + (f.morePlatforms ?? 0);
   return (
     <div className="platforms-cell">
       {f.platforms.slice(0, 4).map((p, i) => (
@@ -96,9 +97,27 @@ function PlatformIcons({ f }: { f: Firm }) {
           {p.icon ? <img src={p.icon} alt={p.name} /> : <span style={{fontSize:9}}>{p.name.slice(0,2)}</span>}
         </span>
       ))}
-      {f.morePlatforms ? <span className="platform-more">+{f.morePlatforms}</span> : null}
+      {more > 0 ? <span className="platform-more-pill">+{more}</span> : null}
     </div>
   );
+}
+
+function RankBadge({ place }: { place: number }) {
+  if (place <= 3) {
+    const cls = place === 1 ? "gold" : place === 2 ? "silver" : "bronze";
+    return (
+      <span className={`rank-trophy ${cls}`} aria-label={`第 ${place} 名`}>
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M7 4h10v2h3v3a4 4 0 0 1-4 4h-.18A5 5 0 0 1 13 16.9V19h3v2H8v-2h3v-2.1A5 5 0 0 1 7.18 13H7a4 4 0 0 1-4-4V6h3V4Zm-2 4v1a2 2 0 0 0 2 2V8H5Zm12 0v3a2 2 0 0 0 2-2V8h-2Z"
+          />
+        </svg>
+        <span className="rank-trophy-num">{place}</span>
+      </span>
+    );
+  }
+  return <span className="rank-num-circle">{place}</span>;
 }
 
 export default function HomePage() {
@@ -153,10 +172,11 @@ export default function HomePage() {
       </div>
 
       <div className="firms-count">
-        全部{meta.label}自营公司 <span className="num">{sorted.length}</span>
+        全部{meta.label}自营公司 <span className="count-pill">{sorted.length}</span>
       </div>
 
       <div className="table-wrap">
+        <div className="table-scroll-hint" aria-hidden="true">← 左右滑动查看更多 →</div>
         <table className="firms-table">
           <thead>
             <tr>
@@ -176,13 +196,15 @@ export default function HomePage() {
               const ov = overrides[f.slug];
               const promoCode = ov?.promoCode ?? f.promoCode;
               const promoPercent = ov?.discountPercent ?? ov?.promoPercent ?? f.promoPercent;
+              const place = idx + 1;
+              const rowClass = place === 1 ? "rank-row-1" : place === 2 ? "rank-row-2" : place === 3 ? "rank-row-3" : "";
               return (
-                <tr key={f.slug}>
-                  <td>
+                <tr key={f.slug} className={rowClass}>
+                  <td className="firm-col">
                     <div className="cell-firm">
-                      {idx < 15 && <span className="rank-num">{idx + 1}</span>}
-                      <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-logo-sm">
-                        {f.isNew && <span className="new-tag-overlay">新</span>}
+                      <RankBadge place={place} />
+                      <Link href={`${prefix}/prop-firms/${f.slug}`} className={`firm-logo-sm ${place <= 3 ? `logo-rank-${place}` : ""}`}>
+                        {f.isNew && <span className="new-ribbon">新</span>}
                         <img src={f.logo} alt={f.name} />
                       </Link>
                       <div>
@@ -197,7 +219,7 @@ export default function HomePage() {
                       {f.rating ? (
                         <><span className="num">{f.rating}</span><span className="reviews">{f.reviews} 条评价</span></>
                       ) : (
-                        <span className="reviews">少于<br />10 条评价</span>
+                        <span className="reviews">少于 10 条评价</span>
                       )}
                     </div>
                   </td>
