@@ -234,7 +234,7 @@ export default function FirmPage() {
                   <h2>Challenges</h2>
                   {f.challenges.map((c, i) => (
                     <div key={i} className="challenge-row">
-                      <a href="#" className="name">{f.name} - {c.name}</a>
+                      <span className="name">{c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`}</span>
                       {c.original && <span className="original">{c.original}</span>}
                       <span className="price">{c.price}</span>
                     </div>
@@ -247,17 +247,16 @@ export default function FirmPage() {
           {tab === "challenges" && (
             <section className="detail-section" style={{ borderTop: "none", marginTop: 0, paddingTop: 0 }}>
               <h2>{f.name} Challenges</h2>
-              {(f.challenges || [
-                { name: "Eval - 50K", price: "$170", original: "$340" },
-                { name: "Eval - 100K", price: "$250", original: "$500" },
-                { name: "Eval - 150K", price: "$350", original: "$700" },
-              ]).map((c, i) => (
+              {(f.challenges && f.challenges.length > 0 ? f.challenges : []).map((c, i) => (
                 <div key={i} className="challenge-row">
-                  <a href="#" className="name">{f.name} - {c.name}</a>
+                  <span className="name">{c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`}</span>
                   {c.original && <span className="original">{c.original}</span>}
                   <span className="price">{c.price}</span>
                 </div>
               ))}
+              {(!f.challenges || f.challenges.length === 0) && (
+                <p style={{ color: "var(--text-dim)" }}>No challenges listed for {f.name} yet.</p>
+              )}
             </section>
           )}
 
