@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: firms
+    description: Firm overrides
 paths:
   /healthz:
     get:
@@ -24,6 +26,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /firms-overrides:
+    get:
+      operationId: getFirmsOverrides
+      tags: [firms]
+      summary: Get firm overrides
+      description: Returns admin-configured overrides keyed by firm slug
+      responses:
+        "200":
+          description: Map of slug -> override
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: "#/components/schemas/FirmOverride"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +50,26 @@ components:
           type: string
       required:
         - status
+    FirmOverride:
+      type: object
+      properties:
+        slug:
+          type: string
+        affiliateUrl:
+          type: string
+          nullable: true
+        promoCode:
+          type: string
+          nullable: true
+        promoPercent:
+          type: number
+          nullable: true
+        promoLabel:
+          type: string
+          nullable: true
+        discountPercent:
+          type: integer
+          nullable: true
+      required:
+        - slug
 

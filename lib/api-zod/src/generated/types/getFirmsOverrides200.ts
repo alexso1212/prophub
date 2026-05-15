@@ -5,7 +5,6 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { FirmOverride } from './firmOverride';
 
-export * from './firmOverride';
-export * from './getFirmsOverrides200';
-export * from './healthStatus';
+export type GetFirmsOverrides200 = {[key: string]: FirmOverride};

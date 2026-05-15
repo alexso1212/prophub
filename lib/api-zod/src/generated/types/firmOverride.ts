@@ -5,9 +5,6 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-export interface HealthStatus {
-  status: string;
-}
 
 export interface FirmOverride {
   slug: string;
@@ -17,6 +14,3 @@ export interface FirmOverride {
   promoLabel?: string | null;
   discountPercent?: number | null;
 }
-
-export type GetFirmsOverrides200 = {[key: string]: FirmOverride};
-
