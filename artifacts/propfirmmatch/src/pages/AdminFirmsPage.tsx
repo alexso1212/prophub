@@ -9,6 +9,7 @@ interface FirmOverride {
   promoCode: string | null;
   promoPercent: number | null;
   promoLabel: string | null;
+  discountPercent: number | null;
 }
 
 interface EditState {
@@ -16,6 +17,7 @@ interface EditState {
   promoCode: string;
   promoPercent: string;
   promoLabel: string;
+  discountPercent: string;
 }
 
 interface Props {
@@ -83,6 +85,7 @@ function FirmsTable() {
           promoCode: o.promoCode ?? "",
           promoPercent: o.promoPercent?.toString() ?? "",
           promoLabel: o.promoLabel ?? "",
+          discountPercent: o.discountPercent?.toString() ?? "",
         };
       }
       setEditStates(initial);
@@ -117,6 +120,7 @@ function FirmsTable() {
           promoCode: state.promoCode,
           promoPercent: state.promoPercent ? parseInt(state.promoPercent, 10) : 0,
           promoLabel: state.promoLabel,
+          discountPercent: state.discountPercent === "" ? null : parseInt(state.discountPercent, 10),
         }),
       });
       if (res.ok) {
@@ -185,7 +189,8 @@ function FirmsTable() {
                 <th>Firm</th>
                 <th>Affiliate URL</th>
                 <th>Promo Code</th>
-                <th style={{ width: 90 }}>Discount %</th>
+                <th style={{ width: 100 }}>Display Discount %</th>
+                <th style={{ width: 90 }}>Promo %</th>
                 <th style={{ width: 120 }}>Label</th>
                 <th style={{ width: 80 }}>Action</th>
               </tr>
@@ -197,6 +202,7 @@ function FirmsTable() {
                   promoCode: "",
                   promoPercent: "",
                   promoLabel: "",
+                  discountPercent: "",
                 };
                 return (
                   <tr key={firm.slug}>
@@ -227,6 +233,17 @@ function FirmsTable() {
                         value={state.promoCode}
                         onChange={(e) => handleChange(firm.slug, "promoCode", e.target.value)}
                         style={{ ...inputStyle, width: 100 }}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        min={0}
+                        max={100}
+                        placeholder={String(firm.promoPercent ?? 0)}
+                        value={state.discountPercent}
+                        onChange={(e) => handleChange(firm.slug, "discountPercent", e.target.value)}
+                        style={{ ...inputStyle, width: 80 }}
                       />
                     </td>
                     <td>

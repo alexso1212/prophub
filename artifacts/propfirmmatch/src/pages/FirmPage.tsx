@@ -65,7 +65,7 @@ export default function FirmPage() {
 
   const affiliateUrl = override?.affiliateUrl;
   const promoCode = override?.promoCode ?? f.promoCode;
-  const promoPercent = override?.promoPercent ?? f.promoPercent;
+  const promoPercent = override?.discountPercent ?? override?.promoPercent ?? f.promoPercent;
   const promoLabel = override?.promoLabel ?? f.promoLabel;
 
   const BuyButton = ({ className }: { className?: string }) => {

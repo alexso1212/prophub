@@ -6,6 +6,7 @@ export interface FirmOverride {
   promoCode: string | null;
   promoPercent: number | null;
   promoLabel: string | null;
+  discountPercent: number | null;
 }
 
 type OverridesMap = Record<string, FirmOverride>;

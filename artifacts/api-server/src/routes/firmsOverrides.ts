@@ -55,7 +55,7 @@ router.get("/admin/firms", requireAdmin, async (_req, res) => {
 
 router.patch("/admin/firms/:slug", requireAdmin, async (req, res) => {
   const { slug } = req.params;
-  const { affiliateUrl, promoCode, promoPercent, promoLabel } = req.body;
+  const { affiliateUrl, promoCode, promoPercent, promoLabel, discountPercent } = req.body;
 
   const updateData: Partial<typeof firmOverridesTable.$inferInsert> = {
     updatedAt: new Date(),
@@ -64,6 +64,19 @@ router.patch("/admin/firms/:slug", requireAdmin, async (req, res) => {
   if (promoCode !== undefined) updateData.promoCode = promoCode;
   if (promoPercent !== undefined) updateData.promoPercent = Number(promoPercent);
   if (promoLabel !== undefined) updateData.promoLabel = promoLabel || null;
+  if (discountPercent !== undefined) {
+    if (discountPercent === null || discountPercent === "") {
+      updateData.discountPercent = null;
+    } else {
+      const n = Number(discountPercent);
+      if (!Number.isInteger(n) || n < 0 || n > 100) {
+        return res
+          .status(400)
+          .json({ error: "discountPercent must be an integer between 0 and 100" });
+      }
+      updateData.discountPercent = n;
+    }
+  }
 
   try {
     const existing = await db

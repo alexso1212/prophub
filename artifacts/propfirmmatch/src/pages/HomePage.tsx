@@ -37,7 +37,7 @@ function OfferCard({ f }: { f: Firm }) {
   const overrides = useFirmsOverrides();
   const ov = overrides[f.slug];
   const promoCode = ov?.promoCode ?? f.promoCode;
-  const promoPercent = ov?.promoPercent ?? f.promoPercent;
+  const promoPercent = ov?.discountPercent ?? ov?.promoPercent ?? f.promoPercent;
   const affiliateUrl = ov?.affiliateUrl;
 
   return (
@@ -67,7 +67,7 @@ function PopularCard({ f, place }: { f: Firm; place: 1 | 2 | 3 }) {
   const overrides = useFirmsOverrides();
   const ov = overrides[f.slug];
   const promoCode = ov?.promoCode ?? f.promoCode;
-  const promoPercent = ov?.promoPercent ?? f.promoPercent;
+  const promoPercent = ov?.discountPercent ?? ov?.promoPercent ?? f.promoPercent;
   const trophy = place === 1 ? "🥇" : place === 2 ? "🥈" : "🥉";
   return (
     <div className="popular-card">
@@ -123,7 +123,7 @@ export default function HomePage() {
       <div className="offers-carousel">
         {firms.filter(f => {
           const ov = overrides[f.slug];
-          const pct = ov?.promoPercent ?? f.promoPercent;
+          const pct = ov?.discountPercent ?? ov?.promoPercent ?? f.promoPercent;
           return pct > 0;
         }).slice(0, 8).map(f => <OfferCard key={f.slug} f={f} />)}
       </div>
@@ -167,7 +167,7 @@ export default function HomePage() {
             {sorted.map((f, idx) => {
               const ov = overrides[f.slug];
               const promoCode = ov?.promoCode ?? f.promoCode;
-              const promoPercent = ov?.promoPercent ?? f.promoPercent;
+              const promoPercent = ov?.discountPercent ?? ov?.promoPercent ?? f.promoPercent;
               const affiliateUrl = ov?.affiliateUrl;
               return (
                 <tr key={f.slug}>

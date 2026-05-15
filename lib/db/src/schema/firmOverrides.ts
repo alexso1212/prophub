@@ -8,6 +8,7 @@ export const firmOverridesTable = pgTable("firm_overrides", {
   promoCode: text("promo_code"),
   promoPercent: integer("promo_percent"),
   promoLabel: text("promo_label"),
+  discountPercent: integer("discount_percent"),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });
 
