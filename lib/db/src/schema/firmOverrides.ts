@@ -1,6 +1,4 @@
 import { pgTable, text, integer, timestamp } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod";
 
 export const firmOverridesTable = pgTable("firm_overrides", {
   slug: text("slug").primaryKey(),
@@ -12,6 +10,5 @@ export const firmOverridesTable = pgTable("firm_overrides", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });
 
-export const insertFirmOverrideSchema = createInsertSchema(firmOverridesTable);
-export type InsertFirmOverride = z.infer<typeof insertFirmOverrideSchema>;
 export type FirmOverride = typeof firmOverridesTable.$inferSelect;
+export type InsertFirmOverride = typeof firmOverridesTable.$inferInsert;

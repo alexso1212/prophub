@@ -9,6 +9,8 @@ import { payoutsForFirm } from "../data/payouts";
 import { useFirmOverride } from "../contexts/FirmsOverridesContext";
 import { useFavorites } from "../store/favs";
 import FirmDetailSectionTabs from "../components/FirmDetailSectionTabs";
+import { ReviewButton } from "../components/ReviewModal";
+import { useFirmReviews, formatRelativeZh } from "../hooks/useFirmReviews";
 
 function Stars({ rating }: { rating: number }) {
   const full = Math.round(rating);
@@ -51,6 +53,24 @@ export default function FirmPage() {
   );
   const reviewAgg  = useMemo(() => f ? reviewsForFirm(f.slug) : undefined, [f]);
   const payoutAgg  = useMemo(() => f ? (payoutsForFirm(f.slug) ?? payoutsForFirm(f.name)) : undefined, [f]);
+  const { reviews: userReviews, refresh: refreshReviews } = useFirmReviews(f?.slug);
+
+  const userReviewStats = useMemo(() => {
+    if (!f) return null;
+    const seedCount = f.reviews ?? 0;
+    const seedAvg = f.rating ?? 0;
+    const userCount = userReviews.length;
+    const userSum = userReviews.reduce((s, r) => s + r.rating, 0);
+    const totalCount = seedCount + userCount;
+    const avg = totalCount > 0 ? (seedAvg * seedCount + userSum) / totalCount : 0;
+    const histogram = [5, 4, 3, 2, 1].map(stars => {
+      const seed = f.reviewsBreakdown?.find(b => b.stars === stars)?.count
+        ?? Math.round((f.totalReviews ?? 0) * (stars === 5 ? 0.7 : stars === 4 ? 0.18 : stars === 3 ? 0.06 : 0.03));
+      const user = userReviews.filter(r => r.rating === stars).length;
+      return { stars, count: seed + user };
+    });
+    return { totalCount, avg, histogram, userCount };
+  }, [f, userReviews]);
 
   if (!f) {
     return (
@@ -113,7 +133,7 @@ export default function FirmPage() {
           {isFav ? "♥ 已收藏" : "♡ 加入收藏"}
         </button>
         <div className="detail-actions">
-          <button className="btn-outline">写一条评价</button>
+          <ReviewButton slug={f.slug} firmName={f.name} onReviewsChanged={refreshReviews} />
           <BuyButton />
         </div>
       </div>
@@ -136,16 +156,27 @@ export default function FirmPage() {
             <div className="item"><div className="label">经营年数</div><div className="val">{f.yearsInOperation} 年</div></div>
           </div>
         </div>
-        {f.rating && (
+        {(f.rating || (userReviewStats && userReviewStats.userCount > 0)) && (
           <div className="review-box">
             <div>
-              <div className="big">{f.rating}</div>
-              <Stars rating={f.rating} />
+              <div className="big">{userReviewStats ? userReviewStats.avg.toFixed(1) : f.rating}</div>
+              <Stars rating={userReviewStats ? userReviewStats.avg : (f.rating ?? 0)} />
               <div style={{ fontSize: 11, color: "var(--text-dim)", marginTop: 4 }}>
-                共 <span style={{ color: "var(--orange)" }}>{f.totalReviews}</span> 条评价
+                共 <span style={{ color: "var(--orange)" }}>{userReviewStats ? userReviewStats.totalCount : f.totalReviews}</span> 条评价
               </div>
             </div>
-            <ReviewBars f={f} />
+            <div className="review-bars">
+              {(userReviewStats?.histogram ?? f.reviewsBreakdown ?? []).map(b => {
+                const total = (userReviewStats?.histogram ?? f.reviewsBreakdown ?? []).reduce((a, x) => a + x.count, 0) || 1;
+                return (
+                  <div key={b.stars} className="bar-row">
+                    <span className="star">{b.stars}★</span>
+                    <div className="bar-track"><div className="bar-fill" style={{ width: `${(b.count / total) * 100}%` }} /></div>
+                    <span style={{ color: "var(--text-dim)" }}>{b.count}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
@@ -187,7 +218,7 @@ export default function FirmPage() {
         tabs={[
           { id: "firm-overview", label: "概览" },
           { id: "firm-challenges", label: "挑战赛", count: f.challenges?.length ?? 12 },
-          { id: "firm-reviews", label: "评价", count: f.reviews },
+          { id: "firm-reviews", label: "评价", count: (f.reviews ?? 0) + userReviews.length },
           { id: "firm-offers", label: "优惠", count: promoPercent > 0 ? 2 : 0 },
           { id: "firm-payouts", label: "出金", count: "新", countTone: "purple" },
         ]}
@@ -348,7 +379,32 @@ export default function FirmPage() {
 
           <section id="firm-reviews" className="firm-anchor-section">
             <section className="detail-section" style={{ borderTop: "none", marginTop: 0, paddingTop: 0 }}>
-              <h2>{f.name} 用户评价（{f.reviews}）</h2>
+              <h2>{f.name} 用户评价（{(f.reviews ?? 0) + userReviews.length}）</h2>
+
+              {userReviews.length > 0 && (
+                <div className="user-reviews-list">
+                  <h3 style={{ fontSize: 16, margin: "0 0 12px" }}>真实用户评价</h3>
+                  {userReviews.map(r => (
+                    <div key={r.id} className="user-review-card">
+                      <div className="urc-head">
+                        {r.userAvatar
+                          ? <img src={r.userAvatar} alt="" className="urc-avatar" />
+                          : <div className="urc-avatar urc-avatar-fallback">{r.userName.slice(0, 1).toUpperCase()}</div>}
+                        <div className="urc-meta">
+                          <div className="urc-name">{r.userName}</div>
+                          <div className="urc-stars">
+                            {"★".repeat(r.rating)}<span className="urc-stars-empty">{"★".repeat(5 - r.rating)}</span>
+                            <span className="urc-time"> · {formatRelativeZh(r.createdAt)}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="urc-title">{r.title}</div>
+                      <p className="urc-body">{r.body}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {reviewAgg ? (
                 <>
                   <p style={{ color: "var(--text-dim)" }}>

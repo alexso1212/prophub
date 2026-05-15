@@ -70,9 +70,10 @@ router.patch("/admin/firms/:slug", requireAdmin, async (req, res) => {
     } else {
       const n = Number(discountPercent);
       if (!Number.isInteger(n) || n < 0 || n > 100) {
-        return res
+        res
           .status(400)
           .json({ error: "discountPercent must be an integer between 0 and 100" });
+        return;
       }
       updateData.discountPercent = n;
     }
