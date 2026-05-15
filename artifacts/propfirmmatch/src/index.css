@@ -1126,3 +1126,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: var(--radius);
 }
 .news-error { color: #ff6a8a; }
+
+/* brand subtitle for firm names */
+.brand-zh-sub { display:block; font-size:11px; color:var(--text-dim); font-weight:400; margin-top:1px; letter-spacing:0; }
+.brand-zh-inline { color:var(--text-dim); font-weight:400; font-size:0.78em; margin-left:6px; }

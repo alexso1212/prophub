@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { firms } from "../data/firms";
+import { getBrandZh } from "../data/brandZh";
 
 export default function BestSellersPage() {
   const ranked = [...firms]
@@ -20,7 +21,7 @@ export default function BestSellersPage() {
               <div className="trophy">{trophy}</div>
               <Link href={`/futures/prop-firms/${f.slug}`}>
                 <div className="logo-wrap"><img src={f.logo} alt={f.name} /></div>
-                <div className="name">{f.name}</div>
+                <div className="name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
               </Link>
               <div className="meta">
                 {f.rating && <span>★ {f.rating}</span>}
@@ -56,7 +57,7 @@ export default function BestSellersPage() {
                       <Link href={`/futures/prop-firms/${f.slug}`} className="firm-logo-sm">
                         <img src={f.logo} alt={f.name} />
                       </Link>
-                      <Link href={`/futures/prop-firms/${f.slug}`} className="firm-name-link">{f.name}</Link>
+                      <Link href={`/futures/prop-firms/${f.slug}`} className="firm-name-link">{f.name}</Link>{getBrandZh(f.slug) && <div className="brand-zh-sub">{getBrandZh(f.slug)}</div>}
                     </div>
                   </td>
                   <td><span className="num">{f.rating ?? "—"}</span></td>

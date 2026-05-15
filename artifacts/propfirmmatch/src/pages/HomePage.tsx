@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { useMemo, useState } from "react";
 import { firms, Firm } from "../data/firms";
 import { findFirmZh } from "../data/firms.zh";
+import { getBrandZh } from "../data/brandZh";
 import NewsFeed from "../components/NewsFeed";
 
 function Stars({ rating }: { rating: number }) {
@@ -15,7 +16,7 @@ function OfferCard({ f }: { f: Firm }) {
     <Link href={`/futures/prop-firms/${f.slug}`} className="offer-card">
       {f.isNew && <span className="offer-new-pill">新</span>}
       <div className="offer-logo"><img src={f.logo} alt={f.name} /></div>
-      <div className="offer-name">{f.name}</div>
+      <div className="offer-name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
       <div className="offer-rating">
         {f.rating ? <><Stars rating={f.rating} /> <span>{f.rating}</span></> : <span>评价不足 10 条</span>}
       </div>
@@ -41,7 +42,7 @@ function PopularCard({ f, place }: { f: Firm; place: 1 | 2 | 3 }) {
       <div className="trophy">{trophy}</div>
       <Link href={`/futures/prop-firms/${f.slug}`}>
         <div className="logo-wrap"><img src={f.logo} alt={f.name} /></div>
-        <div className="name">{f.name}</div>
+        <div className="name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
       </Link>
       <div className="meta">
         {f.rating && <span>★ {f.rating}</span>}
@@ -137,6 +138,7 @@ export default function HomePage() {
                     </Link>
                     <div>
                       <Link href={`/futures/prop-firms/${f.slug}`} className="firm-name-link">{f.name}</Link>
+                      {getBrandZh(f.slug) && <div className="brand-zh-sub">{getBrandZh(f.slug)}</div>}
                       <div className="firm-id">{f.trackingId}</div>
                     </div>
                   </div>

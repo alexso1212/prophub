@@ -2,6 +2,7 @@ import { Link, useParams } from "wouter";
 import { useState, useMemo } from "react";
 import { findFirm, Firm, enrichChallenge } from "../data/firms";
 import { findFirmZh } from "../data/firms.zh";
+import { getBrandZh } from "../data/brandZh";
 import { reviewsForFirm } from "../data/reviews";
 import { payoutsForFirm } from "../data/payouts";
 
@@ -81,7 +82,7 @@ export default function FirmPage() {
           <img src={f.logo} alt={f.name} />
         </div>
         <div className="hero-info">
-          <h1>{f.name}</h1>
+          <h1>{f.name}{getBrandZh(f.slug) && <span style={{ fontSize: 16, color: "var(--text-dim)", fontWeight: 400, marginLeft: 10 }}>· {getBrandZh(f.slug)}</span>}</h1>
           <div className="hero-likes">♡ {f.trackingId}</div>
           <div className="hero-meta">
             {f.ceo && <div className="item"><div className="label">创始人</div><div className="val">{f.ceo}</div></div>}

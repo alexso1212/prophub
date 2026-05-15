@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { firms } from "../data/firms";
+import { getBrandZh } from "../data/brandZh";
 
 const KEY = "pfm-favorites";
 
@@ -40,7 +41,7 @@ export default function FavoritesPage() {
               <div className="trophy">{["★","★","★"][i]}</div>
               <Link href={`/futures/prop-firms/${f.slug}`}>
                 <div className="logo-wrap"><img src={f.logo} alt={f.name} /></div>
-                <div className="name">{f.name}</div>
+                <div className="name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
               </Link>
               <div className="meta">
                 {f.rating && <span>★ {f.rating}</span>}
@@ -67,7 +68,7 @@ export default function FavoritesPage() {
               </button>
               <Link href={`/futures/prop-firms/${f.slug}`}>
                 <div className="offer-logo"><img src={f.logo} alt={f.name} /></div>
-                <div className="offer-name">{f.name}</div>
+                <div className="offer-name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
                 <div className="offer-rating">
                   {f.rating ? <span>★ {f.rating}</span> : <span>新上线</span>}
                 </div>
