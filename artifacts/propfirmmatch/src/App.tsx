@@ -20,6 +20,7 @@ import SimplePage from "./pages/SimplePage";
 import GiveawaysPage from "./pages/GiveawaysPage";
 import CareersPage from "./pages/CareersPage";
 import TutorialsPage from "./pages/TutorialsPage";
+import GoPage from "./pages/GoPage";
 import AdminFirmsPage from "./pages/AdminFirmsPage";
 import { FirmsOverridesProvider } from "./contexts/FirmsOverridesContext";
 import { CategoryProvider, type Category } from "./contexts/CategoryContext";
@@ -203,6 +204,7 @@ function Router({ clerkEnabled }: { clerkEnabled: boolean }) {
         <Route path="/crypto/giveaways" component={GiveawaysPage} />
         <Route path="/careers" component={CareersPage} />
         <Route path="/tutorials" component={TutorialsPage} />
+        <Route path="/go/:slug" component={GoPage} />
 
         <Route path="/search" component={SearchPage} />
 

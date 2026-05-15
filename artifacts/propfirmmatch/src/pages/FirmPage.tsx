@@ -92,21 +92,14 @@ export default function FirmPage() {
   const leverageZh = zh?.leverageZh && zh.leverageZh.length > 0 ? zh.leverageZh : f.leverage;
   const consistencyZh = zh?.consistencyRulesZh && zh.consistencyRulesZh.length > 0 ? zh.consistencyRulesZh : f.consistencyRules;
 
-  const affiliateUrl = override?.affiliateUrl;
   const promoCode = override?.promoCode ?? f.promoCode;
   const promoPercent = override?.discountPercent ?? override?.promoPercent ?? f.promoPercent;
   const promoLabel = override?.promoLabel ?? f.promoLabel;
+  const goHref = `/go/${f.slug}`;
 
-  const BuyButton = ({ className }: { className?: string }) => {
-    if (affiliateUrl) {
-      return (
-        <a href={affiliateUrl} target="_blank" rel="noopener sponsored nofollow" className={className ?? "btn-buy"}>
-          立即购买
-        </a>
-      );
-    }
-    return <button className={className ?? "btn-buy"}>立即购买</button>;
-  };
+  const BuyButton = ({ className }: { className?: string }) => (
+    <Link href={goHref} className={className ?? "btn-buy"}>立即购买</Link>
+  );
 
   return (
     <main className="container">
@@ -367,13 +360,9 @@ export default function FirmPage() {
                     <div key={i} className="challenge-card">
                       <div className="cc-head">
                         <div className="cc-title">
-                          {affiliateUrl ? (
-                            <a href={affiliateUrl} target="_blank" rel="noopener sponsored nofollow" style={{ color: "inherit", textDecoration: "none" }}>
-                              {programZh(c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`)}
-                            </a>
-                          ) : (
-                            programZh(c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`)
-                          )}
+                          <Link href={goHref} style={{ color: "inherit", textDecoration: "none" }}>
+                            {programZh(c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`)}
+                          </Link>
                         </div>
                         <div className="cc-prices">
                           {c.original && <span className="original">{c.original}</span>}

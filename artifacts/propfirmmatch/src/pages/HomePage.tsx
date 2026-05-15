@@ -13,22 +13,15 @@ function Stars({ rating }: { rating: number }) {
   return <span className="stars">{"★".repeat(full)}{"☆".repeat(5 - full)}</span>;
 }
 
-function CtaButton({ f, overrideUrl, className, children, prefix }: {
+function CtaButton({ f, className, children }: {
   f: Firm;
   overrideUrl?: string | null;
   className?: string;
   children: React.ReactNode;
   prefix: string;
 }) {
-  if (overrideUrl) {
-    return (
-      <a href={overrideUrl} target="_blank" rel="noopener sponsored nofollow" className={className}>
-        {children}
-      </a>
-    );
-  }
   return (
-    <Link href={`${prefix}/prop-firms/${f.slug}`} className={className}>
+    <Link href={`/go/${f.slug}`} className={className}>
       {children}
     </Link>
   );
@@ -40,10 +33,9 @@ function OfferCard({ f, prefix }: { f: Firm; prefix: string }) {
   const ov = overrides[f.slug];
   const promoCode = ov?.promoCode ?? f.promoCode;
   const promoPercent = ov?.discountPercent ?? ov?.promoPercent ?? f.promoPercent;
-  const affiliateUrl = ov?.affiliateUrl;
 
   return (
-    <CtaButton f={f} overrideUrl={affiliateUrl} className="offer-card" prefix={prefix}>
+    <CtaButton f={f} className="offer-card" prefix={prefix}>
       {f.isNew && <span className="offer-new-pill">新</span>}
       <div className="offer-logo"><img src={f.logo} alt={f.name} /></div>
       <div className="offer-name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
@@ -184,7 +176,6 @@ export default function HomePage() {
               const ov = overrides[f.slug];
               const promoCode = ov?.promoCode ?? f.promoCode;
               const promoPercent = ov?.discountPercent ?? ov?.promoPercent ?? f.promoPercent;
-              const affiliateUrl = ov?.affiliateUrl;
               return (
                 <tr key={f.slug}>
                   <td>
@@ -229,11 +220,7 @@ export default function HomePage() {
                     ) : <span style={{ color: "var(--text-muted)" }}>—</span>}
                   </td>
                   <td>
-                    {affiliateUrl ? (
-                      <a href={affiliateUrl} target="_blank" rel="noopener sponsored nofollow" className="btn-firm">Firm</a>
-                    ) : (
-                      <Link href={`${prefix}/prop-firms/${f.slug}`} className="btn-firm">详情</Link>
-                    )}
+                    <Link href={`/go/${f.slug}`} className="btn-firm">Firm</Link>
                   </td>
                 </tr>
               );
