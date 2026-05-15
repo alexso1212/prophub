@@ -62,10 +62,10 @@ export default function Layout({ children }: { children: ReactNode }) {
         </div>
 
         <div className="header-right">
-          <button className="btn-pill"><span className="dot" />招聘中</button>
-          <button className="btn-pill">📚 教程</button>
-          <button className="btn-pill">登录</button>
-          <button className="btn-pill primary">注册</button>
+          <a className="btn-pill hide-on-mobile" href="https://propfirmmatch.com/careers" target="_blank" rel="noreferrer"><span className="dot" />招聘中</a>
+          <a className="btn-pill hide-on-mobile" href="https://propfirmmatch.com/tutorials" target="_blank" rel="noreferrer">📚 教程</a>
+          <Link href="/sign-in" className="btn-pill">登录</Link>
+          <Link href="/sign-up" className="btn-pill primary">注册</Link>
         </div>
       </header>
 
