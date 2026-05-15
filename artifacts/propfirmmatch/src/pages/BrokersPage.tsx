@@ -37,9 +37,12 @@ export default function BrokersPage() {
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
               {b.firms.map(f => (
-                <Link key={f.slug} href={`/futures/prop-firms/${f.slug}`} className="kv-chip" title={getBrandZh(f.slug) || ""}>
+                <Link key={f.slug} href={`/futures/prop-firms/${f.slug}`} className="kv-chip">
                   <img src={f.logo} alt={f.name} style={{ width: 16, height: 16, objectFit: "contain" }} />
-                  {f.name}
+                  <span>
+                    {f.name}
+                    {getBrandZh(f.slug) && <span className="brand-zh-inline" style={{ marginLeft: 4 }}>· {getBrandZh(f.slug)}</span>}
+                  </span>
                 </Link>
               ))}
             </div>

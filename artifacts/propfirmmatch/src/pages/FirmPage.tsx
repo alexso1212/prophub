@@ -3,7 +3,7 @@ import { useState, useMemo } from "react";
 import { findFirm, Firm, enrichChallenge } from "../data/firms";
 import { findFirmZh } from "../data/firms.zh";
 import { getBrandZh } from "../data/brandZh";
-import { countryZh } from "../data/i18nZh";
+import { countryZh, medianZh, programZh } from "../data/i18nZh";
 import { reviewsForFirm } from "../data/reviews";
 import { payoutsForFirm } from "../data/payouts";
 
@@ -251,7 +251,7 @@ export default function FirmPage() {
                   <h2>挑战赛列表</h2>
                   {f.challenges.map((c, i) => (
                     <div key={i} className="challenge-row">
-                      <span className="name">{c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`}</span>
+                      <span className="name">{programZh(c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`)}</span>
                       {c.original && <span className="original">{c.original}</span>}
                       <span className="price">{c.price}</span>
                     </div>
@@ -269,7 +269,7 @@ export default function FirmPage() {
                   {enrichedChallenges.map((c, i) => (
                     <div key={i} className="challenge-card">
                       <div className="cc-head">
-                        <div className="cc-title">{c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`}</div>
+                        <div className="cc-title">{programZh(c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`)}</div>
                         <div className="cc-prices">
                           {c.original && <span className="original">{c.original}</span>}
                           <span className="price">{c.price}</span>
@@ -277,7 +277,7 @@ export default function FirmPage() {
                       </div>
                       <div className="cc-grid">
                         <div><label>账户规模</label><span>{c.accountSize ?? "—"}</span></div>
-                        <div><label>项目类型</label><span>{c.programType ?? "—"}</span></div>
+                        <div><label>项目类型</label><span>{c.programType ? programZh(c.programType) : "—"}</span></div>
                         <div><label>盈利目标</label><span>{c.profitTarget ?? "—"}</span></div>
                         <div><label>最大回撤</label><span>{c.drawdown ?? "—"}</span></div>
                         <div><label>重置费用</label><span>{c.resetPrice ?? "—"}</span></div>
@@ -359,7 +359,7 @@ export default function FirmPage() {
                   <div className="ps-card"><label>出金笔数</label><span>{payoutAgg.count.toLocaleString()}</span></div>
                   <div className="ps-card"><label>最大单笔出金</label><span>${payoutAgg.largest.toLocaleString()}</span></div>
                   <div className="ps-card"><label>平均出金额</label><span>${payoutAgg.avg.toLocaleString()}</span></div>
-                  <div className="ps-card ps-wide"><label>到账时间中位数</label><span>{payoutAgg.median}</span></div>
+                  <div className="ps-card ps-wide"><label>到账时间中位数</label><span>{medianZh(payoutAgg.median)}</span></div>
                 </div>
               ) : (
                 <p style={{ color: "var(--text-dim)" }}>
