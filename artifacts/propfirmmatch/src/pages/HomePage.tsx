@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { useMemo, useState } from "react";
 import { firms, Firm } from "../data/firms";
+import NewsFeed from "../components/NewsFeed";
 
 function Stars({ rating }: { rating: number }) {
   const full = Math.round(rating);
@@ -73,6 +74,8 @@ export default function HomePage() {
 
   return (
     <main className="container">
+      <NewsFeed limit={8} />
+
       <div className="section-title">
         <span className="icon">✨</span> Exclusive May Futures Offers
       </div>

@@ -12,6 +12,7 @@ const NAV = [
   { to: "/futures/payouts", label: "Payouts" },
   { to: "/futures/payouts-leaderboard", label: "Trader Leaderboard" },
   { to: "/futures/brokers", label: "Brokers" },
+  { to: "/futures/news", label: "新闻" },
 ];
 
 export default function Layout({ children }: { children: ReactNode }) {

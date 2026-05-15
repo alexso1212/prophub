@@ -11,6 +11,7 @@ import RulesPage from "./pages/RulesPage";
 import PayoutsPage from "./pages/PayoutsPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import BrokersPage from "./pages/BrokersPage";
+import NewsPage from "./pages/NewsPage";
 import SimplePage from "./pages/SimplePage";
 
 function Router() {
@@ -43,6 +44,8 @@ function Router() {
       <Route path="/futures/leaderboard" component={LeaderboardPage} />
 
       <Route path="/futures/brokers" component={BrokersPage} />
+
+      <Route path="/futures/news" component={NewsPage} />
 
       <Route>
         <SimplePage title="Page not found" body="The page you're looking for doesn't exist." />
