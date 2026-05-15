@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { firms } from "../data/firms";
 import { getBrandZh } from "../data/brandZh";
+import { programZh } from "../data/i18nZh";
 
 export default function BestSellersPage() {
   const ranked = [...firms]
@@ -61,7 +62,7 @@ export default function BestSellersPage() {
                     </div>
                   </td>
                   <td><span className="num">{f.rating ?? "—"}</span></td>
-                  <td>{top?.name || "—"}</td>
+                  <td>{top?.name ? programZh(top.name) : "—"}</td>
                   <td style={{ color: "var(--orange)", fontWeight: 700 }}>{top?.price || "—"}</td>
                   <td>{f.promoPercent > 0 ? <span className="promo-discount">{f.promoPercent}% 折扣</span> : "—"}</td>
                   <td><Link href={`/futures/prop-firms/${f.slug}`} className="btn-firm">查看</Link></td>
