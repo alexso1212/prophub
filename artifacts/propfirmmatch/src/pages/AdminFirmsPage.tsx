@@ -10,6 +10,25 @@ interface FirmOverride {
   promoPercent: number | null;
   promoLabel: string | null;
   discountPercent: number | null;
+  updatedAt: string | null;
+}
+
+function formatRelativeTime(iso: string | null): string {
+  if (!iso) return "—";
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return "—";
+  const diffSec = Math.round((Date.now() - then) / 1000);
+  if (diffSec < 60) return "just now";
+  const mins = Math.round(diffSec / 60);
+  if (mins < 60) return `${mins} minute${mins === 1 ? "" : "s"} ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+  const days = Math.round(hours / 24);
+  if (days < 30) return `${days} day${days === 1 ? "" : "s"} ago`;
+  const months = Math.round(days / 30);
+  if (months < 12) return `${months} month${months === 1 ? "" : "s"} ago`;
+  const years = Math.round(days / 365);
+  return `${years} year${years === 1 ? "" : "s"} ago`;
 }
 
 interface EditState {
@@ -140,6 +159,8 @@ function FirmsTable() {
   const filteredFirms = localFirms.filter((f) =>
     f.name.toLowerCase().includes(search.toLowerCase()),
   );
+  const overridesBySlug: Record<string, FirmOverride> = {};
+  for (const o of overrides) overridesBySlug[o.slug] = o;
 
   if (error) {
     return (
@@ -192,6 +213,7 @@ function FirmsTable() {
                 <th style={{ width: 100 }}>Display Discount %</th>
                 <th style={{ width: 90 }}>Promo %</th>
                 <th style={{ width: 120 }}>Label</th>
+                <th style={{ width: 110 }}>Last updated</th>
                 <th style={{ width: 80 }}>Action</th>
               </tr>
             </thead>
@@ -265,6 +287,9 @@ function FirmsTable() {
                         onChange={(e) => handleChange(firm.slug, "promoLabel", e.target.value)}
                         style={{ ...inputStyle, width: 100 }}
                       />
+                    </td>
+                    <td style={{ color: "var(--text-dim)", fontSize: 12, whiteSpace: "nowrap" }}>
+                      {formatRelativeTime(overridesBySlug[firm.slug]?.updatedAt ?? null)}
                     </td>
                     <td>
                       <button
