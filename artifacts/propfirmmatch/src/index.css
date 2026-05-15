@@ -978,3 +978,23 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 @media (max-width: 768px) {
   .offer-row { grid-template-columns: 1fr; gap: 6px; }
 }
+
+/* ============== Firm detail: review category bars ============== */
+.review-cats { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.cat-row { display: grid; grid-template-columns: 140px 1fr 36px; gap: 12px; align-items: center; }
+.cat-row .cat-label { color: var(--text-dim); font-size: 13px; }
+.cat-row .cat-val { color: var(--orange); font-weight: 700; font-size: 13px; text-align: right; }
+
+/* ============== Firm detail: payout stats ============== */
+.payout-stats {
+  display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px;
+}
+.payout-stats .ps-wide { grid-column: span 2; }
+@media (max-width: 768px) { .payout-stats { grid-template-columns: 1fr 1fr; } .payout-stats .ps-wide { grid-column: span 2; } }
+.ps-card {
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.ps-card label { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+.ps-card span { font-weight: 700; font-size: 18px; }

@@ -2,7 +2,6 @@ import { Link, useParams } from "wouter";
 import { useState, useMemo } from "react";
 import { findFirm, Firm, enrichChallenge } from "../data/firms";
 import { reviewsForFirm } from "../data/reviews";
-import { offersForFirm } from "../data/offers";
 import { payoutsForFirm } from "../data/payouts";
 
 function Stars({ rating }: { rating: number }) {
@@ -40,9 +39,8 @@ export default function FirmPage() {
     () => (f?.challenges ?? []).map(c => enrichChallenge(c, f?.promoCode)),
     [f]
   );
-  const reviewList = useMemo(() => f ? reviewsForFirm(f.slug) : [], [f]);
-  const offerList  = useMemo(() => f ? offersForFirm(f.slug)  : [], [f]);
-  const payoutList = useMemo(() => f ? payoutsForFirm(f.name) : [], [f]);
+  const reviewAgg  = useMemo(() => f ? reviewsForFirm(f.slug) : undefined, [f]);
+  const payoutAgg  = useMemo(() => f ? (payoutsForFirm(f.slug) ?? payoutsForFirm(f.name)) : undefined, [f]);
 
   if (!f) {
     return (
@@ -132,7 +130,7 @@ export default function FirmPage() {
           Reviews <span className="count-pill">{f.reviews}</span>
         </button>
         <button className={tab === "offers" ? "active" : ""} onClick={() => setTab("offers")}>
-          Offers <span className="count-pill">{f.promoPercent > 0 ? 2 : 0}</span>
+          Offers <span className="count-pill">{f.promoPercent > 0 && f.promoCode ? 1 : 0}</span>
         </button>
         <button className={tab === "payouts" ? "active" : ""} onClick={() => setTab("payouts")}>
           Payouts <span className="count-pill" style={{ background: "rgba(168,85,247,0.15)", color: "var(--purple)" }}>New</span>
@@ -288,22 +286,38 @@ export default function FirmPage() {
           {tab === "reviews" && (
             <section className="detail-section" style={{ borderTop: "none", marginTop: 0, paddingTop: 0 }}>
               <h2>{f.name} Reviews ({f.reviews})</h2>
-              {reviewList.length > 0 ? (
-                <div className="review-list">
-                  {reviewList.map((r, i) => (
-                    <article key={i} className="review-item">
-                      <div className="ri-head">
-                        <Stars rating={r.rating} />
-                        <span className="ri-meta">{r.author} · {r.country.toUpperCase()} · {r.date}</span>
-                        {r.verifiedPayout && <span className="ri-verified">Verified payout</span>}
+              {reviewAgg ? (
+                <>
+                  <p style={{ color: "var(--text-dim)" }}>
+                    Verified category ratings from {reviewAgg.reviewCount} reviewers across {reviewAgg.accountsTracked.toLocaleString()} tracked accounts. Overall score <strong style={{ color: "var(--orange)" }}>{reviewAgg.overall.toFixed(1)}/5</strong>.
+                  </p>
+                  <div className="review-cats">
+                    {[
+                      { label: "Rules",            v: reviewAgg.rules },
+                      { label: "Customer Care",    v: reviewAgg.customerCare },
+                      { label: "User Friendliness",v: reviewAgg.friendliness },
+                      { label: "Payout Process",   v: reviewAgg.payoutProcess },
+                    ].map(c => (
+                      <div key={c.label} className="cat-row">
+                        <span className="cat-label">{c.label}</span>
+                        <div className="bar-track"><div className="bar-fill" style={{ width: `${(c.v / 5) * 100}%` }} /></div>
+                        <span className="cat-val">{c.v.toFixed(1)}</span>
                       </div>
-                      <h3 className="ri-title">{r.title}</h3>
-                      <p className="ri-body">{r.body}</p>
-                    </article>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                  {f.reviewsBreakdown && f.reviewsBreakdown.length === 5 && (
+                    <>
+                      <h3 style={{ marginTop: 24, fontSize: 16 }}>Star distribution</h3>
+                      <ReviewBars f={f} />
+                    </>
+                  )}
+                </>
               ) : (
-                <p style={{ color: "var(--text-dim)" }}>No reviews yet — be the first to leave one.</p>
+                <p style={{ color: "var(--text-dim)" }}>
+                  {f.reviews > 0
+                    ? `${f.name} has ${f.reviews} verified reviews with an average rating of ${f.rating}/5.`
+                    : `${f.name} has fewer than 10 reviews. Be among the first to leave one.`}
+                </p>
               )}
             </section>
           )}
@@ -311,52 +325,37 @@ export default function FirmPage() {
           {tab === "offers" && (
             <section className="detail-section" style={{ borderTop: "none", marginTop: 0, paddingTop: 0 }}>
               <h2>{f.name} Offers</h2>
-              {offerList.length > 0 ? (
-                <div className="offer-list">
-                  {offerList.map((o, i) => (
-                    <div key={i} className={`offer-row ${o.status}`}>
-                      <div className="of-pct">{o.percent}% OFF</div>
-                      <div className="of-body">
-                        <div className="of-desc">{o.description}</div>
-                        <div className="of-meta">
-                          {o.startDate}{o.endDate ? ` → ${o.endDate}` : " · Active"}
-                        </div>
-                      </div>
-                      <div className="of-code">Code <strong>{o.code}</strong></div>
-                      <span className={`of-status ${o.status}`}>{o.status === "active" ? "Active" : "Expired"}</span>
-                    </div>
-                  ))}
+              {f.promoPercent > 0 && f.promoCode ? (
+                <div className="offer-row active">
+                  <div className="of-pct">{f.promoPercent}% OFF</div>
+                  <div className="of-body">
+                    <div className="of-desc">{f.offerDescription}</div>
+                    <div className="of-meta">Active promo · use at checkout</div>
+                  </div>
+                  <div className="of-code">Code <strong>{f.promoCode}</strong></div>
+                  <span className="of-status active">Active</span>
                 </div>
-              ) : <p style={{ color: "var(--text-dim)" }}>No offers on record for {f.name}.</p>}
+              ) : (
+                <p style={{ color: "var(--text-dim)" }}>No active offer for {f.name} right now.</p>
+              )}
             </section>
           )}
 
           {tab === "payouts" && (
             <section className="detail-section" style={{ borderTop: "none", marginTop: 0, paddingTop: 0 }}>
               <h2>{f.name} Payouts</h2>
-              {payoutList.length > 0 ? (
-                <div className="table-wrap">
-                  <table className="firms-table">
-                    <thead>
-                      <tr><th>Trader</th><th>Country</th><th>Account</th><th>Days</th><th>Method</th><th>Date</th><th style={{ textAlign: "right" }}>Amount</th></tr>
-                    </thead>
-                    <tbody>
-                      {payoutList.map((p, i) => (
-                        <tr key={i}>
-                          <td>{p.trader}</td>
-                          <td>{p.country.toUpperCase()}</td>
-                          <td>{p.account}</td>
-                          <td>{p.days}d</td>
-                          <td>{p.method ?? "—"}</td>
-                          <td>{p.date}</td>
-                          <td style={{ textAlign: "right", fontWeight: 700, color: "var(--orange)" }}>${p.amount.toLocaleString()}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              {payoutAgg ? (
+                <div className="payout-stats">
+                  <div className="ps-card"><label>Total tracked payouts</label><span style={{ color: "var(--orange)" }}>${payoutAgg.total.toLocaleString()}</span></div>
+                  <div className="ps-card"><label>Number of payouts</label><span>{payoutAgg.count.toLocaleString()}</span></div>
+                  <div className="ps-card"><label>Largest single payout</label><span>${payoutAgg.largest.toLocaleString()}</span></div>
+                  <div className="ps-card"><label>Average payout</label><span>${payoutAgg.avg.toLocaleString()}</span></div>
+                  <div className="ps-card ps-wide"><label>Median time to payout</label><span>{payoutAgg.median}</span></div>
                 </div>
               ) : (
-                <p style={{ color: "var(--text-dim)" }}>No verified payouts have been submitted for {f.name} yet.</p>
+                <p style={{ color: "var(--text-dim)" }}>
+                  No payout records tracked for {f.name} on the source page yet.
+                </p>
               )}
             </section>
           )}

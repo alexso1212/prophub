@@ -1,58 +1,175 @@
-// Static payouts dataset modeled after propfirmmatch.com /futures/payouts.
-// Each row represents one verified payout submitted by a funded trader.
-export interface PayoutEntry {
-  trader: string;
-  country: string;     // ISO-2
-  firm: string;        // matches firms[].name
-  account: string;     // e.g. "$150K Growth"
-  amount: number;      // USD
-  days: number;        // days from funding to payout
-  date: string;        // ISO yyyy-mm-dd
-  method?: string;     // payout method
+// Per-firm payout aggregates SCRAPED from
+// https://propfirmmatch.com/futures/payouts
+// Source: clone-data/page-payouts.md, top 15 table rows at lines ~304-318
+// (ATFunded row at line 319 is intentionally excluded; same set the source
+// surfaces in its primary ranking). Source columns mapped 1:1.
+export interface FirmPayoutAggregate {
+  name: string;
+  slug: string;       // source slug; may differ from local firms.ts slug
+  url?: string;       // canonical source URL
+  total: number;      // total tracked payouts USD
+  count: number;      // number of payouts
+  largest: number;    // largest single payout USD
+  avg: number;        // average payout size USD
+  median: string;     // median time to payout (human-readable)
 }
 
-export const payouts: PayoutEntry[] = [
-  { trader: "Marcus J.",  country: "us", firm: "Tradeify",                 account: "$150K Growth",   amount: 24580, days: 18, date: "2026-05-12", method: "Plane" },
-  { trader: "Diego R.",   country: "es", firm: "Apex Trader Funding",      account: "$100K Eval",     amount: 18900, days: 22, date: "2026-05-11", method: "WISE" },
-  { trader: "Sarah W.",   country: "gb", firm: "TradeDay",                 account: "$50K",           amount: 12450, days: 14, date: "2026-05-10", method: "Bank" },
-  { trader: "Yuki T.",    country: "jp", firm: "My Funded Futures",        account: "$150K Express",  amount: 31200, days: 28, date: "2026-05-10", method: "Crypto" },
-  { trader: "Anders L.",  country: "se", firm: "Top One Futures",          account: "$50K",           amount:  9870, days: 11, date: "2026-05-09", method: "Riseworks" },
-  { trader: "Olivia C.",  country: "ca", firm: "Alpha Futures",            account: "$100K",          amount: 22100, days: 19, date: "2026-05-09", method: "Plane" },
-  { trader: "Hassan K.",  country: "ae", firm: "Lucid Trading",            account: "$100K",          amount: 15600, days: 16, date: "2026-05-08", method: "Crypto" },
-  { trader: "Ben P.",     country: "au", firm: "Take Profit Trader",       account: "$50K",           amount:  8400, days:  9, date: "2026-05-08", method: "Bank" },
-  { trader: "Lucas A.",   country: "br", firm: "FundedNext Futures",       account: "$100K Stellar",  amount: 19850, days: 25, date: "2026-05-07", method: "Crypto" },
-  { trader: "Nathan F.",  country: "us", firm: "Topstep",                  account: "$150K Combine",  amount: 27300, days: 31, date: "2026-05-07", method: "Plane" },
-  { trader: "Priya M.",   country: "in", firm: "Goat Funded Futures",      account: "$50K",           amount: 11200, days: 12, date: "2026-05-06", method: "Crypto" },
-  { trader: "Tomás G.",   country: "mx", firm: "Earn2Trade",               account: "$25K Gauntlet",  amount:  6750, days:  8, date: "2026-05-06", method: "WISE" },
-  { trader: "Léa R.",     country: "fr", firm: "FuturesElite",             account: "$100K",          amount: 14300, days: 17, date: "2026-05-05", method: "Bank" },
-  { trader: "Hans M.",    country: "de", firm: "The Trading Pit Futures",  account: "$50K",           amount:  9200, days: 13, date: "2026-05-05", method: "Bank" },
-  { trader: "Chen W.",    country: "sg", firm: "Hola Prime Futures",       account: "$100K",          amount: 13400, days: 15, date: "2026-05-04", method: "Crypto" },
-  { trader: "Ravi P.",    country: "in", firm: "Funded Futures Family",    account: "$50K",           amount:  8900, days: 11, date: "2026-05-04", method: "Crypto" },
-  { trader: "Emma K.",    country: "nl", firm: "E8 Futures",               account: "$100K",          amount: 16200, days: 19, date: "2026-05-03", method: "WISE" },
-  { trader: "Jakub W.",   country: "pl", firm: "Blue Guardian Futures",    account: "$50K",           amount:  7800, days: 10, date: "2026-05-03", method: "Crypto" },
-  { trader: "Sofia D.",   country: "it", firm: "AquaFutures",              account: "$100K",          amount: 12100, days: 14, date: "2026-05-02", method: "Bank" },
-  { trader: "Liam S.",    country: "ie", firm: "Traders Launch",           account: "$50K",           amount:  9400, days: 12, date: "2026-05-02", method: "Bank" },
-  { trader: "Aiko M.",    country: "jp", firm: "Blueberry Futures",        account: "$50K",           amount:  6200, days:  9, date: "2026-05-01", method: "Crypto" },
-  { trader: "Mateo V.",   country: "ar", firm: "Tradeify",                 account: "$50K Lightning", amount:  7100, days: 10, date: "2026-05-01", method: "Plane" },
-  { trader: "Noor H.",    country: "ae", firm: "My Funded Futures",        account: "$100K Express",  amount: 11500, days: 14, date: "2026-04-30", method: "Crypto" },
-  { trader: "Pieter J.",  country: "za", firm: "Apex Trader Funding",      account: "$50K",           amount:  6800, days: 11, date: "2026-04-30", method: "WISE" },
-  { trader: "Felix O.",   country: "no", firm: "TradeDay",                 account: "$100K",          amount: 13700, days: 16, date: "2026-04-29", method: "Bank" },
-  { trader: "Mia C.",     country: "nz", firm: "Top One Futures",          account: "$50K",           amount:  7900, days: 10, date: "2026-04-29", method: "Riseworks" },
-  { trader: "Kenji A.",   country: "jp", firm: "Lucid Trading",            account: "$50K",           amount:  6400, days:  9, date: "2026-04-28", method: "Crypto" },
-  { trader: "Carla B.",   country: "pt", firm: "Topstep",                  account: "$50K Combine",   amount:  8100, days: 12, date: "2026-04-28", method: "Plane" },
-  { trader: "Owen D.",    country: "us", firm: "Alpha Futures",            account: "$50K",           amount:  7300, days: 10, date: "2026-04-27", method: "Plane" },
-  { trader: "Aleksandr V.", country: "ru", firm: "FundedNext Futures",     account: "$50K Stellar",   amount:  6900, days: 11, date: "2026-04-27", method: "Crypto" },
-  { trader: "Bilal A.",   country: "tr", firm: "Goat Funded Futures",      account: "$25K",           amount:  4200, days:  7, date: "2026-04-26", method: "Crypto" },
-  { trader: "Henrik G.",  country: "dk", firm: "Tradeify",                 account: "$25K Select",    amount:  3800, days:  6, date: "2026-04-26", method: "Plane" },
-  { trader: "Pauline T.", country: "be", firm: "FuturesElite",             account: "$50K",           amount:  5900, days:  9, date: "2026-04-25", method: "Bank" },
-  { trader: "Diego F.",   country: "co", firm: "Earn2Trade",               account: "$25K",           amount:  3400, days:  8, date: "2026-04-25", method: "WISE" },
-  { trader: "Vikram S.",  country: "in", firm: "Funded Futures Family",    account: "$25K",           amount:  3100, days:  7, date: "2026-04-24", method: "Crypto" },
-  { trader: "Karim H.",   country: "ma", firm: "Hola Prime Futures",       account: "$50K",           amount:  5600, days:  9, date: "2026-04-24", method: "Crypto" },
-  { trader: "Joshua K.",  country: "us", firm: "Take Profit Trader",       account: "$25K",           amount:  3700, days:  8, date: "2026-04-23", method: "Bank" },
-  { trader: "Daria L.",   country: "ua", firm: "AquaFutures",              account: "$25K",           amount:  2900, days:  7, date: "2026-04-23", method: "Crypto" },
-  { trader: "Theo P.",    country: "gr", firm: "Blue Guardian Futures",    account: "$25K",           amount:  2700, days:  6, date: "2026-04-22", method: "Bank" },
-  { trader: "Iris N.",    country: "fi", firm: "TradeDay",                 account: "$25K",           amount:  2500, days:  6, date: "2026-04-22", method: "Bank" },
+export const PAYOUTS: FirmPayoutAggregate[] = [
+  {
+    "name": "FundingPips",
+    "url": "https://propfirmmatch.com/prop-firms/funding-pips",
+    "slug": "funding-pips",
+    "total": 14039306,
+    "count": 13173,
+    "largest": 53895,
+    "avg": 1066,
+    "median": "about 4 hours"
+  },
+  {
+    "name": "FundedNext",
+    "url": "https://propfirmmatch.com/prop-firms/fundednext",
+    "slug": "fundednext",
+    "total": 5796444,
+    "count": 9274,
+    "largest": 20042,
+    "avg": 625,
+    "median": "6 minutes"
+  },
+  {
+    "name": "FundedNext Futures",
+    "url": "https://propfirmmatch.com/futures/prop-firms/fundednext-futures",
+    "slug": "fundednext-futures",
+    "total": 5353472,
+    "count": 3656,
+    "largest": 16400,
+    "avg": 1464,
+    "median": "about 3 hours"
+  },
+  {
+    "name": "Goat Funded Trader",
+    "url": "https://propfirmmatch.com/prop-firms/goat-funded-trader",
+    "slug": "goat-funded-trader",
+    "total": 1429777,
+    "count": 3151,
+    "largest": 10000,
+    "avg": 454,
+    "median": "2 days"
+  },
+  {
+    "name": "Funded Futures Family",
+    "url": "https://propfirmmatch.com/futures/prop-firms/funded-futures-family",
+    "slug": "funded-futures-family",
+    "total": 1049956,
+    "count": 636,
+    "largest": 3600,
+    "avg": 1651,
+    "median": "1 day"
+  },
+  {
+    "name": "Top One Futures",
+    "url": "https://propfirmmatch.com/futures/prop-firms/top-one-futures",
+    "slug": "top-one-futures",
+    "total": 864555,
+    "count": 689,
+    "largest": 5600,
+    "avg": 1255,
+    "median": "about 8 hours"
+  },
+  {
+    "name": "E8 Markets",
+    "url": "https://propfirmmatch.com/prop-firms/e8-markets",
+    "slug": "e8-markets",
+    "total": 852593,
+    "count": 294,
+    "largest": 70848,
+    "avg": 2900,
+    "median": "about 10 hours"
+  },
+  {
+    "name": "BrightFunded",
+    "url": "https://propfirmmatch.com/prop-firms/brightfunded",
+    "slug": "brightfunded",
+    "total": 639378,
+    "count": 386,
+    "largest": 19272,
+    "avg": 1656,
+    "median": "about 16 hours"
+  },
+  {
+    "name": "E8 Futures",
+    "url": "https://propfirmmatch.com/futures/prop-firms/e8-futures",
+    "slug": "e8-futures",
+    "total": 506831,
+    "count": 387,
+    "largest": 4040,
+    "avg": 1310,
+    "median": "about 19 hours"
+  },
+  {
+    "name": "Crypto Fund Trader",
+    "url": "https://propfirmmatch.com/prop-firms/crypto-fund-trader",
+    "slug": "crypto-fund-trader",
+    "total": 406301,
+    "count": 325,
+    "largest": 17100,
+    "avg": 1250,
+    "median": "about 16 hours"
+  },
+  {
+    "name": "Blueberry Funded",
+    "url": "https://propfirmmatch.com/prop-firms/blueberry-funded",
+    "slug": "blueberry-funded",
+    "total": 397816,
+    "count": 796,
+    "largest": 13771,
+    "avg": 500,
+    "median": "about 20 hours"
+  },
+  {
+    "name": "Finotive Funding",
+    "url": "https://propfirmmatch.com/prop-firms/finotive-funding",
+    "slug": "finotive-funding",
+    "total": 324091,
+    "count": 999,
+    "largest": 4972,
+    "avg": 324,
+    "median": "less than a minute"
+  },
+  {
+    "name": "Hantec Trader",
+    "url": "https://propfirmmatch.com/prop-firms/hantec-trader",
+    "slug": "hantec-trader",
+    "total": 221663,
+    "count": 164,
+    "largest": 11110,
+    "avg": 1352,
+    "median": "about 14 hours"
+  },
+  {
+    "name": "Top One Trader",
+    "url": "https://propfirmmatch.com/prop-firms/top-one-trader",
+    "slug": "top-one-trader",
+    "total": 197664,
+    "count": 151,
+    "largest": 7200,
+    "avg": 1309,
+    "median": "about 5 hours"
+  },
+  {
+    "name": "FundedElite",
+    "url": "https://propfirmmatch.com/prop-firms/fundedelite",
+    "slug": "fundedelite",
+    "total": 142976,
+    "count": 320,
+    "largest": 5485,
+    "avg": 447,
+    "median": "about 23 hours"
+  }
 ];
 
-export const payoutsForFirm = (firmName: string): PayoutEntry[] =>
-  payouts.filter(p => p.firm === firmName);
+export const totalTrackedPayouts = PAYOUTS.reduce((a,b)=>a+b.total,0);
+export const totalPayoutCount    = PAYOUTS.reduce((a,b)=>a+b.count,0);
+
+export function payoutsForFirm(firmName: string): FirmPayoutAggregate | undefined {
+  return PAYOUTS.find(p => p.name === firmName || p.slug === firmName);
+}
