@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { NewsItem, NewsCard } from "../components/NewsFeed";
+import { NewsIcon } from "../components/icons";
 
 type Category = NewsItem["category"] | "all";
 
@@ -35,7 +36,7 @@ export default function NewsPage() {
 
   return (
     <main className="container">
-      <div className="section-title">📰 金融快讯中心</div>
+      <div className="section-title"><NewsIcon size={18} className="icon" /> 金融快讯中心</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 20, maxWidth: 720 }}>
         覆盖外汇、期货、股指、加密四大板块，原始英文快讯经 AI 重写为中文标题、摘要和三条要点，方便快速决策。
       </p>

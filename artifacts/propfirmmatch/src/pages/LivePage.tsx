@@ -1,10 +1,11 @@
 import { useCategoryMeta } from "../contexts/CategoryContext";
+import { TvIcon, PlayIcon } from "../components/icons";
 
 export default function LivePage() {
   const meta = useCategoryMeta();
   return (
     <main className="container">
-      <div className="section-title">🎥 直播间 · {meta.label}</div>
+      <div className="section-title"><TvIcon size={18} className="icon" /> 直播间 · {meta.label}</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 18, maxWidth: 720 }}>
         每天与合作公司联合直播实盘交易、挑战赛策略和复盘讲解。开播时间将通过站内通知和邮件提醒。
       </p>
@@ -41,7 +42,7 @@ export default function LivePage() {
             LIVE
           </div>
           <div style={{ textAlign: "center", color: "var(--text-dim)" }}>
-            <div style={{ fontSize: 48, lineHeight: 1, marginBottom: 12 }}>▶</div>
+            <div style={{ marginBottom: 12, color: "var(--text-muted)" }}><PlayIcon size={56} /></div>
             <div style={{ fontSize: 14 }}>直播流接入中，敬请期待</div>
           </div>
         </div>

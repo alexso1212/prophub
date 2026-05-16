@@ -1,6 +1,10 @@
 import { Link, useLocation } from "wouter";
 import { ReactNode, useEffect, useState, FormEvent } from "react";
 import type { Category } from "../contexts/CategoryContext";
+import {
+  SparkleIcon, SearchIcon, BookIcon, GiftIcon, TvIcon, HeartIcon,
+  ChartIcon, BitcoinIcon,
+} from "./icons";
 
 function buildNav(cat: Category) {
   const p = `/${cat}`;
@@ -62,7 +66,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <>
       <div className="top-bar">
-        <span aria-hidden>✨</span>
+        <SparkleIcon size={14} />
         <span>新一期抽奖活动上线 →</span>
         <Link className="check-now" href={`/${activeCategory}/giveaways`}>立即查看</Link>
       </div>
@@ -92,8 +96,8 @@ export default function Layout({ children }: { children: ReactNode }) {
           <button
             type="submit"
             aria-label="搜索"
-            style={{ background: "none", border: 0, padding: 0, cursor: "pointer", color: "inherit" }}
-          >🔍</button>
+            style={{ background: "none", border: 0, padding: 0, cursor: "pointer", color: "inherit", display: "inline-flex", alignItems: "center" }}
+          ><SearchIcon size={16} /></button>
           <label htmlFor="site-search" className="sr-only" style={{position:"absolute",left:-9999}}>搜索自营公司</label>
           <input
             id="site-search"
@@ -112,7 +116,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
         <div className="header-right">
           <Link className="btn-pill hide-on-mobile" href="/careers"><span className="dot" />招聘中</Link>
-          <Link className="btn-pill hide-on-mobile" href="/tutorials">📚 教程</Link>
+          <Link className="btn-pill hide-on-mobile" href="/tutorials"><BookIcon size={14} /> 教程</Link>
           <Link href="/sign-in" className="btn-pill hide-on-mobile">登录</Link>
           <Link href="/sign-up" className="btn-pill primary">注册</Link>
           <button
@@ -151,10 +155,10 @@ export default function Layout({ children }: { children: ReactNode }) {
             </div>
             <Link className="drawer-link" href="/sign-in">登录账户</Link>
             <Link className="drawer-link" href="/careers"><span className="dot" />招聘中</Link>
-            <Link className="drawer-link" href="/tutorials">📚 教程</Link>
-            <Link className="drawer-link" href={`/${activeCategory}/giveaways`}>🎁 免费抽奖</Link>
-            <Link className="drawer-link" href={`/${activeCategory}/live`}>🎥 直播间</Link>
-            <Link className="drawer-link" href={`/${activeCategory}/favorite-firms`}>♡ 我的收藏</Link>
+            <Link className="drawer-link" href="/tutorials"><BookIcon size={14} /> 教程</Link>
+            <Link className="drawer-link" href={`/${activeCategory}/giveaways`}><GiftIcon size={14} /> 免费抽奖</Link>
+            <Link className="drawer-link" href={`/${activeCategory}/live`}><TvIcon size={14} /> 直播间</Link>
+            <Link className="drawer-link" href={`/${activeCategory}/favorite-firms`}><HeartIcon size={14} /> 我的收藏</Link>
             <div className="drawer-section">板块</div>
             <Link className="drawer-link" href="/forex/all-prop-firms">外汇</Link>
             <Link className="drawer-link" href="/futures/all-prop-firms">期货</Link>
@@ -173,7 +177,10 @@ export default function Layout({ children }: { children: ReactNode }) {
 
       {activeCategory !== "futures" && (
         <div className="demo-banner" role="status">
-          {activeCategory === "forex" ? "📊" : "₿"} {activeCategory === "forex" ? "外汇" : "加密"}版本目前为
+          <span style={{ display: "inline-flex", verticalAlign: "-3px", marginRight: 4 }}>
+            {activeCategory === "forex" ? <ChartIcon size={14} /> : <BitcoinIcon size={14} />}
+          </span>
+          {activeCategory === "forex" ? "外汇" : "加密"}版本目前为
           <strong style={{ margin: "0 4px", color: "var(--orange)" }}>演示数据</strong>
           ，数据持续接入中，结构与功能与期货版完全一致。
         </div>

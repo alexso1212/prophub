@@ -4,6 +4,7 @@ import { Firm, getDiscountedPrices, formatUsd } from "../data/firms";
 import { findFirmZh } from "../data/firms.zh";
 import { getBrandZh } from "../data/brandZh";
 import { firmsForCategory, useCategory, type Category } from "../contexts/CategoryContext";
+import FirmLogo from "../components/FirmLogo";
 
 interface SearchHit {
   firm: Firm;
@@ -22,7 +23,7 @@ function ResultCard({ hit }: { hit: SearchHit }) {
   return (
     <Link href={`/${hit.category}/prop-firms/${f.slug}`} className="offer-card">
       {f.isNew && <span className="offer-new-pill">新</span>}
-      <div className="offer-logo"><img src={f.logo} alt={f.name} /></div>
+      <div className="offer-logo"><FirmLogo src={f.logo} alt={f.name} /></div>
       <div className="offer-name">
         {f.name}
         {getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}

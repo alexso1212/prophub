@@ -1,6 +1,8 @@
 import { Link } from "wouter";
 import { useCategory, useCategoryFirms } from "../contexts/CategoryContext";
 import { getBrandZh } from "../data/brandZh";
+import FirmLogo from "../components/FirmLogo";
+import { GiftIcon } from "../components/icons";
 
 type Giveaway = {
   id: string;
@@ -26,7 +28,7 @@ export default function GiveawaysPage() {
 
   return (
     <main className="container">
-      <div className="section-title">🎁 免费抽奖</div>
+      <div className="section-title"><GiftIcon size={18} className="icon" /> 免费抽奖</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 24, maxWidth: 720 }}>
         每周联合合作公司送出免费评估账户与挑战赛通行证。完成下方任务获取抽奖码，开奖后通过站内信通知。
       </p>
@@ -40,7 +42,7 @@ export default function GiveawaysPage() {
             <div key={g.id} className="rule-card" style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: 18, alignItems: "center" }}>
               {sponsor && (
                 <Link href={`${prefix}/prop-firms/${sponsor.slug}`} className="firm-logo-sm" style={{ width: 56, height: 56 }}>
-                  <img src={sponsor.logo} alt={sponsor.name} />
+                  <FirmLogo src={sponsor.logo} alt={sponsor.name} />
                 </Link>
               )}
               <div>

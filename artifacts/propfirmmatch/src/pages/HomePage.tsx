@@ -5,6 +5,8 @@ import { findFirmZh } from "../data/firms.zh";
 import { getBrandZh } from "../data/brandZh";
 import { countryZh } from "../data/i18nZh";
 import NewsFeed from "../components/NewsFeed";
+import FirmLogo from "../components/FirmLogo";
+import { SparkleIcon, SettingsIcon, HeartIcon, TrophyIcon } from "../components/icons";
 import { useFirmsOverrides } from "../contexts/FirmsOverridesContext";
 import { useCategory, useCategoryFirms, useCategoryMeta } from "../contexts/CategoryContext";
 
@@ -37,7 +39,7 @@ function OfferCard({ f, prefix }: { f: Firm; prefix: string }) {
   return (
     <CtaButton f={f} className="offer-card" prefix={prefix}>
       {f.isNew && <span className="offer-new-pill">新</span>}
-      <div className="offer-logo"><img src={f.logo} alt={f.name} /></div>
+      <div className="offer-logo"><FirmLogo src={f.logo} alt={f.name} /></div>
       <div className="offer-name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
       <div className="offer-rating">
         {f.rating ? <><Stars rating={f.rating} /> <span>{f.rating}</span></> : <span>评价不足 10 条</span>}
@@ -71,12 +73,15 @@ function PopularCard({ f, place, prefix }: { f: Firm; place: 1 | 2 | 3; prefix: 
   const ov = overrides[f.slug];
   const promoCode = ov?.promoCode ?? f.promoCode;
   const promoPercent = ov?.discountPercent ?? ov?.promoPercent ?? f.promoPercent;
-  const trophy = place === 1 ? "🥇" : place === 2 ? "🥈" : "🥉";
+  const cls = place === 1 ? "gold" : place === 2 ? "silver" : "bronze";
   return (
     <div className="popular-card">
-      <div className="trophy">{trophy}</div>
+      <div className={`trophy trophy-${cls}`} aria-label={`第 ${place} 名`}>
+        <TrophyIcon size={22} />
+        <span className="trophy-num">{place}</span>
+      </div>
       <Link href={`${prefix}/prop-firms/${f.slug}`}>
-        <div className="logo-wrap"><img src={f.logo} alt={f.name} /></div>
+        <div className="logo-wrap"><FirmLogo src={f.logo} alt={f.name} /></div>
         <div className="name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
       </Link>
       <div className="meta">
@@ -145,7 +150,7 @@ export default function HomePage() {
   return (
     <main className="container">
       <div className="section-title">
-        <span className="icon">✨</span> 本月{meta.label}专属优惠
+        <SparkleIcon size={18} className="icon" /> 本月{meta.label}专属优惠
       </div>
       <div className="offers-carousel">
         {firms.filter(f => {
@@ -163,16 +168,16 @@ export default function HomePage() {
       </div>
 
       <div className="filter-bar">
-        <button className="filter-pill">⚙ 筛选</button>
+        <button className="filter-pill"><SettingsIcon size={13} /> 筛选</button>
         <button className={`filter-pill ${filter === "popular" ? "active" : ""}`} onClick={() => setFilter("popular")}>人气</button>
-        <button className={`filter-pill ${filter === "favorite" ? "active" : ""}`} onClick={() => setFilter("favorite")}>♡ 收藏 {favorites.length}/3</button>
+        <button className={`filter-pill ${filter === "favorite" ? "active" : ""}`} onClick={() => setFilter("favorite")}><HeartIcon size={13} /> 收藏 {favorites.length}/3</button>
         <button className={`filter-pill ${filter === "new" ? "active" : ""}`} onClick={() => setFilter("new")}>新上线</button>
         <button className={`filter-pill ${filter === "all" ? "active" : ""}`} onClick={() => setFilter("all")}>全部</button>
         <span className="live-tag">数据 1 分钟前更新</span>
       </div>
 
       <div className="firms-count">
-        全部{meta.label}自营公司 <span className="count-pill">{sorted.length}</span>
+        <span>全部{meta.label}自营公司</span> <span className="count-pill">{sorted.length}</span>
       </div>
 
       <div className="table-wrap firms-desktop">
@@ -205,7 +210,7 @@ export default function HomePage() {
                       <RankBadge place={place} />
                       <Link href={`${prefix}/prop-firms/${f.slug}`} className={`firm-logo-sm ${place <= 3 ? `logo-rank-${place}` : ""}`}>
                         {f.isNew && <span className="new-ribbon">新</span>}
-                        <img src={f.logo} alt={f.name} />
+                        <FirmLogo src={f.logo} alt={f.name} />
                       </Link>
                       <div>
                         <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-name-link">{f.name}</Link>
@@ -215,13 +220,14 @@ export default function HomePage() {
                     </div>
                   </td>
                   <td>
-                    <div className="rating-cell">
-                      {f.rating ? (
-                        <><span className="num">{f.rating}</span><span className="reviews">{f.reviews} 条评价</span></>
-                      ) : (
-                        <span className="reviews">少于 10 条评价</span>
-                      )}
-                    </div>
+                    {f.rating ? (
+                      <div className="rating-cell">
+                        <span className="rating-pill">{f.rating}</span>
+                        <span className="reviews">{f.reviews} 条评价</span>
+                      </div>
+                    ) : (
+                      <div className="rating-cell"><span className="reviews">少于 10 条评价</span></div>
+                    )}
                   </td>
                   <td>
                     <div className="country-cell">
@@ -273,7 +279,7 @@ export default function HomePage() {
                   className={`firm-logo-sm ${place <= 3 ? `logo-rank-${place}` : ""}`}
                 >
                   {f.isNew && <span className="new-ribbon">新</span>}
-                  <img src={f.logo} alt={f.name} />
+                  <FirmLogo src={f.logo} alt={f.name} />
                 </Link>
                 <div className="fm-firm-meta">
                   <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-name-link">{f.name}</Link>
@@ -310,7 +316,7 @@ export default function HomePage() {
                     <td>
                       <div className="rating-cell">
                         {f.rating ? (
-                          <><span className="num">{f.rating}</span><span className="reviews">{f.reviews}</span></>
+                          <><span className="rating-pill">{f.rating}</span><span className="reviews">{f.reviews}</span></>
                         ) : <span className="reviews">&lt;10</span>}
                       </div>
                     </td>

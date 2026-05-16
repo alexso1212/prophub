@@ -12,6 +12,8 @@ import FirmDetailSectionTabs from "../components/FirmDetailSectionTabs";
 import { ReviewButton } from "../components/ReviewModal";
 import { useFirmReviews, formatRelativeZh } from "../hooks/useFirmReviews";
 import { useCategory, useCategoryFirms, useCategoryMeta } from "../contexts/CategoryContext";
+import FirmLogo from "../components/FirmLogo";
+import { ArrowLeftIcon, HeartIcon, FlameIcon, ClipboardIcon, SparkleIcon } from "../components/icons";
 
 function Stars({ rating }: { rating: number }) {
   const full = Math.round(rating);
@@ -115,9 +117,9 @@ export default function FirmPage() {
               window.location.href = `${import.meta.env.BASE_URL}${category}/all-prop-firms`;
             }
           }}
-        >←</button>
+        ><ArrowLeftIcon size={16} /></button>
         <div className="firm-pill">
-          <img src={f.logo} alt={f.name} />
+          <FirmLogo src={f.logo} alt={f.name} />
           <span>{f.name}</span>
           <span style={{ color: "var(--text-dim)" }}>▾</span>
         </div>
@@ -128,7 +130,7 @@ export default function FirmPage() {
           aria-label={isFav ? "移除收藏" : "加入收藏"}
           onClick={() => favorites.toggle(f.slug)}
         >
-          {isFav ? "♥ 已收藏" : "♡ 加入收藏"}
+          <HeartIcon size={13} filled={isFav} /> {isFav ? "已收藏" : "加入收藏"}
         </button>
         <div className="detail-actions">
           <ReviewButton slug={f.slug} firmName={f.name} onReviewsChanged={refreshReviews} />
@@ -139,11 +141,11 @@ export default function FirmPage() {
       <div className="detail-hero">
         <div className="hero-logo">
           {f.isNew && <span className="new-tag-overlay">新</span>}
-          <img src={f.logo} alt={f.name} />
+          <FirmLogo src={f.logo} alt={f.name} />
         </div>
         <div className="hero-info">
           <h1>{f.name}{getBrandZh(f.slug) && <span className="brand-zh-inline" style={{ fontSize: 16, color: "var(--text-dim)", fontWeight: 400, marginLeft: 10 }}>· {getBrandZh(f.slug)}</span>}</h1>
-          <div className="hero-likes">♡ {f.trackingId}</div>
+          <div className="hero-likes"><HeartIcon size={12} /> {f.trackingId}</div>
           <div className="hero-meta">
             {f.ceo && <div className="item"><div className="label">创始人</div><div className="val">{f.ceo}</div></div>}
             <div className="item"><div className="label">注册地</div>
@@ -182,7 +184,7 @@ export default function FirmPage() {
       {promoPercent > 0 && (
         <div className="offer-banner">
           <div className="left">
-            <span className="badge">🔥 限时优惠</span>
+            <span className="badge"><FlameIcon size={13} /> 限时优惠</span>
             <span className="pct">{promoPercent}% 折扣</span>
             {(() => {
               const prices = getDiscountedPrices(f, promoPercent);
@@ -197,7 +199,7 @@ export default function FirmPage() {
           <div className="firm-mini">
             <div className="firm-logo-sm" style={{ width: 40, height: 40 }}>
               {f.isNew && <span className="new-tag-overlay">新</span>}
-              <img src={f.logo} alt="" />
+              <FirmLogo src={f.logo} alt={f.name} />
             </div>
             <div>
               <div style={{ fontWeight: 600 }}>{f.name}</div>
@@ -207,7 +209,7 @@ export default function FirmPage() {
           <div className="desc">{offerDescZh}</div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {promoLabel && <span className="code-pill" style={{ background: "rgba(168,85,247,0.15)", color: "var(--purple)" }}>{promoLabel}</span>}
-            <div className="code-pill">优惠码 <strong>{promoCode} 📋</strong></div>
+            <div className="code-pill">优惠码 <strong>{promoCode}</strong> <ClipboardIcon size={12} /></div>
           </div>
         </div>
       )}
@@ -238,7 +240,7 @@ export default function FirmPage() {
         <div>
           <section id="firm-overview" className="firm-anchor-section">
             <div className="ai-summary-card">
-                <span className="ai-tag">✨ AI 简介</span>
+                <span className="ai-tag"><SparkleIcon size={12} /> AI 简介</span>
                 <h3>{f.name} 公司速览</h3>
                 <p>
                   {summaryExpanded || summaryZh.length <= 380

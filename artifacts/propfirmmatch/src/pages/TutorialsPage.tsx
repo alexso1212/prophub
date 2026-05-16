@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { useCategory } from "../contexts/CategoryContext";
+import { BookIcon } from "../components/icons";
 
 type Tutorial = {
   id: string;
@@ -28,7 +29,7 @@ export default function TutorialsPage() {
 
   return (
     <main className="container">
-      <div className="section-title">📚 教程中心</div>
+      <div className="section-title"><BookIcon size={18} className="icon" /> 教程中心</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 24, maxWidth: 720 }}>
         从零基础到专家级，一站学习自营交易的全流程：挑战赛选择、通关策略、风险管理与出金技巧。
       </p>

@@ -2,6 +2,8 @@ import { Link } from "wouter";
 import { getBrandZh } from "../data/brandZh";
 import { useFavorites } from "../store/favs";
 import { useCategory, useCategoryFirms } from "../contexts/CategoryContext";
+import FirmLogo from "../components/FirmLogo";
+import { HeartIcon, StarIcon } from "../components/icons";
 
 export default function FavoritesPage() {
   const category = useCategory();
@@ -12,23 +14,23 @@ export default function FavoritesPage() {
 
   return (
     <main className="container">
-      <div className="section-title">♡ 我的收藏</div>
+      <div className="section-title"><HeartIcon size={18} className="icon" /> 我的收藏</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 24, maxWidth: 720 }}>
         最多收藏 3 家公司方便对比。点击下方公司卡片右上角的爱心即可加入或移除收藏。
       </p>
 
       {favFirms.length === 0 ? (
         <div style={{ textAlign: "center", padding: "40px 20px", border: "1px dashed var(--border)", borderRadius: 12, marginBottom: 30 }}>
-          <div style={{ fontSize: 48, marginBottom: 8 }}>♡</div>
+          <div style={{ marginBottom: 8, color: "var(--text-muted)" }}><HeartIcon size={48} /></div>
           <div style={{ color: "var(--text-dim)" }}>还没有收藏 —— 在下方任选最多 3 家公司。</div>
         </div>
       ) : (
         <div className="popular-row" style={{ marginBottom: 30 }}>
           {favFirms.map((f, i) => (
             <div key={f.slug} className="popular-card">
-              <div className="trophy">{["★", "★", "★"][i]}</div>
+              <div className="trophy"><StarIcon size={20} /></div>
               <Link href={`${prefix}/prop-firms/${f.slug}`}>
-                <div className="logo-wrap"><img src={f.logo} alt={f.name} /></div>
+                <div className="logo-wrap"><FirmLogo src={f.logo} alt={f.name} /></div>
                 <div className="name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
               </Link>
               <div className="meta">
@@ -50,12 +52,12 @@ export default function FavoritesPage() {
               <button
                 onClick={() => toggle(f.slug)}
                 aria-label={on ? "移除收藏" : "加入收藏"}
-                style={{ position: "absolute", top: 10, right: 10, fontSize: 18, color: on ? "var(--orange)" : "var(--text-muted)" }}
+                style={{ position: "absolute", top: 10, right: 10, color: on ? "var(--orange)" : "var(--text-muted)", display: "inline-flex" }}
               >
-                {on ? "♥" : "♡"}
+                <HeartIcon size={18} filled={on} />
               </button>
               <Link href={`${prefix}/prop-firms/${f.slug}`}>
-                <div className="offer-logo"><img src={f.logo} alt={f.name} /></div>
+                <div className="offer-logo"><FirmLogo src={f.logo} alt={f.name} /></div>
                 <div className="offer-name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
                 <div className="offer-rating">
                   {f.rating ? <span>★ {f.rating}</span> : <span>新上线</span>}

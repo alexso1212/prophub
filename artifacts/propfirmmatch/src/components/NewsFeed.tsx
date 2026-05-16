@@ -72,7 +72,7 @@ export default function NewsFeed({ limit = 8 }: { limit?: number }) {
   return (
     <section className="news-feed">
       <div className="news-feed-head">
-        <h2>📰 实时金融快讯</h2>
+        <h2><span className="news-feed-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="14" height="16" rx="1.5"/><path d="M17 8h3v9a3 3 0 0 1-3 3"/><path d="M6 8h7M6 12h7M6 16h4"/></svg></span> 实时金融快讯</h2>
         <Link href="/futures/news" className="news-more">查看全部 →</Link>
       </div>
 
