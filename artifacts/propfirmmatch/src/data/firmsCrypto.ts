@@ -144,7 +144,7 @@ export const firmsCrypto: Firm[] = [
   {
     slug: "cx-arc-funded",
     name: "Arc Funded",
-    logo: "https://www.google.com/s2/favicons?domain=arcfunded.com&sz=128",
+    logo: "https://icons.duckduckgo.com/ip3/arcfunded.com.ico",
     rating: 4.4, reviews: 78, totalReviews: 78, isNew: true,
     reviewsBreakdown: [{stars:5,count:52},{stars:4,count:16},{stars:3,count:6},{stars:2,count:2},{stars:1,count:2}],
     country: "PA", countryCode: "pa",
@@ -171,7 +171,7 @@ export const firmsCrypto: Firm[] = [
   {
     slug: "cx-cryptostakers",
     name: "CryptoStakers",
-    logo: "https://www.google.com/s2/favicons?domain=cryptostakers.io&sz=128",
+    logo: `${import.meta.env.BASE_URL}logos/cryptostakers.svg`,
     rating: 4.1, reviews: 64, totalReviews: 64, isNew: true,
     reviewsBreakdown: [{stars:5,count:38},{stars:4,count:14},{stars:3,count:6},{stars:2,count:4},{stars:1,count:2}],
     country: "CA", countryCode: "ca",
@@ -197,7 +197,7 @@ export const firmsCrypto: Firm[] = [
   {
     slug: "cx-perp-pros",
     name: "Perp Pros",
-    logo: "https://www.google.com/s2/favicons?domain=perppros.com&sz=128",
+    logo: `${import.meta.env.BASE_URL}logos/perppros.svg`,
     rating: 4.3, reviews: 52, totalReviews: 52, isNew: true,
     reviewsBreakdown: [{stars:5,count:34},{stars:4,count:12},{stars:3,count:4},{stars:2,count:1},{stars:1,count:1}],
     country: "VG", countryCode: "vg",
