@@ -73,7 +73,7 @@ export default function LeaderboardPage() {
                     {f ? (
                       <div className="cell-firm">
                         <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-logo-sm">
-                          <img src={f.logo} alt={f.name} />
+                          <FirmLogo src={f.logo} alt={f.name} />
                         </Link>
                         <div>
                           <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-name-link">{f.name}</Link>

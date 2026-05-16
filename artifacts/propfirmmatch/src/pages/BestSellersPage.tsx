@@ -3,7 +3,7 @@ import { getBrandZh } from "../data/brandZh";
 import { programZh } from "../data/i18nZh";
 import { useCategory, useCategoryFirms } from "../contexts/CategoryContext";
 import FirmLogo from "../components/FirmLogo";
-import { TrophyIcon } from "../components/icons";
+import { TrophyIcon, StarIcon } from "../components/icons";
 
 export default function BestSellersPage() {
   const category = useCategory();
@@ -33,7 +33,7 @@ export default function BestSellersPage() {
                 <div className="name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
               </Link>
               <div className="meta">
-                {f.rating && <span>★ {f.rating}</span>}
+                {f.rating && <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}><StarIcon size={11} /> {f.rating}</span>}
                 <span>{f.reviews} 条评价</span>
               </div>
               {f.promoPercent > 0 && <div className="discount">{f.promoPercent}% 折扣 — {f.promoCode}</div>}

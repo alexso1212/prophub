@@ -34,7 +34,7 @@ export default function FavoritesPage() {
                 <div className="name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
               </Link>
               <div className="meta">
-                {f.rating && <span>★ {f.rating}</span>}
+                {f.rating && <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}><StarIcon size={11} /> {f.rating}</span>}
                 <span>{f.reviews} 条评价</span>
               </div>
               <button className="btn-outline" style={{ marginTop: 10 }} onClick={() => toggle(f.slug)}>移除收藏</button>
@@ -60,7 +60,7 @@ export default function FavoritesPage() {
                 <div className="offer-logo"><FirmLogo src={f.logo} alt={f.name} /></div>
                 <div className="offer-name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
                 <div className="offer-rating">
-                  {f.rating ? <span>★ {f.rating}</span> : <span>新上线</span>}
+                  {f.rating ? <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}><StarIcon size={11} /> {f.rating}</span> : <span>新上线</span>}
                 </div>
               </Link>
             </div>

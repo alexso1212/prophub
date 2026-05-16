@@ -1794,3 +1794,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .search input { font-size: 14px; }
   .search input::placeholder { font-size: 13px; }
 }
+
+/* Star row inline icons */
+.star-row, .stars, .stars-row { display: inline-flex; align-items: center; gap: 1px; color: var(--orange); vertical-align: -2px; }
+.bar-row .star { display: inline-flex; align-items: center; gap: 2px; color: var(--orange); }
+.urc-stars { display: inline-flex; align-items: center; gap: 2px; color: var(--orange); }

@@ -144,6 +144,17 @@ export function StarIcon({ filled = true, ...p }: IconProps & { filled?: boolean
     </Svg>
   );
 }
+
+export function StarRow({ rating, size = 12, className }: { rating: number; size?: number; className?: string }) {
+  const full = Math.round(rating);
+  return (
+    <span className={`star-row ${className ?? ""}`} aria-label={`${rating} 星`}>
+      {[1, 2, 3, 4, 5].map(n => (
+        <StarIcon key={n} size={size} filled={n <= full} />
+      ))}
+    </span>
+  );
+}
 export function TvIcon(p: IconProps) {
   return (
     <Svg {...p}>

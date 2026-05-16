@@ -6,13 +6,12 @@ import { getBrandZh } from "../data/brandZh";
 import { countryZh } from "../data/i18nZh";
 import NewsFeed from "../components/NewsFeed";
 import FirmLogo from "../components/FirmLogo";
-import { SparkleIcon, SettingsIcon, HeartIcon, TrophyIcon } from "../components/icons";
+import { SparkleIcon, SettingsIcon, HeartIcon, TrophyIcon, StarRow, StarIcon } from "../components/icons";
 import { useFirmsOverrides } from "../contexts/FirmsOverridesContext";
 import { useCategory, useCategoryFirms, useCategoryMeta } from "../contexts/CategoryContext";
 
 function Stars({ rating }: { rating: number }) {
-  const full = Math.round(rating);
-  return <span className="stars">{"★".repeat(full)}{"☆".repeat(5 - full)}</span>;
+  return <StarRow rating={rating} className="stars" />;
 }
 
 function CtaButton({ f, className, children }: {
@@ -85,7 +84,7 @@ function PopularCard({ f, place, prefix }: { f: Firm; place: 1 | 2 | 3; prefix: 
         <div className="name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
       </Link>
       <div className="meta">
-        {f.rating && <span>★ {f.rating}</span>}
+        {f.rating && <span><StarIcon size={11} /> {f.rating}</span>}
         <span>{f.reviews} 条评价</span>
       </div>
       {promoPercent > 0 && <div className="discount">{promoPercent}% 折扣 — {promoCode}</div>}

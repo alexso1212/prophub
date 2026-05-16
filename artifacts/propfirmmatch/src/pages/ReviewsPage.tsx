@@ -42,7 +42,7 @@ export default function ReviewsPage() {
                 <div className="review-bars" style={{ minWidth: 200, flex: "0 0 200px" }}>
                   {f.reviewsBreakdown.map(b => (
                     <div key={b.stars} className="bar-row">
-                      <span className="star">{b.stars}★</span>
+                      <span className="star">{b.stars}<StarIcon size={10} /></span>
                       <div className="bar-track"><div className="bar-fill" style={{ width: `${total ? (b.count / total) * 100 : 0}%` }} /></div>
                       <span style={{ color: "var(--text-dim)" }}>{b.count}</span>
                     </div>

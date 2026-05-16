@@ -3,7 +3,7 @@ import { findFirmZh } from "../data/firms.zh";
 import { getBrandZh } from "../data/brandZh";
 import { useCategory, useCategoryFirms, useCategoryMeta } from "../contexts/CategoryContext";
 import FirmLogo from "../components/FirmLogo";
-import { SparkleIcon } from "../components/icons";
+import { SparkleIcon, StarRow } from "../components/icons";
 
 export default function OffersPage() {
   const category = useCategory();
@@ -28,7 +28,7 @@ export default function OffersPage() {
               <div className="offer-logo"><FirmLogo src={f.logo} alt={f.name} /></div>
               <div className="offer-name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>
               <div className="offer-rating">
-                {f.rating ? <><span className="stars">{"★".repeat(Math.round(f.rating))}{"☆".repeat(5 - Math.round(f.rating))}</span> <span>{f.rating}</span></> : <span>评价不足 10 条</span>}
+                {f.rating ? <><StarRow rating={f.rating} className="stars" /> <span>{f.rating}</span></> : <span>评价不足 10 条</span>}
               </div>
               <div className="offer-discount">{f.promoPercent}% 折扣</div>
               <div className="offer-code">优惠码 <strong>{f.promoCode}</strong></div>

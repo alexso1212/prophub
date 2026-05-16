@@ -5,6 +5,7 @@ import { findFirmZh } from "../data/firms.zh";
 import { getBrandZh } from "../data/brandZh";
 import { firmsForCategory, useCategory, type Category } from "../contexts/CategoryContext";
 import FirmLogo from "../components/FirmLogo";
+import { StarRow } from "../components/icons";
 
 interface SearchHit {
   firm: Firm;
@@ -12,8 +13,7 @@ interface SearchHit {
 }
 
 function Stars({ rating }: { rating: number }) {
-  const full = Math.round(rating);
-  return <span className="stars">{"★".repeat(full)}{"☆".repeat(5 - full)}</span>;
+  return <StarRow rating={rating} className="stars" />;
 }
 
 function ResultCard({ hit }: { hit: SearchHit }) {

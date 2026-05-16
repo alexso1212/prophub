@@ -13,11 +13,10 @@ import { ReviewButton } from "../components/ReviewModal";
 import { useFirmReviews, formatRelativeZh } from "../hooks/useFirmReviews";
 import { useCategory, useCategoryFirms, useCategoryMeta } from "../contexts/CategoryContext";
 import FirmLogo from "../components/FirmLogo";
-import { ArrowLeftIcon, HeartIcon, FlameIcon, ClipboardIcon, SparkleIcon } from "../components/icons";
+import { ArrowLeftIcon, HeartIcon, FlameIcon, ClipboardIcon, SparkleIcon, StarRow, StarIcon } from "../components/icons";
 
 function Stars({ rating }: { rating: number }) {
-  const full = Math.round(rating);
-  return <span className="stars-row">{"★".repeat(full)}{"☆".repeat(5 - full)}</span>;
+  return <StarRow rating={rating} className="stars-row" />;
 }
 
 function ReviewBars({ f }: { f: Firm }) {
@@ -33,7 +32,7 @@ function ReviewBars({ f }: { f: Firm }) {
     <div className="review-bars">
       {items.map(b => (
         <div key={b.stars} className="bar-row">
-          <span className="star">{b.stars}★</span>
+          <span className="star">{b.stars}<StarIcon size={10} /></span>
           <div className="bar-track"><div className="bar-fill" style={{ width: `${(b.count / total) * 100}%` }} /></div>
           <span style={{ color: "var(--text-dim)" }}>{b.count}</span>
         </div>
@@ -170,7 +169,7 @@ export default function FirmPage() {
                 const total = (userReviewStats?.histogram ?? f.reviewsBreakdown ?? []).reduce((a, x) => a + x.count, 0) || 1;
                 return (
                   <div key={b.stars} className="bar-row">
-                    <span className="star">{b.stars}★</span>
+                    <span className="star">{b.stars}<StarIcon size={10} /></span>
                     <div className="bar-track"><div className="bar-fill" style={{ width: `${(b.count / total) * 100}%` }} /></div>
                     <span style={{ color: "var(--text-dim)" }}>{b.count}</span>
                   </div>
@@ -203,7 +202,7 @@ export default function FirmPage() {
             </div>
             <div>
               <div style={{ fontWeight: 600 }}>{f.name}</div>
-              {f.rating && <div style={{ fontSize: 11, color: "var(--text-dim)" }}>★ {f.rating}（{f.reviews}）</div>}
+              {f.rating && <div style={{ fontSize: 11, color: "var(--text-dim)", display: "inline-flex", alignItems: "center", gap: 3 }}><StarIcon size={11} /> {f.rating}（{f.reviews}）</div>}
             </div>
           </div>
           <div className="desc">{offerDescZh}</div>
@@ -404,7 +403,9 @@ export default function FirmPage() {
                         <div className="urc-meta">
                           <div className="urc-name">{r.userName}</div>
                           <div className="urc-stars">
-                            {"★".repeat(r.rating)}<span className="urc-stars-empty">{"★".repeat(5 - r.rating)}</span>
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <StarIcon key={i} size={12} filled={i < r.rating} />
+                            ))}
                             <span className="urc-time"> · {formatRelativeZh(r.createdAt)}</span>
                           </div>
                         </div>
