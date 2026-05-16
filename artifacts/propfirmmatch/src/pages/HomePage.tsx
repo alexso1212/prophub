@@ -7,6 +7,7 @@ import { countryZh } from "../data/i18nZh";
 import NewsFeed from "../components/NewsFeed";
 import FirmLogo from "../components/FirmLogo";
 import { SparkleIcon, SettingsIcon, HeartIcon, TrophyIcon, StarRow, StarIcon } from "../components/icons";
+import Onboarding from "../components/Onboarding";
 import { useFirmsOverrides } from "../contexts/FirmsOverridesContext";
 import { useCategory, useCategoryFirms, useCategoryMeta } from "../contexts/CategoryContext";
 
@@ -148,7 +149,8 @@ export default function HomePage() {
 
   return (
     <main className="container">
-      <div className="section-title">
+      <Onboarding />
+      <div id="homepage-offers" className="section-title">
         <SparkleIcon size={18} className="icon" /> 本月{meta.label}专属优惠
       </div>
       <div className="offers-carousel">

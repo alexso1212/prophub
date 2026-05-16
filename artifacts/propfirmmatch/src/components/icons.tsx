@@ -225,6 +225,45 @@ export function PromoIcon(p: IconProps) {
     </Svg>
   );
 }
+export function ChevronRightIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M9 6l6 6-6 6" />
+    </Svg>
+  );
+}
+export function ChevronDownIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M6 9l6 6 6-6" />
+    </Svg>
+  );
+}
+export function LightbulbIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M9 18h6M10 21h4" />
+      <path d="M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z" />
+    </Svg>
+  );
+}
+export function WalletIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M3 7a2 2 0 0 1 2-2h12v4" />
+      <rect x="3" y="7" width="18" height="13" rx="2" />
+      <circle cx="17" cy="13.5" r="1.4" fill="currentColor" />
+    </Svg>
+  );
+}
+export function HandshakeIcon(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M3 13l4-4 3 3 4-4 4 4 3-3" />
+      <path d="M9 14l2 2 3-3 3 3" />
+    </Svg>
+  );
+}
 export function PinIcon(p: IconProps) {
   return (
     <Svg size={p.size ?? 14} {...p}>
