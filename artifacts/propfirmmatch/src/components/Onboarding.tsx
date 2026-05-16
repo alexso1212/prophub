@@ -27,6 +27,28 @@ export default function Onboarding() {
     }
   }, []);
 
+  useEffect(() => {
+    if (collapsed !== false) return;
+    if (typeof window === "undefined") return;
+    let done = false;
+    const onScroll = () => {
+      if (done) return;
+      const doc = document.documentElement;
+      const scrolled = window.scrollY + window.innerHeight;
+      const full = doc.scrollHeight;
+      if (full - scrolled < 200) {
+        done = true;
+        try {
+          window.localStorage.setItem(STORAGE_KEY, "1");
+        } catch {
+          /* ignore */
+        }
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [collapsed]);
+
   function setAndStore(next: boolean) {
     setCollapsed(next);
     try {
