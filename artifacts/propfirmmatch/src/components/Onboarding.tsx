@@ -1,26 +1,82 @@
-import { useEffect, useState } from "react";
-import { onboardingCopy } from "../data/onboardingCopy";
-import {
-  ChevronRightIcon,
-  ChevronDownIcon,
-  CloseIcon,
-  CheckIcon,
-  ShieldIcon,
-  BalanceIcon,
-  BriefcaseIcon,
-  WalletIcon,
-  TrophyIcon,
-  HandshakeIcon,
-} from "./icons";
+import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { onboardingTree, type Leaf } from "../data/onboardingCopy";
+import { ChevronDownIcon, CloseIcon, ExpandIcon } from "./icons";
 
-const STORAGE_KEY = "pfm.onboarding.collapsed.v2";
+const STORAGE_KEY = "pfm.onboarding.collapsed.v3";
 
-const STEP_ICONS = [WalletIcon, TrophyIcon, HandshakeIcon];
-const BADGE_ICONS = [CheckIcon, BalanceIcon, ShieldIcon];
-const MODEL_ICONS = [BriefcaseIcon, BalanceIcon, WalletIcon];
+interface TreeProps {
+  fullscreen: boolean;
+  expanded: Set<number>;
+  onToggleBranch: (i: number) => void;
+  activeTip: string | null;
+  onToggleTip: (id: string | null) => void;
+}
+
+function Tree({ fullscreen, expanded, onToggleBranch, activeTip, onToggleTip }: TreeProps) {
+  return (
+    <div className={`onb-mm ${fullscreen ? "onb-mm-fs" : ""}`}>
+      <div className="onb-mm-root-wrap">
+        <div className="onb-mm-root">{onboardingTree.root}</div>
+        <span className="onb-mm-trunk" aria-hidden="true" />
+        <span className="onb-mm-bus" aria-hidden="true" />
+      </div>
+      <div className="onb-mm-branches">
+        {onboardingTree.branches.map((b, i) => {
+          const isOpen = expanded.has(i);
+          return (
+            <div key={i} className={`onb-mm-branch ${isOpen ? "is-open" : ""}`}>
+              <span className="onb-mm-stem" aria-hidden="true" />
+              <button
+                type="button"
+                className="onb-mm-branch-head"
+                onClick={() => onToggleBranch(i)}
+                aria-expanded={isOpen}
+              >
+                <span className="onb-mm-branch-label">{b.label}</span>
+                <ChevronDownIcon size={14} className="onb-mm-chev" />
+              </button>
+              <div className="onb-mm-leaves" role="group" aria-hidden={!isOpen}>
+                {isOpen &&
+                  b.leaves.map((l: Leaf, j) => {
+                    const tipId = `${i}-${j}`;
+                    const tipOpen = activeTip === tipId;
+                    return (
+                      <div key={j} className="onb-mm-leaf-wrap" style={{ animationDelay: `${j * 40}ms` }}>
+                        <button
+                          type="button"
+                          className={`onb-mm-leaf${l.tip ? " has-tip" : ""}${tipOpen ? " is-active" : ""}`}
+                          onClick={() => {
+                            if (l.tip) onToggleTip(tipOpen ? null : tipId);
+                          }}
+                        >
+                          <span className="onb-mm-leaf-text">{l.text}</span>
+                          {l.tip && <span className="onb-mm-leaf-dot" aria-hidden="true" />}
+                        </button>
+                        {tipOpen && l.tip && (
+                          <div className="onb-mm-tip" role="tooltip">
+                            <span className="onb-mm-tip-arrow" aria-hidden="true" />
+                            {l.tip}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 export default function Onboarding() {
   const [collapsed, setCollapsed] = useState<boolean | null>(null);
+  const [expandedInline, setExpandedInline] = useState<Set<number>>(new Set());
+  const [expandedFs, setExpandedFs] = useState<Set<number>>(new Set());
+  const [activeTip, setActiveTip] = useState<string | null>(null);
+  const [fullscreen, setFullscreen] = useState(false);
 
   useEffect(() => {
     try {
@@ -38,9 +94,7 @@ export default function Onboarding() {
     const onScroll = () => {
       if (done) return;
       const doc = document.documentElement;
-      const scrolled = window.scrollY + window.innerHeight;
-      const full = doc.scrollHeight;
-      if (full - scrolled < 200) {
+      if (doc.scrollHeight - (window.scrollY + window.innerHeight) < 200) {
         done = true;
         try {
           window.localStorage.setItem(STORAGE_KEY, "1");
@@ -53,6 +107,27 @@ export default function Onboarding() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [collapsed]);
 
+  const closeFs = useCallback(() => {
+    setFullscreen(false);
+    setExpandedFs(new Set());
+    setExpandedInline(new Set());
+    setActiveTip(null);
+  }, []);
+
+  useEffect(() => {
+    if (!fullscreen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeFs();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [fullscreen, closeFs]);
+
   function setAndStore(next: boolean) {
     setCollapsed(next);
     try {
@@ -62,188 +137,99 @@ export default function Onboarding() {
     }
   }
 
-  function gotoOffers() {
-    setAndStore(true);
-    if (typeof window !== "undefined") {
-      const el = document.getElementById("homepage-offers");
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+  function toggleInline(i: number) {
+    setExpandedInline(prev => {
+      const next = new Set<number>();
+      if (!prev.has(i)) next.add(i);
+      return next;
+    });
+    setActiveTip(null);
   }
 
-  function gotoFaq() {
-    if (typeof window !== "undefined") {
-      const el = document.getElementById("onb-scam");
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+  function toggleFs(i: number) {
+    setExpandedFs(prev => {
+      const next = new Set(prev);
+      if (next.has(i)) next.delete(i);
+      else next.add(i);
+      return next;
+    });
+    setActiveTip(null);
+  }
+
+  function openFs() {
+    setFullscreen(true);
+    setActiveTip(null);
   }
 
   if (collapsed === null) return null;
 
   if (collapsed) {
     return (
-      <div className="onb-collapsed" role="region" aria-label="新手指引">
-        <span className="onb-collapsed-left">
-          <ShieldIcon size={14} />
-          <span>{onboardingCopy.collapsedBar.text}</span>
-        </span>
+      <div className="onb-collapsed" role="region" aria-label="新手引导">
+        <span className="onb-collapsed-left">再看看怎么运作？</span>
         <button type="button" className="onb-collapsed-btn" onClick={() => setAndStore(false)}>
-          {onboardingCopy.collapsedBar.cta}
+          展开
           <ChevronDownIcon size={12} />
         </button>
       </div>
     );
   }
 
-  const c = onboardingCopy;
-
   return (
-    <section className="onb" aria-labelledby="onb-title">
-      <button
-        type="button"
-        className="onb-dismiss"
-        aria-label="关闭新手指引"
-        onClick={() => setAndStore(true)}
-      >
-        <CloseIcon size={14} />
-      </button>
-
-      {/* ① Who we are */}
-      <div className="onb-who">
-        <div className="onb-eyebrow">{c.whoWeAre.eyebrow}</div>
-        <h2 id="onb-title" className="onb-title">
-          {c.whoWeAre.title}
-        </h2>
-        <p className="onb-sub">{c.whoWeAre.subtitle}</p>
-
-        <div className="onb-badges">
-          {c.whoWeAre.badges.map((b, i) => {
-            const Icon = BADGE_ICONS[i];
-            return (
-              <div className="onb-badge" key={b.label}>
-                <span className="onb-badge-icon"><Icon size={14} /></span>
-                <div>
-                  <div className="onb-badge-label">{b.label}</div>
-                  <div className="onb-badge-sub">{b.sub}</div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="onb-cta-row">
-          <button type="button" className="onb-cta-primary" onClick={gotoFaq}>
-            {c.whoWeAre.primaryCta} <ChevronRightIcon size={14} />
+    <>
+      <section className="onb" aria-label="新手引导">
+        <div className="onb-toolbar">
+          <button type="button" className="onb-fs-btn" onClick={openFs} aria-label="全屏查看">
+            <ExpandIcon size={14} />
+            <span>全屏查看</span>
           </button>
-          <button type="button" className="onb-cta-secondary" onClick={gotoOffers}>
-            {c.whoWeAre.secondaryCta}
+          <button
+            type="button"
+            className="onb-dismiss"
+            aria-label="关闭新手引导"
+            onClick={() => setAndStore(true)}
+          >
+            <CloseIcon size={14} />
           </button>
         </div>
-      </div>
+        <Tree
+          fullscreen={false}
+          expanded={expandedInline}
+          onToggleBranch={toggleInline}
+          activeTip={activeTip}
+          onToggleTip={setActiveTip}
+        />
+      </section>
 
-      {/* ② Is this a scam? */}
-      <div id="onb-scam" className="onb-scam">
-        <div className="onb-section-title">{c.isThisScam.title}</div>
-        <p className="onb-section-sub">{c.isThisScam.sub}</p>
-        <div className="onb-qa-grid">
-          {c.isThisScam.items.map((item, i) => (
-            <details className="onb-qa" key={i} open>
-              <summary>
-                <span className="onb-qa-q">{item.q}</span>
-                <ChevronDownIcon size={14} className="onb-qa-chev" />
-              </summary>
-              <div className="onb-qa-a">{item.a}</div>
-            </details>
-          ))}
-        </div>
-      </div>
-
-      {/* ③ Business model */}
-      <div className="onb-model">
-        <div className="onb-section-title">{c.businessModel.title}</div>
-        <div className="onb-model-flow">
-          {c.businessModel.nodes.map((node, i) => {
-            const Icon = MODEL_ICONS[i];
-            const last = i === c.businessModel.nodes.length - 1;
-            return (
-              <div className="onb-model-wrap" key={node.role}>
-                <div className="onb-model-card">
-                  <div className="onb-model-icon"><Icon size={18} /></div>
-                  <div className="onb-model-role">{node.role}</div>
-                  <div className="onb-model-body">{node.body}</div>
-                </div>
-                {!last && (
-                  <span className="onb-model-arrow" aria-hidden="true">
-                    <ChevronRightIcon size={18} />
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </div>
-        <p className="onb-model-explain">{c.businessModel.explain}</p>
-      </div>
-
-      {/* ④ Three steps */}
-      <div className="onb-steps-wrap">
-        <div className="onb-section-title">{c.steps.title}</div>
-        <div className="onb-steps">
-          {c.steps.items.map((step, i) => {
-            const Icon = STEP_ICONS[i];
-            const last = i === c.steps.items.length - 1;
-            return (
-              <div className="onb-step-wrap" key={step.n}>
-                <div className="onb-step">
-                  <div className="onb-step-head">
-                    <span className="onb-step-icon"><Icon size={18} /></span>
-                    <span className="onb-step-num">第 {step.n} 关</span>
-                  </div>
-                  <div className="onb-step-title">{step.title}</div>
-                  <div className="onb-step-analogy">{step.analogy}</div>
-                  <div className="onb-step-detail">{step.detail}</div>
-                </div>
-                {!last && (
-                  <span className="onb-step-arrow" aria-hidden="true">
-                    <ChevronRightIcon size={18} />
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* ⑤ Fit check */}
-      <div className="onb-fit">
-        <div className="onb-section-title">{c.fitCheck.title}</div>
-        <div className="onb-fit-grid">
-          <div className="onb-fit-col onb-fit-yes">
-            <div className="onb-fit-col-label">{c.fitCheck.fit.label}</div>
-            <ul>
-              {c.fitCheck.fit.items.map((x, i) => (
-                <li key={i}>{x}</li>
-              ))}
-            </ul>
-          </div>
-          <div className="onb-fit-col onb-fit-no">
-            <div className="onb-fit-col-label">{c.fitCheck.notFit.label}</div>
-            <ul>
-              {c.fitCheck.notFit.items.map((x, i) => (
-                <li key={i}>{x}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-        <p className="onb-fit-bottom">{c.fitCheck.bottomLine}</p>
-      </div>
-
-      <div className="onb-footer-row">
-        <button type="button" className="onb-cta-secondary" onClick={() => setAndStore(true)}>
-          看完了，收起这段
-        </button>
-        <button type="button" className="onb-cta-primary" onClick={gotoOffers}>
-          开始挑公司 <ChevronRightIcon size={14} />
-        </button>
-      </div>
-    </section>
+      {fullscreen && typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="onb-fs-overlay"
+            onClick={closeFs}
+            role="dialog"
+            aria-modal="true"
+            aria-label="新手引导全屏视图"
+          >
+            <div className="onb-fs-canvas" onClick={e => e.stopPropagation()}>
+              <button
+                type="button"
+                className="onb-fs-close"
+                aria-label="关闭全屏"
+                onClick={closeFs}
+              >
+                <CloseIcon size={18} />
+              </button>
+              <Tree
+                fullscreen={true}
+                expanded={expandedFs}
+                onToggleBranch={toggleFs}
+                activeTip={activeTip}
+                onToggleTip={setActiveTip}
+              />
+            </div>
+          </div>,
+          document.body
+        )}
+    </>
   );
 }

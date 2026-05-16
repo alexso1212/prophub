@@ -264,19 +264,10 @@ export function HandshakeIcon(p: IconProps) {
     </Svg>
   );
 }
-export function ShieldIcon(p: IconProps) {
+export function ExpandIcon(p: IconProps) {
   return (
     <Svg {...p}>
-      <path d="M12 3l8 3v6c0 4.5-3.4 8.4-8 9-4.6-.6-8-4.5-8-9V6l8-3z" />
-      <path d="M9 12l2 2 4-4" />
-    </Svg>
-  );
-}
-export function BalanceIcon(p: IconProps) {
-  return (
-    <Svg {...p}>
-      <path d="M12 3v18M5 21h14" />
-      <path d="M12 6l-6 2 3 6a3 3 0 0 0 6 0l3-6-6-2z" />
+      <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
     </Svg>
   );
 }
