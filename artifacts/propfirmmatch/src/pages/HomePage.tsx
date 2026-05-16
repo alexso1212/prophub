@@ -317,6 +317,7 @@ export default function HomePage() {
                     <td>
                       <div className="country-cell">
                         <img src={`https://flagcdn.com/w80/${f.countryCode}.png`} alt={f.country} />
+                        <span>{countryZh(f.countryCode?.toUpperCase() || "", f.country)}</span>
                       </div>
                     </td>
                     <td>{f.yearsInOperation}年</td>
