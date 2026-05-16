@@ -395,7 +395,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-x;
+    /* Allow vertical pans to bubble to the page (right pane has no vertical
+       scroll content), while still owning horizontal pans for column scroll. */
+    touch-action: pan-x pan-y;
     overscroll-behavior-x: contain;
   }
   .firms-mobile-right::-webkit-scrollbar { height: 6px; }
