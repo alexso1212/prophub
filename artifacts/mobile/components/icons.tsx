@@ -248,6 +248,22 @@ export function CopyIcon(p: IconProps) {
   );
 }
 
+export function ChevronDownIcon(p: IconProps) {
+  return (
+    <Base {...p}>
+      <Path d="M6 9l6 6 6-6" />
+    </Base>
+  );
+}
+
+export function ExpandIcon(p: IconProps) {
+  return (
+    <Base {...p}>
+      <Path d="M3 9V3h6M21 9V3h-6M3 15v6h6M21 15v6h-6" />
+    </Base>
+  );
+}
+
 export function InboxIcon(p: IconProps) {
   return (
     <Base {...p}>

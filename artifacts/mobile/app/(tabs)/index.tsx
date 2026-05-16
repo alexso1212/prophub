@@ -1,8 +1,10 @@
 import { useRouter } from "expo-router";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
   Platform,
   RefreshControl,
   StyleSheet,
@@ -13,6 +15,7 @@ import {
 import { useGetFirmsOverrides } from "@workspace/api-client-react";
 
 import { FirmCard } from "@/components/FirmCard";
+import Onboarding, { markOnboardingCollapsed } from "@/components/Onboarding";
 import { InboxIcon, SearchIcon } from "@/components/icons";
 import { useColors } from "@/hooks/useColors";
 import { firms } from "@/data-firms";
@@ -31,6 +34,22 @@ export default function FirmsScreen() {
   }, [query]);
 
   const isWeb = Platform.OS === "web";
+
+  const autoCollapsedRef = useRef(false);
+  const onScroll = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (autoCollapsedRef.current) return;
+      const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
+      if (
+        contentSize.height - (contentOffset.y + layoutMeasurement.height) <
+        200
+      ) {
+        autoCollapsedRef.current = true;
+        markOnboardingCollapsed();
+      }
+    },
+    [],
+  );
 
   return (
     <View style={[styles.container, { backgroundColor: c.background }]}>
@@ -61,6 +80,9 @@ export default function FirmsScreen() {
             paddingBottom: isWeb ? 100 : 120,
             gap: 12,
           }}
+          ListHeaderComponent={<Onboarding />}
+          onScroll={onScroll}
+          scrollEventThrottle={200}
           renderItem={({ item }) => (
             <FirmCard
               firm={item}
