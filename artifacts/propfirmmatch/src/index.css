@@ -367,6 +367,143 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .table-wrap::-webkit-scrollbar { height: 8px; }
 .table-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+
+/* ============== Mobile split table (left static / right horizontal scroll) ============== */
+.firms-mobile { display: none; }
+.firms-mobile-empty { display: none; }
+.firms-mobile-more { display: none; }
+@media (max-width: 768px) {
+  .firms-desktop { display: none !important; }
+  .firms-mobile {
+    display: flex;
+    background: var(--card-2);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .firms-mobile-left {
+    flex: 0 0 168px;
+    width: 168px;
+    border-right: 1px solid var(--card-border);
+    background: var(--card-2);
+    /* No overflow → vertical swipes scroll the page naturally */
+  }
+  .firms-mobile-right {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+    overscroll-behavior-x: contain;
+  }
+  .firms-mobile-right::-webkit-scrollbar { height: 6px; }
+  .firms-mobile-right::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.12); border-radius: 4px;
+  }
+
+  /* Header spacer on the left lines up with the right table thead */
+  .fm-header-spacer {
+    height: 38px;
+    border-bottom: 1px solid var(--card-border);
+    background: rgba(255,255,255,0.02);
+  }
+
+  /* Left rows */
+  .fm-left-row {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 8px;
+    border-bottom: 1px solid var(--card-border);
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  .fm-left-row:last-child { border-bottom: none; }
+  .fm-left-row .firm-logo-sm {
+    width: 32px; height: 32px; flex: 0 0 32px;
+  }
+  .fm-left-row .rank-trophy,
+  .fm-left-row .rank-num-circle {
+    flex: 0 0 auto;
+  }
+  .fm-firm-meta {
+    min-width: 0;
+    overflow: hidden;
+  }
+  .fm-firm-meta .firm-name-link {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fm-firm-meta .brand-zh-sub {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-left: 0;
+    margin-top: 2px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Right table */
+  .firms-table-mobile {
+    border-collapse: collapse;
+    font-size: 12px;
+    min-width: 560px;
+  }
+  .firms-table-mobile thead th {
+    height: 38px;
+    padding: 0 10px;
+    text-align: left;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--card-border);
+    white-space: nowrap;
+  }
+  .firms-table-mobile tbody td {
+    height: 80px;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--card-border);
+    vertical-align: middle;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+  .firms-table-mobile tbody tr:last-child td { border-bottom: none; }
+
+  /* Top-3 row tints — apply on both sides */
+  .firms-mobile .fm-row.rank-row-1 { background-image: linear-gradient(90deg, rgba(245,158,11,0.10), transparent 70%); }
+  .firms-mobile .fm-row.rank-row-2 { background-image: linear-gradient(90deg, rgba(203,213,225,0.08), transparent 70%); }
+  .firms-mobile .fm-row.rank-row-3 { background-image: linear-gradient(90deg, rgba(194,134,78,0.10), transparent 70%); }
+  .firms-mobile .fm-left-row.rank-row-1,
+  .firms-mobile .fm-left-row.rank-row-2,
+  .firms-mobile .fm-left-row.rank-row-3 { background-color: rgba(255,255,255,0.02); }
+
+  .firms-mobile-empty {
+    display: block;
+    text-align: center;
+    color: var(--text-dim);
+    padding: 32px;
+    background: var(--card-2);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    margin-top: 8px;
+  }
+  .firms-mobile-more {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+  }
+}
 .table-scroll-hint {
   display: none;
   font-size: 11px;

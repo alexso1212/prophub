@@ -175,7 +175,7 @@ export default function HomePage() {
         全部{meta.label}自营公司 <span className="count-pill">{sorted.length}</span>
       </div>
 
-      <div className="table-wrap">
+      <div className="table-wrap firms-desktop">
         <div className="table-scroll-hint" aria-hidden="true">← 左右滑动查看更多 →</div>
         <table className="firms-table">
           <thead>
@@ -255,6 +255,95 @@ export default function HomePage() {
           </tbody>
         </table>
         <div className="view-more"><Link href={`${prefix}/all-prop-firms`} className="btn-firm">查看更多</Link></div>
+      </div>
+
+      {/* Mobile split view: left column scrolls with page; right column scrolls horizontally */}
+      <div className="firms-mobile" aria-hidden={false}>
+        <div className="firms-mobile-left">
+          <div className="fm-header-spacer" />
+          {sorted.map((f, idx) => {
+            const place = idx + 1;
+            const rowClass = place <= 3 ? `rank-row-${place}` : "";
+            return (
+              <div key={f.slug} className={`fm-row fm-left-row ${rowClass}`}>
+                <RankBadge place={place} />
+                <Link
+                  href={`${prefix}/prop-firms/${f.slug}`}
+                  className={`firm-logo-sm ${place <= 3 ? `logo-rank-${place}` : ""}`}
+                >
+                  {f.isNew && <span className="new-ribbon">新</span>}
+                  <img src={f.logo} alt={f.name} />
+                </Link>
+                <div className="fm-firm-meta">
+                  <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-name-link">{f.name}</Link>
+                  {getBrandZh(f.slug) && <div className="brand-zh-sub">{getBrandZh(f.slug)}</div>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div className="firms-mobile-right">
+          <table className="firms-table-mobile">
+            <thead>
+              <tr>
+                <th>评分</th>
+                <th>国家</th>
+                <th>年数</th>
+                <th>{category === "forex" ? "货币对" : "品种"}</th>
+                <th>平台</th>
+                <th>最大资金</th>
+                <th>优惠</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sorted.map((f, idx) => {
+                const ov = overrides[f.slug];
+                const promoCode = ov?.promoCode ?? f.promoCode;
+                const promoPercent = ov?.discountPercent ?? ov?.promoPercent ?? f.promoPercent;
+                const place = idx + 1;
+                const rowClass = place <= 3 ? `rank-row-${place}` : "";
+                return (
+                  <tr key={f.slug} className={`fm-row ${rowClass}`}>
+                    <td>
+                      <div className="rating-cell">
+                        {f.rating ? (
+                          <><span className="num">{f.rating}</span><span className="reviews">{f.reviews}</span></>
+                        ) : <span className="reviews">&lt;10</span>}
+                      </div>
+                    </td>
+                    <td>
+                      <div className="country-cell">
+                        <img src={`https://flagcdn.com/w80/${f.countryCode}.png`} alt={f.country} />
+                      </div>
+                    </td>
+                    <td>{f.yearsInOperation}年</td>
+                    <td>{category === "forex" ? (f.currencyPairs ?? f.numAssets) : f.numAssets}</td>
+                    <td><PlatformIcons f={f} /></td>
+                    <td style={{ fontWeight: 600 }}>{f.maxAllocation}</td>
+                    <td>
+                      {promoPercent > 0 ? (
+                        <div className="promo-cell">
+                          <span className="promo-discount">{promoPercent}%</span>
+                          <span className="promo-code">{promoCode}</span>
+                        </div>
+                      ) : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                    </td>
+                    <td>
+                      <Link href={`/go/${f.slug}`} className="btn-firm">Firm</Link>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {sorted.length === 0 && (
+        <div className="firms-mobile-empty">{meta.label}板块暂无符合条件的公司。</div>
+      )}
+      <div className="view-more firms-mobile-more">
+        <Link href={`${prefix}/all-prop-firms`} className="btn-firm">查看更多</Link>
       </div>
 
       <p className="page-footer-text">
