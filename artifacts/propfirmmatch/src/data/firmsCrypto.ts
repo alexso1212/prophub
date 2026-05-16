@@ -197,7 +197,7 @@ export const firmsCrypto: Firm[] = [
   {
     slug: "cx-fundingpips-crypto",
     name: "FundingPips Crypto",
-    logo: `${import.meta.env.BASE_URL}logos/fundingpips.webp`,
+    logo: `${import.meta.env.BASE_URL}logos/fundingpips.png`,
     rating: 4.6, reviews: 2680, totalReviews: 2680, isNew: false,
     reviewsBreakdown: [{stars:5,count:2010},{stars:4,count:430},{stars:3,count:140},{stars:2,count:60},{stars:1,count:40}],
     country: "AE", countryCode: "ae",
