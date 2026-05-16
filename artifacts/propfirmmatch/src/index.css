@@ -359,8 +359,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   overflow-x: auto;
+  overflow-y: visible;
   -webkit-overflow-scrolling: touch;
   position: relative;
+  touch-action: pan-x;
+  overscroll-behavior-x: contain;
 }
 .table-wrap::-webkit-scrollbar { height: 8px; }
 .table-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
