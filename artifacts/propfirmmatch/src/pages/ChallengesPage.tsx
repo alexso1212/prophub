@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { getBrandZh } from "../data/brandZh";
 import { programZh } from "../data/i18nZh";
 import { useCategory, useCategoryFirms } from "../contexts/CategoryContext";
+import FirmLogo from "../components/FirmLogo";
 
 export default function ChallengesPage() {
   const category = useCategory();
@@ -73,7 +74,7 @@ export default function ChallengesPage() {
                 <td>
                   <div className="cell-firm">
                     <Link href={`${prefix}/prop-firms/${c.firmSlug}`} className="firm-logo-sm">
-                      <img src={c.logo} alt={c.firmName} />
+                      <FirmLogo src={c.logo} alt={c.firmName} />
                     </Link>
                     <div>
                       <Link href={`${prefix}/prop-firms/${c.firmSlug}`} className="firm-name-link">{c.firmName}</Link>

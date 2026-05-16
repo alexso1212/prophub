@@ -2,6 +2,8 @@ import { Link } from "wouter";
 import { getBrandZh } from "../data/brandZh";
 import { countryZh } from "../data/i18nZh";
 import { useCategory, useCategoryFirms } from "../contexts/CategoryContext";
+import FirmLogo from "../components/FirmLogo";
+import { StarIcon } from "../components/icons";
 
 export default function ReviewsPage() {
   const category = useCategory();
@@ -10,7 +12,7 @@ export default function ReviewsPage() {
   const sorted = [...firms].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
   return (
     <main className="container">
-      <div className="section-title">⭐ 自营公司用户评价</div>
+      <div className="section-title"><StarIcon size={18} className="icon" /> 自营公司用户评价</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 24, maxWidth: 720 }}>
         来自真实签约交易员的已验证评价。一站浏览全部 {firms.length} 家自营公司的星级分布。
       </p>
@@ -21,7 +23,7 @@ export default function ReviewsPage() {
           return (
             <Link key={f.slug} href={`${prefix}/prop-firms/${f.slug}`} className="review-row-card">
               <div className="firm-logo-sm" style={{ width: 56, height: 56 }}>
-                <img src={f.logo} alt={f.name} />
+                <FirmLogo src={f.logo} alt={f.name} />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>

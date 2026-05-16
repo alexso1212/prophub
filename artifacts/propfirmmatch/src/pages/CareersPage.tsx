@@ -1,3 +1,5 @@
+import { BriefcaseIcon } from "../components/icons";
+
 type Job = {
   id: string;
   title: string;
@@ -18,7 +20,7 @@ const JOBS: Job[] = [
 export default function CareersPage() {
   return (
     <main className="container">
-      <div className="section-title">💼 加入我们</div>
+      <div className="section-title"><BriefcaseIcon size={18} className="icon" /> 加入我们</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 28, maxWidth: 720 }}>
         Prop Firm Match 是全球自营交易公司的导航与点评平台。我们 100% 远程，团队分布在 12 个国家，致力于让交易者更高效地找到适合自己的公司。
       </p>

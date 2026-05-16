@@ -2,6 +2,8 @@ import { useMemo } from "react";
 import { Link } from "wouter";
 import { getBrandZh } from "../data/brandZh";
 import { useCategory, useCategoryFirms, useCategoryMeta } from "../contexts/CategoryContext";
+import FirmLogo from "../components/FirmLogo";
+import { BriefcaseIcon, ChartIcon } from "../components/icons";
 
 export default function BrokersPage() {
   const category = useCategory();
@@ -11,7 +13,7 @@ export default function BrokersPage() {
 
   // 外汇没有清算经纪概念，按交易平台聚合更直观
   const isForex = category === "forex";
-  const titleEmoji = isForex ? "🛰️" : "🏦";
+  const TitleIcon = isForex ? ChartIcon : BriefcaseIcon;
   const titleText = isForex ? "交易平台" : "合作经纪";
   const subText = isForex
     ? "各家外汇 prop firm 接入的主流交易平台一览（MT4/MT5/cTrader/DXTrade 等）。"
@@ -32,7 +34,7 @@ export default function BrokersPage() {
 
   return (
     <main className="container">
-      <div className="section-title">{titleEmoji} {titleText}</div>
+      <div className="section-title"><TitleIcon size={18} className="icon" /> {titleText}</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 24, maxWidth: 720 }}>{subText}</p>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
@@ -50,7 +52,9 @@ export default function BrokersPage() {
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
               {b.firms.map(f => (
                 <Link key={f.slug} href={`${prefix}/prop-firms/${f.slug}`} className="kv-chip">
-                  <img src={f.logo} alt={f.name} style={{ width: 16, height: 16, objectFit: "contain" }} />
+                  <span style={{ width: 16, height: 16, display: "inline-flex" }}>
+                    <FirmLogo src={f.logo} alt={f.name} style={{ width: 16, height: 16, objectFit: "contain" }} />
+                  </span>
                   <span>
                     {f.name}
                     {getBrandZh(f.slug) && <span className="brand-zh-inline" style={{ marginLeft: 4 }}>· {getBrandZh(f.slug)}</span>}

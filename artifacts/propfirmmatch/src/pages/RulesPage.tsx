@@ -3,6 +3,8 @@ import { findFirmZh } from "../data/firms.zh";
 import { getBrandZh } from "../data/brandZh";
 import { countryZh } from "../data/i18nZh";
 import { useCategory, useCategoryFirms } from "../contexts/CategoryContext";
+import FirmLogo from "../components/FirmLogo";
+import { ClipboardIcon } from "../components/icons";
 
 export default function RulesPage() {
   const category = useCategory();
@@ -10,7 +12,7 @@ export default function RulesPage() {
   const prefix = `/${category}`;
   return (
     <main className="container">
-      <div className="section-title">📜 规则手册</div>
+      <div className="section-title"><ClipboardIcon size={18} className="icon" /> 规则手册</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 24, maxWidth: 720 }}>
         一站对比各家自营公司的一致性规则、杠杆上限和项目限制。点击任意公司查看完整规则手册。
       </p>
@@ -24,7 +26,7 @@ export default function RulesPage() {
             <div key={f.slug} className="rule-card">
               <div className="rule-card-head">
                 <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-logo-sm" style={{ width: 48, height: 48 }}>
-                  <img src={f.logo} alt={f.name} />
+                  <FirmLogo src={f.logo} alt={f.name} />
                 </Link>
                 <div style={{ flex: 1 }}>
                   <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-name-link" style={{ fontSize: 16 }}>{f.name}</Link>{getBrandZh(f.slug) && <span className="brand-zh-inline">· {getBrandZh(f.slug)}</span>}

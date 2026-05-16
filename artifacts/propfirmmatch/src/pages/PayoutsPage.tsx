@@ -3,6 +3,8 @@ import { PAYOUTS, totalTrackedPayouts, totalPayoutCount } from "../data/payouts"
 import { getBrandZh } from "../data/brandZh";
 import { medianZh } from "../data/i18nZh";
 import { useCategory, useCategoryFirms, useCategoryMeta } from "../contexts/CategoryContext";
+import FirmLogo from "../components/FirmLogo";
+import { CoinsIcon } from "../components/icons";
 
 const avgAcrossFirms = Math.round(totalTrackedPayouts / totalPayoutCount);
 
@@ -18,7 +20,7 @@ export default function PayoutsPage() {
 
   return (
     <main className="container">
-      <div className="section-title">💰 自营公司出金记录</div>
+      <div className="section-title"><CoinsIcon size={18} className="icon" /> 自营公司出金记录</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 24, maxWidth: 720 }}>
         {isFutures
           ? <>覆盖 {PAYOUTS.length} 家自营公司的出金数据汇总 —— 累计出金额度、出金笔数、最大单笔金额、平均出金额以及到账时间中位数，全部来自源站公司维度的出金记录。</>
@@ -63,7 +65,7 @@ export default function PayoutsPage() {
                     {f ? (
                       <div className="cell-firm">
                         <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-logo-sm">
-                          <img src={f.logo} alt={f.name} />
+                          <FirmLogo src={f.logo} alt={f.name} />
                         </Link>
                         <div>
                           <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-name-link">{f.name}</Link>

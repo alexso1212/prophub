@@ -3,6 +3,8 @@ import { LEADERBOARD } from "../data/leaderboard";
 import { getBrandZh } from "../data/brandZh";
 import { medianZh } from "../data/i18nZh";
 import { useCategory, useCategoryFirms, useCategoryMeta } from "../contexts/CategoryContext";
+import FirmLogo from "../components/FirmLogo";
+import { TrophyIcon } from "../components/icons";
 
 export default function LeaderboardPage() {
   const category = useCategory();
@@ -14,7 +16,7 @@ export default function LeaderboardPage() {
 
   return (
     <main className="container">
-      <div className="section-title">🏅 自营公司出金排行</div>
+      <div className="section-title"><TrophyIcon size={18} className="icon" /> 自营公司出金排行</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 18, maxWidth: 720 }}>
         {isFutures
           ? <>按累计出金额度排序的自营公司榜单，数据来自公开出金记录表。源站 /futures/payouts-leaderboard 上的"个人交易员排行"需要登录账号才能访问，因此这里改为展示公司维度排行。</>
@@ -24,13 +26,16 @@ export default function LeaderboardPage() {
       <div className="popular-row" style={{ marginBottom: 30 }}>
         {rows.slice(0, 3).map((t, i) => {
           const f = firms.find(x => x.slug === t.slug || x.name === t.name);
-          const trophy = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
+          const cls = i === 0 ? "gold" : i === 1 ? "silver" : "bronze";
           return (
             <div key={t.slug} className="popular-card">
-              <div className="trophy">{trophy}</div>
+              <div className={`trophy trophy-${cls}`} aria-label={`第 ${i + 1} 名`}>
+                <TrophyIcon size={22} />
+                <span className="trophy-num">{i + 1}</span>
+              </div>
               {f && (
                 <div className="logo-wrap">
-                  <img src={f.logo} alt={f.name} style={{ width: 48, height: 48, objectFit: "contain" }} />
+                  <FirmLogo src={f.logo} alt={f.name} />
                 </div>
               )}
               <div className="name">{t.name}{f && getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>

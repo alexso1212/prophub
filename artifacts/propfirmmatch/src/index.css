@@ -190,8 +190,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   width: 28px; height: 28px;
   border-radius: 6px;
   display: inline-grid; place-items: center;
-  font-size: 14px;
+  color: #fff;
+  flex-shrink: 0;
 }
+.section-title .icon svg { display: block; }
 
 .offers-carousel {
   display: grid;
@@ -285,10 +287,20 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .trophy {
   position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
-  width: 50px; height: 50px;
-  display: grid; place-items: center;
-  font-size: 36px;
+  min-width: 50px; height: 36px;
+  padding: 0 10px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+  border-radius: 999px;
+  background: var(--card-2);
+  border: 1px solid var(--card-border);
+  color: var(--text-dim);
+  font-weight: 800; font-size: 13px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
 }
+.trophy.trophy-gold   { color: #f59e0b; border-color: rgba(245,158,11,0.55); background: linear-gradient(180deg, rgba(245,158,11,0.18), rgba(245,158,11,0.06)); }
+.trophy.trophy-silver { color: #cbd5e1; border-color: rgba(203,213,225,0.55); background: linear-gradient(180deg, rgba(203,213,225,0.18), rgba(203,213,225,0.06)); }
+.trophy.trophy-bronze { color: #c2864e; border-color: rgba(194,134,78,0.55); background: linear-gradient(180deg, rgba(194,134,78,0.20), rgba(194,134,78,0.06)); }
+.trophy-num { font-size: 13px; font-weight: 800; }
 .popular-card .logo-wrap {
   width: 64px; height: 64px;
   margin: 30px auto 10px;
@@ -627,10 +639,39 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .firms-table tr.rank-row-2 .firm-col { background-color: var(--card-2); }
 .firms-table tr.rank-row-3 .firm-col { background-color: var(--card-2); }
 .rating-cell {
-  display: flex; flex-direction: column; gap: 2px;
+  display: flex; flex-direction: column; gap: 4px; align-items: flex-start;
 }
 .rating-cell .num { font-weight: 700; color: var(--orange); }
 .rating-cell .reviews { font-size: 11px; color: var(--text-muted); }
+.rating-pill {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 36px;
+  padding: 2px 10px;
+  border: 1px solid rgba(255,106,61,0.45);
+  background: rgba(255,106,61,0.10);
+  color: var(--orange);
+  font-weight: 700; font-size: 13px;
+  border-radius: 999px;
+  line-height: 1.4;
+}
+
+/* ---------- Firm logo fallback (initials) ---------- */
+.firm-logo-fallback {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #ff6a3d, #a855f7);
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: .02em;
+  font-size: 13px;
+  border-radius: inherit;
+}
+.firm-logo-sm .firm-logo-fallback { font-size: 13px; }
+.offer-logo .firm-logo-fallback,
+.popular-card .logo-wrap .firm-logo-fallback,
+.hero-logo .firm-logo-fallback { font-size: 18px; }
+.hero-logo .firm-logo-fallback { font-size: 28px; }
+.firm-pill .firm-logo-fallback { width: 22px; height: 22px; font-size: 10px; border-radius: 6px; }
 
 .country-cell { display: flex; align-items: center; gap: 6px; }
 .country-cell img { width: 20px; height: 14px; object-fit: cover; border-radius: 2px; }
@@ -682,7 +723,17 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 999px;
   font-size: 12px; font-weight: 600;
   display: inline-block;
+  box-shadow: 0 4px 10px rgba(255,106,61,0.18);
+  transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
 }
+.btn-firm:hover { transform: translateY(-1px); opacity: .94; box-shadow: 0 6px 14px rgba(255,106,61,0.28); }
+
+/* news-feed inline icon */
+.news-feed-icon { display: inline-flex; vertical-align: -3px; color: var(--orange); margin-right: 4px; }
+.news-feed h2 { display: inline-flex; align-items: center; gap: 6px; }
+
+/* AI tag SVG sizing */
+.ai-tag svg { display: block; }
 
 .view-more {
   text-align: center;
@@ -716,6 +767,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   -webkit-background-clip: text; background-clip: text;
   color: transparent;
 }
+.firms-count > span:first-child { color: var(--text); }
 .count-pill {
   display: inline-flex; align-items: center; justify-content: center;
   min-width: 28px; height: 24px;
