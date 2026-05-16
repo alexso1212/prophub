@@ -6,7 +6,7 @@ export const firmsForex: Firm[] = [
   {
     slug: "fx-ftmo",
     name: "FTMO",
-    logo: "",
+    logo: "https://www.google.com/s2/favicons?domain=ftmo.com&sz=128",
     rating: 4.7, reviews: 482, totalReviews: 482,
     reviewsBreakdown: [{stars:5,count:340},{stars:4,count:96},{stars:3,count:24},{stars:2,count:12},{stars:1,count:10}],
     ceo: "Otakar Suffner",
@@ -36,7 +36,7 @@ export const firmsForex: Firm[] = [
   {
     slug: "fx-the-5ers",
     name: "The 5%ers",
-    logo: "",
+    logo: "https://www.google.com/s2/favicons?domain=the5ers.com&sz=128",
     rating: 4.5, reviews: 218, totalReviews: 218,
     reviewsBreakdown: [{stars:5,count:140},{stars:4,count:50},{stars:3,count:14},{stars:2,count:8},{stars:1,count:6}],
     country: "IL", countryCode: "il",
@@ -93,7 +93,7 @@ export const firmsForex: Firm[] = [
   {
     slug: "fx-myforexfunds-demo",
     name: "MyForexFunds Demo",
-    logo: "",
+    logo: "https://www.google.com/s2/favicons?domain=myforexfunds.com&sz=128",
     rating: 4.2, reviews: 96, totalReviews: 96,
     country: "CA", countryCode: "ca",
     yearsInOperation: 2, trackingId: "fx-1004",
@@ -141,7 +141,7 @@ export const firmsForex: Firm[] = [
   {
     slug: "fx-maven-trading",
     name: "Maven Trading",
-    logo: "",
+    logo: "https://www.google.com/s2/favicons?domain=maventrading.com&sz=128",
     rating: 4.1, reviews: 47, totalReviews: 47,
     country: "GB", countryCode: "gb",
     yearsInOperation: 2, trackingId: "fx-1006",

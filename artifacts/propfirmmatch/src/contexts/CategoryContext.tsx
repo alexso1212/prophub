@@ -46,9 +46,9 @@ export interface CategoryMeta {
 }
 
 export const CATEGORY_META: Record<Category, CategoryMeta> = {
-  forex:   { label: "外汇", shortLabel: "外汇", icon: "💱", assetWord: "货币对",   pathPrefix: "/forex" },
-  futures: { label: "期货", shortLabel: "期货", icon: "📈", assetWord: "期货合约", pathPrefix: "/futures" },
-  crypto:  { label: "加密", shortLabel: "加密", icon: "₿",  assetWord: "加密资产", pathPrefix: "/crypto" },
+  forex:   { label: "外汇", shortLabel: "外汇", icon: "forex", assetWord: "货币对",   pathPrefix: "/forex" },
+  futures: { label: "期货", shortLabel: "期货", icon: "futures", assetWord: "期货合约", pathPrefix: "/futures" },
+  crypto:  { label: "加密", shortLabel: "加密", icon: "crypto",  assetWord: "加密资产", pathPrefix: "/crypto" },
 };
 
 export function useCategoryMeta(): CategoryMeta {

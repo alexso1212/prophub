@@ -6,7 +6,7 @@ export const firmsCrypto: Firm[] = [
   {
     slug: "cx-hyperliquid-prop",
     name: "Hyperliquid Prop",
-    logo: "",
+    logo: "https://www.google.com/s2/favicons?domain=hyperliquid.xyz&sz=128",
     rating: 4.6, reviews: 312, totalReviews: 312,
     reviewsBreakdown: [{stars:5,count:220},{stars:4,count:62},{stars:3,count:18},{stars:2,count:7},{stars:1,count:5}],
     ceo: "Jeff Yan",
@@ -35,7 +35,7 @@ export const firmsCrypto: Firm[] = [
   {
     slug: "cx-bybit-funded",
     name: "Bybit Funded",
-    logo: "",
+    logo: "https://www.google.com/s2/favicons?domain=bybit.com&sz=128",
     rating: 4.4, reviews: 256, totalReviews: 256,
     reviewsBreakdown: [{stars:5,count:160},{stars:4,count:60},{stars:3,count:20},{stars:2,count:9},{stars:1,count:7}],
     country: "AE", countryCode: "ae",
@@ -63,7 +63,7 @@ export const firmsCrypto: Firm[] = [
   {
     slug: "cx-blofin-prop",
     name: "Blofin Prop",
-    logo: "",
+    logo: "https://www.google.com/s2/favicons?domain=blofin.com&sz=128",
     rating: 4.3, reviews: 188, totalReviews: 188,
     reviewsBreakdown: [{stars:5,count:120},{stars:4,count:38},{stars:3,count:18},{stars:2,count:8},{stars:1,count:4}],
     country: "KY", countryCode: "ky",
@@ -91,7 +91,7 @@ export const firmsCrypto: Firm[] = [
   {
     slug: "cx-onyx-trading",
     name: "Onyx Trading",
-    logo: "",
+    logo: "https://www.google.com/s2/favicons?domain=onyx.markets&sz=128",
     rating: 4.5, reviews: 142, totalReviews: 142,
     reviewsBreakdown: [{stars:5,count:96},{stars:4,count:30},{stars:3,count:10},{stars:2,count:4},{stars:1,count:2}],
     country: "GB", countryCode: "gb",
@@ -118,7 +118,7 @@ export const firmsCrypto: Firm[] = [
   {
     slug: "cx-ftt-funded",
     name: "FTT Funded",
-    logo: "",
+    logo: "https://www.google.com/s2/favicons?domain=fttfunded.com&sz=128",
     rating: 4.2, reviews: 96, totalReviews: 96,
     reviewsBreakdown: [{stars:5,count:60},{stars:4,count:22},{stars:3,count:8},{stars:2,count:4},{stars:1,count:2}],
     country: "EE", countryCode: "ee",
@@ -144,7 +144,7 @@ export const firmsCrypto: Firm[] = [
   {
     slug: "cx-arc-funded",
     name: "Arc Funded",
-    logo: "",
+    logo: "https://www.google.com/s2/favicons?domain=arcfunded.com&sz=128",
     rating: 4.4, reviews: 78, totalReviews: 78, isNew: true,
     reviewsBreakdown: [{stars:5,count:52},{stars:4,count:16},{stars:3,count:6},{stars:2,count:2},{stars:1,count:2}],
     country: "PA", countryCode: "pa",
@@ -171,7 +171,7 @@ export const firmsCrypto: Firm[] = [
   {
     slug: "cx-cryptostakers",
     name: "CryptoStakers",
-    logo: "",
+    logo: "https://www.google.com/s2/favicons?domain=cryptostakers.io&sz=128",
     rating: 4.1, reviews: 64, totalReviews: 64, isNew: true,
     reviewsBreakdown: [{stars:5,count:38},{stars:4,count:14},{stars:3,count:6},{stars:2,count:4},{stars:1,count:2}],
     country: "CA", countryCode: "ca",
@@ -197,7 +197,7 @@ export const firmsCrypto: Firm[] = [
   {
     slug: "cx-perp-pros",
     name: "Perp Pros",
-    logo: "",
+    logo: "https://www.google.com/s2/favicons?domain=perppros.com&sz=128",
     rating: 4.3, reviews: 52, totalReviews: 52, isNew: true,
     reviewsBreakdown: [{stars:5,count:34},{stars:4,count:12},{stars:3,count:4},{stars:2,count:1},{stars:1,count:1}],
     country: "VG", countryCode: "vg",

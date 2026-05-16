@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 
 interface Props {
   src?: string;
   alt: string;
   className?: string;
+  style?: CSSProperties;
 }
 
-export default function FirmLogo({ src, alt, className }: Props) {
+export default function FirmLogo({ src, alt, className, style }: Props) {
   const [failed, setFailed] = useState(false);
   const showFallback = !src || failed;
 
@@ -16,7 +17,7 @@ export default function FirmLogo({ src, alt, className }: Props) {
       .slice(0, 2)
       .toUpperCase() || "?";
     return (
-      <span className={`firm-logo-fallback ${className ?? ""}`} aria-label={alt}>
+      <span className={`firm-logo-fallback ${className ?? ""}`} aria-label={alt} style={style}>
         {initials}
       </span>
     );
@@ -27,6 +28,7 @@ export default function FirmLogo({ src, alt, className }: Props) {
       src={src}
       alt={alt}
       className={className}
+      style={style}
       onError={() => setFailed(true)}
       loading="lazy"
     />

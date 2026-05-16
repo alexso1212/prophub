@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/react";
+import { StarIcon } from "./icons";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
@@ -128,7 +129,7 @@ export default function ReviewModal({ slug, firmName, open, onClose, existing, o
                 onMouseEnter={() => setHover(n)}
                 onClick={() => setRating(n)}
                 aria-label={`${n} 星`}
-              >★</button>
+              ><StarIcon size={20} filled={(hover || rating) >= n} /></button>
             ))}
             <span className="rm-rating-num">{rating}/5</span>
           </div>
