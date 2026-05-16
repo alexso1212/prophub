@@ -16,6 +16,11 @@ import { ChevronDownIcon, CloseIcon, ExpandIcon } from "./icons";
 
 const STORAGE_KEY = "pfm.onboarding.collapsed.v3";
 
+const collapseListeners = new Set<() => void>();
+function emitCollapse() {
+  for (const l of collapseListeners) l();
+}
+
 interface TreeProps {
   fullscreen: boolean;
   expanded: Set<number>;
@@ -196,12 +201,7 @@ function Tree({
   );
 }
 
-export interface OnboardingProps {
-  /** Called when collapsed state changes, so parent can persist UI hints. */
-  onCollapsedChange?: (collapsed: boolean) => void;
-}
-
-export default function Onboarding(_props: OnboardingProps = {}) {
+export default function Onboarding() {
   const c = useColors();
   const [collapsed, setCollapsed] = useState<boolean | null>(null);
   const [expandedInline, setExpandedInline] = useState<Set<number>>(new Set());
@@ -218,6 +218,14 @@ export default function Onboarding(_props: OnboardingProps = {}) {
         setCollapsed(false);
       }
     })();
+  }, []);
+
+  useEffect(() => {
+    const onCollapse = () => setCollapsed(true);
+    collapseListeners.add(onCollapse);
+    return () => {
+      collapseListeners.delete(onCollapse);
+    };
   }, []);
 
   const setAndStore = useCallback((next: boolean) => {
@@ -384,12 +392,9 @@ export default function Onboarding(_props: OnboardingProps = {}) {
 }
 
 /** Imperative helper for parents to mark the onboarding as collapsed from outside (e.g. on scroll-to-end). */
-export async function markOnboardingCollapsed() {
-  try {
-    await AsyncStorage.setItem(STORAGE_KEY, "1");
-  } catch {
-    /* ignore */
-  }
+export function markOnboardingCollapsed() {
+  emitCollapse();
+  AsyncStorage.setItem(STORAGE_KEY, "1").catch(() => {});
 }
 
 const s = StyleSheet.create({
