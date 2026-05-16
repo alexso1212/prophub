@@ -1,19 +1,23 @@
 import { useEffect, useState } from "react";
 import { onboardingCopy } from "../data/onboardingCopy";
 import {
+  ChevronRightIcon,
+  ChevronDownIcon,
+  CloseIcon,
+  CheckIcon,
+  ShieldIcon,
+  BalanceIcon,
+  BriefcaseIcon,
   WalletIcon,
   TrophyIcon,
   HandshakeIcon,
-  ChevronRightIcon,
-  ChevronDownIcon,
-  LightbulbIcon,
-  SparkleIcon,
-  CloseIcon,
 } from "./icons";
 
-const STORAGE_KEY = "pfm.onboarding.collapsed.v1";
+const STORAGE_KEY = "pfm.onboarding.collapsed.v2";
 
 const STEP_ICONS = [WalletIcon, TrophyIcon, HandshakeIcon];
+const BADGE_ICONS = [CheckIcon, BalanceIcon, ShieldIcon];
+const MODEL_ICONS = [BriefcaseIcon, BalanceIcon, WalletIcon];
 
 export default function Onboarding() {
   const [collapsed, setCollapsed] = useState<boolean | null>(null);
@@ -58,13 +62,28 @@ export default function Onboarding() {
     }
   }
 
+  function gotoOffers() {
+    setAndStore(true);
+    if (typeof window !== "undefined") {
+      const el = document.getElementById("homepage-offers");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  function gotoFaq() {
+    if (typeof window !== "undefined") {
+      const el = document.getElementById("onb-scam");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
   if (collapsed === null) return null;
 
   if (collapsed) {
     return (
       <div className="onb-collapsed" role="region" aria-label="新手指引">
         <span className="onb-collapsed-left">
-          <LightbulbIcon size={14} />
+          <ShieldIcon size={14} />
           <span>{onboardingCopy.collapsedBar.text}</span>
         </span>
         <button type="button" className="onb-collapsed-btn" onClick={() => setAndStore(false)}>
@@ -88,130 +107,141 @@ export default function Onboarding() {
         <CloseIcon size={14} />
       </button>
 
-      <div className="onb-hero">
-        <div className="onb-hero-text">
-          <div className="onb-eyebrow">
-            <SparkleIcon size={12} /> {c.hero.eyebrow}
-          </div>
-          <h1 id="onb-title" className="onb-title">
-            {c.hero.title}
-          </h1>
-          <p className="onb-sub">{c.hero.subtitle}</p>
-          <div className="onb-cta-row">
-            <button
-              type="button"
-              className="onb-cta-primary"
-              onClick={() => {
-                setAndStore(true);
-                if (typeof window !== "undefined") {
-                  const el = document.getElementById("homepage-offers");
-                  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                }
-              }}
-            >
-              {c.hero.primaryCta} <ChevronRightIcon size={14} />
-            </button>
-            <a className="onb-cta-secondary" href="#onb-steps">
-              {c.hero.secondaryCta}
-            </a>
-          </div>
-        </div>
+      {/* ① Who we are */}
+      <div className="onb-who">
+        <div className="onb-eyebrow">{c.whoWeAre.eyebrow}</div>
+        <h2 id="onb-title" className="onb-title">
+          {c.whoWeAre.title}
+        </h2>
+        <p className="onb-sub">{c.whoWeAre.subtitle}</p>
 
-        <div className="onb-hero-visual" aria-hidden="true">
-          <div className="onb-vis-card onb-vis-small">
-            <div className="onb-vis-label">{c.hero.compareSmall}</div>
-            <div className="onb-vis-amount">$100</div>
-          </div>
-          <ChevronRightIcon size={20} className="onb-vis-arrow" />
-          <div className="onb-vis-card onb-vis-big">
-            <div className="onb-vis-label">{c.hero.compareBig}</div>
-            <div className="onb-vis-amount onb-vis-amount-big">$100,000</div>
-          </div>
-          <ChevronRightIcon size={20} className="onb-vis-arrow" />
-          <div className="onb-vis-card onb-vis-share">
-            <div className="onb-vis-label">{c.hero.compareShare}</div>
-            <div className="onb-vis-amount onb-vis-amount-share">80%</div>
-          </div>
-        </div>
-      </div>
-
-      <div id="onb-steps" className="onb-steps">
-        {c.steps.map((step, i) => {
-          const Icon = STEP_ICONS[i];
-          const last = i === c.steps.length - 1;
-          return (
-            <div className="onb-step-wrap" key={step.n}>
-              <div className="onb-step">
-                <div className="onb-step-icon">
-                  <Icon size={22} />
+        <div className="onb-badges">
+          {c.whoWeAre.badges.map((b, i) => {
+            const Icon = BADGE_ICONS[i];
+            return (
+              <div className="onb-badge" key={b.label}>
+                <span className="onb-badge-icon"><Icon size={14} /></span>
+                <div>
+                  <div className="onb-badge-label">{b.label}</div>
+                  <div className="onb-badge-sub">{b.sub}</div>
                 </div>
-                <div className="onb-step-num">第 {step.n} 步</div>
-                <div className="onb-step-title">{step.title}</div>
-                <div className="onb-step-analogy">{step.analogy}</div>
-                <div className="onb-step-detail">{step.detail}</div>
               </div>
-              {!last && (
-                <span className="onb-step-arrow" aria-hidden="true">
-                  <ChevronRightIcon size={20} />
-                </span>
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+
+        <div className="onb-cta-row">
+          <button type="button" className="onb-cta-primary" onClick={gotoFaq}>
+            {c.whoWeAre.primaryCta} <ChevronRightIcon size={14} />
+          </button>
+          <button type="button" className="onb-cta-secondary" onClick={gotoOffers}>
+            {c.whoWeAre.secondaryCta}
+          </button>
+        </div>
       </div>
 
-      <div className="onb-value">
-        <div className="onb-value-title">
-          <LightbulbIcon size={16} /> {c.bigValue.title}
+      {/* ② Is this a scam? */}
+      <div id="onb-scam" className="onb-scam">
+        <div className="onb-section-title">{c.isThisScam.title}</div>
+        <p className="onb-section-sub">{c.isThisScam.sub}</p>
+        <div className="onb-qa-grid">
+          {c.isThisScam.items.map((item, i) => (
+            <details className="onb-qa" key={i} open>
+              <summary>
+                <span className="onb-qa-q">{item.q}</span>
+                <ChevronDownIcon size={14} className="onb-qa-chev" />
+              </summary>
+              <div className="onb-qa-a">{item.a}</div>
+            </details>
+          ))}
         </div>
-        <div className="onb-value-grid">
-          <div className="onb-value-cell onb-value-small">
-            <div className="onb-value-label">{c.bigValue.small.label}</div>
-            <div className="onb-value-amount">{c.bigValue.small.amount}</div>
-            <div className="onb-value-note">{c.bigValue.small.note}</div>
-          </div>
-          <ChevronRightIcon size={18} className="onb-value-arrow" />
-          <div className="onb-value-cell onb-value-big">
-            <div className="onb-value-label">{c.bigValue.big.label}</div>
-            <div className="onb-value-amount">{c.bigValue.big.amount}</div>
-            <div className="onb-value-note">{c.bigValue.big.note}</div>
-          </div>
-          <ChevronRightIcon size={18} className="onb-value-arrow" />
-          <div className="onb-value-cell onb-value-share">
-            <div className="onb-value-label">{c.bigValue.share.label}</div>
-            <div className="onb-value-amount">{c.bigValue.share.amount}</div>
-            <div className="onb-value-note">{c.bigValue.share.note}</div>
-          </div>
-        </div>
-        <p className="onb-value-explain">{c.bigValue.explain}</p>
       </div>
 
-      <div className="onb-faq">
-        <div className="onb-faq-title">小白最常问的几个问题</div>
-        {c.faq.map((item, i) => (
-          <details className="onb-faq-item" key={i}>
-            <summary>
-              <span>{item.q}</span>
-              <ChevronDownIcon size={14} className="onb-faq-chev" />
-            </summary>
-            <div className="onb-faq-a">{item.a}</div>
-          </details>
-        ))}
+      {/* ③ Business model */}
+      <div className="onb-model">
+        <div className="onb-section-title">{c.businessModel.title}</div>
+        <div className="onb-model-flow">
+          {c.businessModel.nodes.map((node, i) => {
+            const Icon = MODEL_ICONS[i];
+            const last = i === c.businessModel.nodes.length - 1;
+            return (
+              <div className="onb-model-wrap" key={node.role}>
+                <div className="onb-model-card">
+                  <div className="onb-model-icon"><Icon size={18} /></div>
+                  <div className="onb-model-role">{node.role}</div>
+                  <div className="onb-model-body">{node.body}</div>
+                </div>
+                {!last && (
+                  <span className="onb-model-arrow" aria-hidden="true">
+                    <ChevronRightIcon size={18} />
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <p className="onb-model-explain">{c.businessModel.explain}</p>
+      </div>
+
+      {/* ④ Three steps */}
+      <div className="onb-steps-wrap">
+        <div className="onb-section-title">{c.steps.title}</div>
+        <div className="onb-steps">
+          {c.steps.items.map((step, i) => {
+            const Icon = STEP_ICONS[i];
+            const last = i === c.steps.items.length - 1;
+            return (
+              <div className="onb-step-wrap" key={step.n}>
+                <div className="onb-step">
+                  <div className="onb-step-head">
+                    <span className="onb-step-icon"><Icon size={18} /></span>
+                    <span className="onb-step-num">第 {step.n} 关</span>
+                  </div>
+                  <div className="onb-step-title">{step.title}</div>
+                  <div className="onb-step-analogy">{step.analogy}</div>
+                  <div className="onb-step-detail">{step.detail}</div>
+                </div>
+                {!last && (
+                  <span className="onb-step-arrow" aria-hidden="true">
+                    <ChevronRightIcon size={18} />
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ⑤ Fit check */}
+      <div className="onb-fit">
+        <div className="onb-section-title">{c.fitCheck.title}</div>
+        <div className="onb-fit-grid">
+          <div className="onb-fit-col onb-fit-yes">
+            <div className="onb-fit-col-label">{c.fitCheck.fit.label}</div>
+            <ul>
+              {c.fitCheck.fit.items.map((x, i) => (
+                <li key={i}>{x}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="onb-fit-col onb-fit-no">
+            <div className="onb-fit-col-label">{c.fitCheck.notFit.label}</div>
+            <ul>
+              {c.fitCheck.notFit.items.map((x, i) => (
+                <li key={i}>{x}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <p className="onb-fit-bottom">{c.fitCheck.bottomLine}</p>
       </div>
 
       <div className="onb-footer-row">
-        <button
-          type="button"
-          className="onb-cta-primary"
-          onClick={() => {
-            setAndStore(true);
-            if (typeof window !== "undefined") {
-              const el = document.getElementById("homepage-offers");
-              if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-            }
-          }}
-        >
-          看懂了，开始挑公司 <ChevronRightIcon size={14} />
+        <button type="button" className="onb-cta-secondary" onClick={() => setAndStore(true)}>
+          看完了，收起这段
+        </button>
+        <button type="button" className="onb-cta-primary" onClick={gotoOffers}>
+          开始挑公司 <ChevronRightIcon size={14} />
         </button>
       </div>
     </section>
