@@ -258,6 +258,7 @@ export default function HomePage() {
       </div>
 
       {/* Mobile split view: left column scrolls with page; right column scrolls horizontally */}
+      {sorted.length > 0 && (
       <div className="firms-mobile" aria-hidden={false}>
         <div className="firms-mobile-left">
           <div className="fm-header-spacer" />
@@ -277,6 +278,7 @@ export default function HomePage() {
                 <div className="fm-firm-meta">
                   <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-name-link">{f.name}</Link>
                   {getBrandZh(f.slug) && <div className="brand-zh-sub">{getBrandZh(f.slug)}</div>}
+                  <div className="firm-id">{f.trackingId}</div>
                 </div>
               </div>
             );
@@ -339,12 +341,15 @@ export default function HomePage() {
           </table>
         </div>
       </div>
+      )}
       {sorted.length === 0 && (
         <div className="firms-mobile-empty">{meta.label}板块暂无符合条件的公司。</div>
       )}
-      <div className="view-more firms-mobile-more">
-        <Link href={`${prefix}/all-prop-firms`} className="btn-firm">查看更多</Link>
-      </div>
+      {sorted.length > 0 && (
+        <div className="view-more firms-mobile-more">
+          <Link href={`${prefix}/all-prop-firms`} className="btn-firm">查看更多</Link>
+        </div>
+      )}
 
       <p className="page-footer-text">
         本页汇总 <span>Prop Firm Match</span> 收录的全部{meta.label}自营公司最新数据，便于你快速找到适合自己交易风格的合作伙伴。可对比评分、评价数、注册地、经营年数、交易平台、可交易品种和最大资金额度，点击任意公司即可查看完整规则、专属优惠和真实交易员反馈。
