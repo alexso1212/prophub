@@ -1,4 +1,3 @@
-import { Feather } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -18,6 +17,12 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGetFirmsOverrides } from "@workspace/api-client-react";
 
+import {
+  ArrowUpRightIcon,
+  CheckIcon,
+  CopyIcon,
+  StarIcon,
+} from "@/components/icons";
 import { useColors } from "@/hooks/useColors";
 import { findFirm } from "@/data-firms";
 
@@ -88,7 +93,7 @@ export default function FirmDetail() {
             <View style={styles.metaRow}>
               {firm.rating != null && (
                 <View style={styles.metaItem}>
-                  <Feather name="star" size={13} color={c.star} />
+                  <StarIcon size={13} color={c.star} filled />
                   <Text style={[styles.meta, { color: c.mutedForeground }]}>
                     {firm.rating.toFixed(1)} ({firm.reviews})
                   </Text>
@@ -139,11 +144,11 @@ export default function FirmDetail() {
             <Text style={[styles.codeValue, { color: c.foreground }]}>{promoCode}</Text>
           </View>
           <View style={styles.copyBtn}>
-            <Feather
-              name={copied ? "check" : "copy"}
-              size={16}
-              color={copied ? c.green : c.mutedForeground}
-            />
+            {copied ? (
+              <CheckIcon size={16} color={c.green} />
+            ) : (
+              <CopyIcon size={16} color={c.mutedForeground} />
+            )}
             <Text style={{ color: copied ? c.green : c.mutedForeground, fontSize: 12 }}>
               {copied ? "Copied" : "Copy"}
             </Text>
@@ -158,7 +163,7 @@ export default function FirmDetail() {
             style={styles.cta}
           >
             <Text style={styles.ctaText}>Visit {firm.name}</Text>
-            <Feather name="arrow-up-right" size={18} color="#ffffff" />
+            <ArrowUpRightIcon size={18} color="#ffffff" />
           </LinearGradient>
         </Pressable>
       </View>

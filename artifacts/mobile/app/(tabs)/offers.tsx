@@ -11,8 +11,11 @@ import {
 import { useGetFirmsOverrides } from "@workspace/api-client-react";
 
 import { FirmCard } from "@/components/FirmCard";
+import { type TrophyTier } from "@/components/icons";
 import { useColors } from "@/hooks/useColors";
 import { firms } from "@/data-firms";
+
+const TIERS: TrophyTier[] = ["gold", "silver", "bronze"];
 
 export default function OffersScreen() {
   const c = useColors();
@@ -48,10 +51,12 @@ export default function OffersScreen() {
         paddingBottom: Platform.OS === "web" ? 100 : 120,
         gap: 12,
       }}
-      renderItem={({ item }) => (
+      renderItem={({ item, index }) => (
         <FirmCard
           firm={item.firm}
           override={item.ov}
+          trophyTier={index < 3 ? TIERS[index] : undefined}
+          trophyRank={index < 3 ? index + 1 : undefined}
           onPress={() => router.push(`/firm/${item.firm.slug}`)}
         />
       )}

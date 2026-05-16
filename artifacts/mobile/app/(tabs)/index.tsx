@@ -1,4 +1,3 @@
-import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
@@ -14,6 +13,7 @@ import {
 import { useGetFirmsOverrides } from "@workspace/api-client-react";
 
 import { FirmCard } from "@/components/FirmCard";
+import { InboxIcon, SearchIcon } from "@/components/icons";
 import { useColors } from "@/hooks/useColors";
 import { firms } from "@/data-firms";
 
@@ -35,7 +35,7 @@ export default function FirmsScreen() {
   return (
     <View style={[styles.container, { backgroundColor: c.background }]}>
       <View style={[styles.searchRow, { backgroundColor: c.cardSolid, borderColor: c.cardBorder }]}>
-        <Feather name="search" size={16} color={c.mutedForeground} />
+        <SearchIcon size={16} color={c.mutedForeground} />
         <TextInput
           value={query}
           onChangeText={setQuery}
@@ -70,7 +70,7 @@ export default function FirmsScreen() {
           )}
           ListEmptyComponent={
             <View style={styles.center}>
-              <Feather name="inbox" size={32} color={c.mutedForeground} />
+              <InboxIcon size={32} color={c.mutedForeground} />
               <Text style={{ color: c.mutedForeground, marginTop: 8 }}>No firms match</Text>
             </View>
           }

@@ -1,9 +1,9 @@
 import { BlurView } from "expo-blur";
 import { Tabs } from "expo-router";
-import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { Platform, StyleSheet, View } from "react-native";
 
+import { BriefcaseIcon, GiftIcon } from "@/components/icons";
 import { useColors } from "@/hooks/useColors";
 
 export default function TabLayout() {
@@ -41,7 +41,7 @@ export default function TabLayout() {
         options={{
           title: "Firms",
           headerTitle: "Prop Firm Match",
-          tabBarIcon: ({ color }) => <Feather name="grid" size={22} color={color} />,
+          tabBarIcon: ({ color }) => <BriefcaseIcon size={22} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -49,7 +49,7 @@ export default function TabLayout() {
         options={{
           title: "Offers",
           headerTitle: "Best Offers",
-          tabBarIcon: ({ color }) => <Feather name="tag" size={22} color={color} />,
+          tabBarIcon: ({ color }) => <GiftIcon size={22} color={color} />,
         }}
       />
     </Tabs>

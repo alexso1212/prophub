@@ -1,9 +1,14 @@
 import { Image } from "expo-image";
-import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
+import {
+  StarIcon,
+  TrophyIcon,
+  TROPHY_TINTS,
+  type TrophyTier,
+} from "@/components/icons";
 import { useColors } from "@/hooks/useColors";
 import type { Firm } from "@/data-firms";
 import type { FirmOverride } from "@workspace/api-client-react";
@@ -12,13 +17,16 @@ type Props = {
   firm: Firm;
   override?: FirmOverride;
   onPress: () => void;
+  trophyTier?: TrophyTier;
+  trophyRank?: number;
 };
 
-export function FirmCard({ firm, override, onPress }: Props) {
+export function FirmCard({ firm, override, onPress, trophyTier, trophyRank }: Props) {
   const c = useColors();
   const promoCode = override?.promoCode ?? firm.promoCode;
   const promoPercent =
     override?.discountPercent ?? override?.promoPercent ?? firm.promoPercent;
+  const tint = trophyTier ? TROPHY_TINTS[trophyTier] : null;
 
   return (
     <Pressable
@@ -43,6 +51,19 @@ export function FirmCard({ firm, override, onPress }: Props) {
             <Text numberOfLines={1} style={[styles.name, { color: c.foreground }]}>
               {firm.name}
             </Text>
+            {tint && (
+              <View
+                style={[
+                  styles.trophyPill,
+                  { backgroundColor: tint.bg, borderColor: tint.border },
+                ]}
+              >
+                <TrophyIcon size={11} color={tint.text} />
+                <Text style={[styles.trophyText, { color: tint.text }]}>
+                  {trophyRank ?? ""}
+                </Text>
+              </View>
+            )}
             {firm.isNew && (
               <View style={[styles.newBadge, { backgroundColor: c.green }]}>
                 <Text style={styles.newText}>NEW</Text>
@@ -52,7 +73,7 @@ export function FirmCard({ firm, override, onPress }: Props) {
           <View style={styles.metaRow}>
             {firm.rating != null && (
               <View style={styles.metaItem}>
-                <Feather name="star" size={12} color={c.star} />
+                <StarIcon size={12} color={c.star} filled />
                 <Text style={[styles.meta, { color: c.mutedForeground }]}>
                   {firm.rating.toFixed(1)} ({firm.reviews})
                 </Text>
@@ -108,6 +129,16 @@ const styles = StyleSheet.create({
   name: { fontSize: 16, fontFamily: "Inter_600SemiBold", flexShrink: 1 },
   newBadge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
   newText: { color: "#0b0a14", fontSize: 9, fontFamily: "Inter_700Bold", letterSpacing: 0.5 },
+  trophyPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 999,
+    borderWidth: 1,
+  },
+  trophyText: { fontSize: 10, fontFamily: "Inter_700Bold" },
   metaRow: { flexDirection: "row", alignItems: "center", gap: 6, marginTop: 4 },
   metaItem: { flexDirection: "row", alignItems: "center", gap: 4 },
   meta: { fontSize: 12, fontFamily: "Inter_400Regular" },
