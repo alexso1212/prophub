@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { onboardingTree, type Leaf } from "../data/onboardingCopy";
 import { ChevronDownIcon, CloseIcon, ExpandIcon } from "./icons";
@@ -77,15 +77,81 @@ export default function Onboarding() {
   const [expandedFs, setExpandedFs] = useState<Set<number>>(new Set());
   const [activeTip, setActiveTip] = useState<string | null>(null);
   const [fullscreen, setFullscreen] = useState(false);
+  const [introPlaying, setIntroPlaying] = useState(false);
+  const introTimersRef = useRef<number[]>([]);
 
   useEffect(() => {
     try {
-      const v = typeof window !== "undefined" && window.localStorage.getItem(STORAGE_KEY);
-      setCollapsed(v === "1");
+      const v = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
+      if (v === null) {
+        setCollapsed(false);
+        setIntroPlaying(true);
+        try {
+          window.localStorage.setItem(STORAGE_KEY, "0");
+        } catch {
+          /* ignore */
+        }
+      } else {
+        setCollapsed(v === "1");
+      }
     } catch {
       setCollapsed(false);
     }
   }, []);
+
+  const cancelIntro = useCallback(() => {
+    if (introTimersRef.current.length) {
+      introTimersRef.current.forEach(t => clearTimeout(t));
+      introTimersRef.current = [];
+    }
+    setIntroPlaying(false);
+  }, []);
+
+  useEffect(() => {
+    if (!introPlaying) return;
+    if (typeof window === "undefined") return;
+    const timers: number[] = [];
+    const branches = onboardingTree.branches;
+    const startDelay = 700;
+    const perBranch = 4000;
+
+    branches.forEach((b, i) => {
+      const base = startDelay + i * perBranch;
+      timers.push(
+        window.setTimeout(() => {
+          setExpandedInline(new Set([i]));
+          setActiveTip(null);
+        }, base)
+      );
+      const tipIdx = b.leaves.findIndex(l => l.tip);
+      if (tipIdx >= 0) {
+        timers.push(
+          window.setTimeout(() => {
+            setActiveTip(`${i}-${tipIdx}`);
+          }, base + 1700)
+        );
+        timers.push(
+          window.setTimeout(() => {
+            setActiveTip(null);
+          }, base + 3300)
+        );
+      }
+    });
+
+    timers.push(
+      window.setTimeout(() => {
+        setExpandedInline(new Set());
+        setActiveTip(null);
+        setIntroPlaying(false);
+        introTimersRef.current = [];
+      }, startDelay + branches.length * perBranch)
+    );
+
+    introTimersRef.current = timers;
+    return () => {
+      timers.forEach(t => clearTimeout(t));
+    };
+  }, [introPlaying]);
 
   useEffect(() => {
     if (collapsed !== false) return;
@@ -129,6 +195,7 @@ export default function Onboarding() {
   }, [fullscreen, closeFs]);
 
   function setAndStore(next: boolean) {
+    cancelIntro();
     setCollapsed(next);
     try {
       window.localStorage.setItem(STORAGE_KEY, next ? "1" : "0");
@@ -138,6 +205,7 @@ export default function Onboarding() {
   }
 
   function toggleInline(i: number) {
+    cancelIntro();
     setExpandedInline(prev => {
       const next = new Set<number>();
       if (!prev.has(i)) next.add(i);
@@ -157,6 +225,7 @@ export default function Onboarding() {
   }
 
   function openFs() {
+    cancelIntro();
     setFullscreen(true);
     setActiveTip(null);
   }
@@ -177,8 +246,19 @@ export default function Onboarding() {
 
   return (
     <>
-      <section className="onb" aria-label="新手引导">
+      <section className={`onb${introPlaying ? " is-intro" : ""}`} aria-label="新手引导">
         <div className="onb-toolbar">
+          {introPlaying && (
+            <button
+              type="button"
+              className="onb-skip-btn"
+              onClick={cancelIntro}
+              aria-label="跳过演示"
+            >
+              <span className="onb-skip-dot" aria-hidden="true" />
+              <span>演示中 · 点击跳过</span>
+            </button>
+          )}
           <button type="button" className="onb-fs-btn" onClick={openFs} aria-label="全屏查看">
             <ExpandIcon size={14} />
             <span>全屏查看</span>
