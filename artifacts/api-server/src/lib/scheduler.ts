@@ -42,8 +42,34 @@ async function hourlyLinkHealth() {
       }
     }
     logger.info({ checked, auto_unpublished }, "[scheduler] hourly link health");
+    if (auto_unpublished > 0) {
+      await notifyLinkHealthAlert(checked, auto_unpublished);
+    }
   } catch (err) {
     logger.error({ err }, "[scheduler] hourly link health failed");
+  }
+}
+
+// Optional webhook ping when published offers got auto-demoted. Set
+// LINK_HEALTH_ALERT_WEBHOOK to any URL that accepts a JSON POST (Slack
+// incoming-webhook, Discord, Feishu/Lark, custom). Silent no-op if unset.
+async function notifyLinkHealthAlert(checked: number, autoUnpublished: number) {
+  const url = process.env.LINK_HEALTH_ALERT_WEBHOOK;
+  if (!url) return;
+  try {
+    const body = {
+      text: `⚠️ Prophub: ${autoUnpublished}/${checked} 个 published offer 链接失效，已自动回到 pending_review。`,
+      checked,
+      autoUnpublished,
+      at: new Date().toISOString(),
+    };
+    await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  } catch (err) {
+    logger.error({ err }, "[scheduler] link health webhook failed");
   }
 }
 

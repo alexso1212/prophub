@@ -1,35 +1,15 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { firmOverridesTable } from "@workspace/db/schema";
-import { getAuth } from "@clerk/express";
 import { eq } from "drizzle-orm";
+import { requireAdmin } from "../lib/requireAdmin";
 
+// NOTE: `firm_overrides` is the legacy public-facing override layer used by
+// the static `firms.ts` catalog for marketing tweaks. The new `firms` /
+// `offers` tables (see admin.ts) are the canonical registry for the
+// scrape→review→publish pipeline. The two are intentionally separate during
+// MVP migration; consolidation tracked in follow-up #78.
 const router: IRouter = Router();
-
-const getAdminEmails = (): string[] => {
-  const raw = process.env.ADMIN_EMAILS ?? "";
-  return raw
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-};
-
-const requireAdmin = (req: any, res: any, next: any) => {
-  if (!process.env.CLERK_PUBLISHABLE_KEY) {
-    return res.status(503).json({ error: "Auth not configured" });
-  }
-  const auth = getAuth(req);
-  const userId = auth?.sessionClaims?.userId || auth?.userId;
-  if (!userId) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-  const email = (auth?.sessionClaims?.email as string | undefined)?.toLowerCase();
-  const adminEmails = getAdminEmails();
-  if (adminEmails.length === 0 || !email || !adminEmails.includes(email)) {
-    return res.status(403).json({ error: "Forbidden: not an admin" });
-  }
-  next();
-};
 
 router.get("/firms-overrides", async (_req, res) => {
   try {
@@ -54,7 +34,7 @@ router.get("/admin/firms", requireAdmin, async (_req, res) => {
 });
 
 router.patch("/admin/firms/:slug", requireAdmin, async (req, res) => {
-  const { slug } = req.params;
+  const slug = String(req.params.slug);
   const { affiliateUrl, promoCode, promoPercent, promoLabel, discountPercent } = req.body;
 
   const updateData: Partial<typeof firmOverridesTable.$inferInsert> = {

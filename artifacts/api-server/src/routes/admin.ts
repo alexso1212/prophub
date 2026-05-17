@@ -53,6 +53,73 @@ router.get("/admin/firms-v2", async (_req, res) => {
   res.json(rows);
 });
 
+// Create a new firm in the canonical registry. `slug` and `name` are
+// required; everything else has sensible defaults.
+const FirmCreateSchema = z.object({
+  slug: z
+    .string()
+    .min(2)
+    .regex(/^[a-z0-9-]+$/i, "slug must be lowercase alphanumeric + dashes"),
+  name: z.string().min(1),
+  officialUrl: z.string().url().nullable().optional(),
+  affiliateBaseUrl: z.string().url().nullable().optional(),
+  affiliateId: z.string().nullable().optional(),
+  logo: z.string().nullable().optional(),
+  country: z.string().nullable().optional(),
+  countryCode: z.string().nullable().optional(),
+  category: z.string().nullable().optional(),
+  status: z.string().optional(),
+  scrapeUrl: z.string().url().nullable().optional(),
+  scrapeEnabled: z.number().int().optional(),
+});
+
+router.post("/admin/firms-v2", async (req, res) => {
+  const parsed = FirmCreateSchema.safeParse(req.body ?? {});
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid firm payload", issues: parsed.error.issues });
+    return;
+  }
+  const [existing] = await db
+    .select()
+    .from(firmsTable)
+    .where(eq(firmsTable.slug, parsed.data.slug));
+  if (existing) {
+    res.status(409).json({ error: `firm with slug=${parsed.data.slug} already exists` });
+    return;
+  }
+  const [row] = await db
+    .insert(firmsTable)
+    .values({ ...parsed.data, slug: parsed.data.slug.toLowerCase() })
+    .returning();
+  res.status(201).json(row);
+});
+
+// Hard-delete a firm and its dependent rows. Refuses to delete if there's
+// still a published offer (operator must archive first).
+router.delete("/admin/firms-v2/:slug", async (req, res) => {
+  const { slug } = req.params;
+  const [pub] = await db
+    .select()
+    .from(offersTable)
+    .where(and(eq(offersTable.firmSlug, slug), eq(offersTable.status, "published")));
+  if (pub) {
+    res
+      .status(409)
+      .json({ error: "Firm has a published offer; archive it before deleting the firm." });
+    return;
+  }
+  // Drop dependent rows in scrape_jobs / offer_changes / offers first.
+  await db.delete(scrapeJobsTable).where(eq(scrapeJobsTable.firmSlug, slug));
+  await db.delete(offerChangesTable).where(eq(offerChangesTable.firmSlug, slug));
+  await db.delete(offersTable).where(eq(offersTable.firmSlug, slug));
+  const deleted = await db.delete(firmsTable).where(eq(firmsTable.slug, slug)).returning();
+  if (deleted.length === 0) {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
+  res.json({ ok: true });
+});
+
 router.patch("/admin/firms-v2/:slug", async (req, res) => {
   const { slug } = req.params;
   const parsed = FirmPatchSchema.safeParse(req.body ?? {});
