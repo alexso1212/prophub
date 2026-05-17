@@ -61,11 +61,14 @@ router.get("/admin/offers", async (req, res) => {
 });
 
 router.get("/admin/offers/queue", async (_req, res) => {
-  // For each firm that has a pending_review offer, return paired current published + pending draft.
+  // For each firm with a draft or pending_review offer, pair it with the
+  // current published version so the reviewer can diff and decide.
+  // Per requirement: AI-generated rows land as `draft` first; an explicit
+  // promote step (or direct approve) advances them.
   const pending = await db
     .select()
     .from(offersTable)
-    .where(eq(offersTable.status, "pending_review"))
+    .where(sql`${offersTable.status} IN ('draft','pending_review')`)
     .orderBy(desc(offersTable.createdAt));
 
   const slugs = [...new Set(pending.map((o) => o.firmSlug))];
@@ -83,6 +86,98 @@ router.get("/admin/offers/queue", async (_req, res) => {
     current: currentMap[draft.firmSlug] ?? null,
   }));
   res.json(cards);
+});
+
+// Promote a draft into the human review queue. Idempotent.
+router.post("/admin/offers/:id/promote", async (req, res) => {
+  const id = Number(req.params.id);
+  const actor = getActor(req);
+  const [row] = await db.select().from(offersTable).where(eq(offersTable.id, id));
+  if (!row) return res.status(404).json({ error: "Not found" });
+  if (row.status !== "draft" && row.status !== "pending_review") {
+    return res.status(409).json({ error: `Cannot promote from status=${row.status}` });
+  }
+  await db
+    .update(offersTable)
+    .set({ status: "pending_review", updatedAt: new Date() })
+    .where(eq(offersTable.id, id));
+  await db.insert(offerChangesTable).values({
+    offerId: id,
+    firmSlug: row.firmSlug,
+    beforeJson: row,
+    afterJson: { ...row, status: "pending_review" },
+    diffSummary: `Promoted draft to pending_review by ${actor}`,
+    actor,
+    action: "promote",
+  });
+  return res.json({ ok: true });
+});
+
+// Restore the most recent published snapshot for a firm from offer_changes.
+// Archives whatever is currently published and re-inserts the prior version
+// as the live offer. Records a `rollback` audit row.
+router.post("/admin/offers/rollback/:firmSlug", async (req, res) => {
+  const firmSlug = req.params.firmSlug;
+  const actor = getActor(req);
+
+  // Find the most recent approve change for this firm where beforeJson
+  // contains the previous published state.
+  const history = await db
+    .select()
+    .from(offerChangesTable)
+    .where(and(eq(offerChangesTable.firmSlug, firmSlug), eq(offerChangesTable.action, "approve")))
+    .orderBy(desc(offerChangesTable.detectedAt))
+    .limit(1);
+
+  const prev = history[0]?.beforeJson as Record<string, unknown> | null;
+  if (!prev || typeof prev !== "object") {
+    return res.status(404).json({ error: "No previous published snapshot found" });
+  }
+
+  const [current] = await db
+    .select()
+    .from(offersTable)
+    .where(and(eq(offersTable.firmSlug, firmSlug), eq(offersTable.status, "published")));
+
+  if (current) {
+    await db
+      .update(offersTable)
+      .set({ status: "expired", updatedAt: new Date() })
+      .where(eq(offersTable.id, current.id));
+  }
+
+  const [restored] = await db
+    .insert(offersTable)
+    .values({
+      firmSlug,
+      discountPercent: (prev.discountPercent as number | null) ?? null,
+      code: (prev.code as string | null) ?? null,
+      label: (prev.label as string | null) ?? null,
+      validUntil: prev.validUntil ? new Date(prev.validUntil as string) : null,
+      planScope: (prev.planScope as string[] | null) ?? [],
+      affiliateUrl: (prev.affiliateUrl as string | null) ?? null,
+      sourceUrl: (prev.sourceUrl as string | null) ?? null,
+      sourceType: "rollback",
+      status: "published",
+      confidenceScore: (prev.confidenceScore as number | null) ?? null,
+      notes: (prev.notes as string | null) ?? null,
+      createdBy: actor,
+      reviewedBy: actor,
+      publishedAt: new Date(),
+    })
+    .returning();
+
+  await db.insert(offerChangesTable).values({
+    offerId: restored.id,
+    firmSlug,
+    beforeJson: current ?? null,
+    afterJson: restored,
+    diffSummary: `Rolled back to previous published snapshot by ${actor}`,
+    actor,
+    action: "rollback",
+  });
+
+  return res.json({ ok: true, restoredOfferId: restored.id });
 });
 
 router.post("/admin/offers/:id/approve", async (req, res) => {
@@ -323,11 +418,17 @@ async function runScrapeJob(jobId: number, slug: string, url: string) {
 
     let offerId: number | null = null;
     if (changed) {
-      // Clear previous pending_review drafts for this firm
+      // Clear previous AI-staged rows (draft + pending_review) for this firm
+      // so only the freshest scrape is in the review queue.
       await db
         .update(offersTable)
         .set({ status: "superseded", updatedAt: new Date() })
-        .where(and(eq(offersTable.firmSlug, slug), eq(offersTable.status, "pending_review")));
+        .where(
+          and(
+            eq(offersTable.firmSlug, slug),
+            sql`${offersTable.status} IN ('draft','pending_review')`,
+          ),
+        );
 
       const [inserted] = await db
         .insert(offersTable)
@@ -344,7 +445,9 @@ async function runScrapeJob(jobId: number, slug: string, url: string) {
           affiliateUrl: current?.affiliateUrl ?? null,
           sourceUrl: url,
           sourceType: "ai_scrape",
-          status: "pending_review",
+          // Spec: AI output defaults to `draft`; a reviewer (or `promote`
+          // endpoint) advances it to `pending_review` before publish.
+          status: "draft",
           confidenceScore: extracted.confidence,
           notes: extracted.summary,
           createdBy: "ai",

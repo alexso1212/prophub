@@ -1,5 +1,28 @@
 import type { Request, Response, NextFunction } from "express";
 import { getAuth } from "@clerk/express";
+import { z } from "zod";
+
+const ClaimsSchema = z
+  .object({
+    email: z.string().optional(),
+    primary_email_address: z.string().optional(),
+  })
+  .passthrough();
+
+interface ResolvedAuth {
+  userId: string | null;
+  email: string | null;
+}
+
+function resolveAuth(req: Request): ResolvedAuth {
+  const auth = getAuth(req);
+  const userId = auth?.userId ?? null;
+  const claimsParse = ClaimsSchema.safeParse(auth?.sessionClaims ?? {});
+  const claims = claimsParse.success ? claimsParse.data : {};
+  const rawEmail = claims.email ?? claims.primary_email_address ?? null;
+  const email = rawEmail ? rawEmail.toLowerCase() : null;
+  return { userId, email };
+}
 
 const getAdminEmails = (): string[] => {
   const raw = process.env.ADMIN_EMAILS ?? "";
@@ -21,12 +44,10 @@ export const requireAdmin = (req: Request, res: Response, next: NextFunction) =>
     }
     return res.status(503).json({ error: "Auth not configured" });
   }
-  const auth = getAuth(req);
-  const userId = (auth as any)?.sessionClaims?.userId || (auth as any)?.userId;
+  const { userId, email } = resolveAuth(req);
   if (!userId) {
     return res.status(401).json({ error: "Unauthorized" });
   }
-  const email = ((auth as any)?.sessionClaims?.email as string | undefined)?.toLowerCase();
   const adminEmails = getAdminEmails();
   if (adminEmails.length === 0 || !email || !adminEmails.includes(email)) {
     return res.status(403).json({ error: "Forbidden: not an admin" });
@@ -36,8 +57,7 @@ export const requireAdmin = (req: Request, res: Response, next: NextFunction) =>
 
 export const getActor = (req: Request): string => {
   try {
-    const auth = getAuth(req);
-    const email = ((auth as any)?.sessionClaims?.email as string | undefined) || "";
+    const { email } = resolveAuth(req);
     return email || "dev";
   } catch {
     return "dev";

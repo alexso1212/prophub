@@ -1,4 +1,18 @@
 import Anthropic from "@anthropic-ai/sdk";
+import type { Tool, ToolChoiceTool, ToolUseBlock } from "@anthropic-ai/sdk/resources/messages";
+import { z } from "zod";
+
+// Runtime schema for what the model returns in the record_offer tool call.
+// We validate before trusting it for DB writes.
+const ExtractedOfferSchema = z.object({
+  discountPercent: z.number().nullable(),
+  code: z.string().nullable(),
+  label: z.string().nullable(),
+  validUntil: z.string().nullable(),
+  applicablePlans: z.array(z.string()),
+  summary: z.string(),
+  confidence: z.number(),
+});
 
 const SYSTEM_PROMPT = `You extract structured promo/offer data from prop trading firm websites. Always call the \`record_offer\` tool with your findings. Rules:
 - If a discount appears as a range (e.g. "up to 90%"), use the largest number.
@@ -7,7 +21,7 @@ const SYSTEM_PROMPT = `You extract structured promo/offer data from prop trading
 - Never invent codes. If unsure, return null and lower confidence.
 - summary must be in Simplified Chinese regardless of source language.`;
 
-const OFFER_TOOL = {
+const OFFER_TOOL: Tool = {
   name: "record_offer",
   description:
     "Record the structured promo/offer data extracted from the prop firm page. Must be called exactly once.",
@@ -81,8 +95,8 @@ export async function extractOfferFromText(text: string): Promise<ExtractedOffer
     model: "claude-haiku-4-5",
     max_tokens: 1024,
     system: SYSTEM_PROMPT,
-    tools: [OFFER_TOOL as any],
-    tool_choice: { type: "tool", name: "record_offer" } as any,
+    tools: [OFFER_TOOL],
+    tool_choice: { type: "tool", name: "record_offer" } satisfies ToolChoiceTool,
     messages: [
       {
         role: "user",
@@ -91,23 +105,25 @@ export async function extractOfferFromText(text: string): Promise<ExtractedOffer
     ],
   });
 
-  const toolBlock = response.content.find((b: any) => b.type === "tool_use") as any;
+  const toolBlock = response.content.find(
+    (b): b is ToolUseBlock => b.type === "tool_use" && b.name === "record_offer",
+  );
   if (!toolBlock) throw new Error("AI did not call record_offer tool");
-  const parsed = toolBlock.input as ExtractedOffer;
+
+  const parsed = ExtractedOfferSchema.safeParse(toolBlock.input);
+  if (!parsed.success) {
+    throw new Error(`AI tool output failed schema validation: ${parsed.error.message}`);
+  }
+  const data = parsed.data;
 
   return {
-    discountPercent: typeof parsed.discountPercent === "number" ? parsed.discountPercent : null,
-    code: parsed.code ? String(parsed.code).trim().toUpperCase() : null,
-    label: parsed.label ? String(parsed.label).trim() : null,
-    validUntil: parsed.validUntil ? String(parsed.validUntil) : null,
-    applicablePlans: Array.isArray(parsed.applicablePlans)
-      ? parsed.applicablePlans.map(String)
-      : [],
-    summary: parsed.summary ? String(parsed.summary).trim() : "",
-    confidence:
-      typeof parsed.confidence === "number"
-        ? Math.max(0, Math.min(1, parsed.confidence))
-        : 0.5,
+    discountPercent: data.discountPercent,
+    code: data.code ? data.code.trim().toUpperCase() : null,
+    label: data.label ? data.label.trim() : null,
+    validUntil: data.validUntil,
+    applicablePlans: data.applicablePlans,
+    summary: data.summary.trim(),
+    confidence: Math.max(0, Math.min(1, data.confidence)),
   };
 }
 
