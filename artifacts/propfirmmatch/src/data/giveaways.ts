@@ -57,7 +57,7 @@ export const GIVEAWAYS: Giveaway[] = [
       "完成邮箱验证 + 加入官方 Discord",
       "已通过 FundedNext 任一阶段考核者获 2 倍号",
     ],
-    category: "futures",
+    category: "all",
   },
   {
     id: "g-2026-05-apex-weekend",
@@ -123,7 +123,7 @@ export const GIVEAWAYS: Giveaway[] = [
       "由 Alpha Futures × E8 联合赞助",
       "开奖名单将同步发布在两家官方 Discord",
     ],
-    category: "futures",
+    category: "all",
   },
 
   {
@@ -144,7 +144,7 @@ export const GIVEAWAYS: Giveaway[] = [
     ],
     proofUrl: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 240'><rect width='600' height='240' fill='%231a1a2e'/><text x='28' y='52' fill='%2322c55e' font-family='Inter,sans-serif' font-size='18' font-weight='700'>%E2%9C%93 4%E6%9C%88%E5%B9%B8%E8%BF%90%E8%80%85%E5%87%AD%E8%AF%81</text><text x='28' y='90' fill='%23ffffff' font-family='Inter,sans-serif' font-size='14'>t****y@gmail.com %E2%80%94 MFFU $150K Express</text><text x='28' y='118' fill='%23ffffff' font-family='Inter,sans-serif' font-size='14'>z****8@qq.com %E2%80%94 Apex $50K</text><text x='28' y='146' fill='%23ffffff' font-family='Inter,sans-serif' font-size='14'>l****o@outlook.com %E2%80%94 Apex $50K</text><text x='28' y='200' fill='%23a1a1aa' font-family='Inter,sans-serif' font-size='12'>%E5%8F%91%E5%A5%96%E6%97%B6%E9%97%B4%EF%BC%9A2026-05-02 %E2%80%A2 %E5%87%AD%E8%AF%81%E5%B7%B2%E5%85%AC%E7%A4%BA%E4%BA%8E%E5%AE%98%E6%96%B9 Discord</text></svg>",
     rules: ["开奖直播回放可在 B 站搜索“propfirmmatch 四月开奖”"],
-    category: "futures",
+    category: "all",
   },
   {
     id: "g-2026-04-topstep-quarterly",
