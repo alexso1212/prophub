@@ -6,6 +6,9 @@ import {
   ChartIcon, BitcoinIcon,
 } from "./icons";
 import SupportWidget from "./SupportWidget";
+import { useBilibiliLiveStatus } from "../hooks/useBilibiliLiveStatus";
+
+const BILIBILI_ROOM_ID = "1874453448";
 
 function buildNav(cat: Category) {
   const p = `/${cat}`;
@@ -53,6 +56,9 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   const NAV = buildNav(activeCategory);
   const homePath = `/${activeCategory}/all-prop-firms`;
+  const liveInfo = useBilibiliLiveStatus(BILIBILI_ROOM_ID);
+  const isLive = liveInfo.status === "live";
+  const isRerun = liveInfo.status === "rerun";
 
   const isActive = (to: string) => {
     if (to === homePath) return path === to || path === "/" || path === `/${activeCategory}`;
@@ -67,10 +73,45 @@ export default function Layout({ children }: { children: ReactNode }) {
         <Link className="check-now" href={`/${activeCategory}/giveaways`}>立即查看</Link>
       </div>
 
-      <div className="live-bar">
-        <span className="live-pill"><span className="live-dot" />LIVE</span>
-        <span className="live-msg">{LIVE_TEXT[activeCategory]} · 主持人正在解读盘面</span>
-        <Link className="live-cta" href={`/${activeCategory}/live`}>立即观看</Link>
+      <div
+        className="live-bar"
+        style={!isLive ? { background: "#1f2937", color: "#cbd5e1" } : undefined}
+      >
+        <span
+          className="live-pill"
+          style={
+            isLive
+              ? undefined
+              : {
+                  background: isRerun ? "#475569" : "#334155",
+                  color: "#e2e8f0",
+                }
+          }
+        >
+          {isLive ? (
+            <>
+              <span className="live-dot" />LIVE
+            </>
+          ) : isRerun ? (
+            "轮播"
+          ) : liveInfo.status === "loading" ? (
+            "···"
+          ) : (
+            "未开播"
+          )}
+        </span>
+        <span className="live-msg">
+          {isLive
+            ? `${LIVE_TEXT[activeCategory]} · 主持人正在解读盘面`
+            : isRerun
+              ? `${LIVE_TEXT[activeCategory]} · 当前为往期回放轮播`
+              : liveInfo.status === "loading"
+                ? "正在获取直播状态…"
+                : `主播暂未开播 · ${LIVE_TEXT[activeCategory].replace("正在交易", "")}频道`}
+        </span>
+        <Link className="live-cta" href={`/${activeCategory}/live`}>
+          {isLive ? "立即观看" : isRerun ? "进入回放" : "关注开播"}
+        </Link>
       </div>
 
       <header className="header">

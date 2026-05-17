@@ -3,6 +3,7 @@ import healthRouter from "./health";
 import newsRouter from "./news";
 import firmsOverridesRouter from "./firmsOverrides";
 import firmReviewsRouter from "./firmReviews";
+import liveRouter from "./live";
 
 const router: IRouter = Router();
 
@@ -10,5 +11,6 @@ router.use(healthRouter);
 router.use(newsRouter);
 router.use(firmsOverridesRouter);
 router.use(firmReviewsRouter);
+router.use(liveRouter);
 
 export default router;
