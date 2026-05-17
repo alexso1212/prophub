@@ -9,7 +9,6 @@ export default function OffersPage() {
   const category = useCategory();
   const meta = useCategoryMeta();
   const firms = useCategoryFirms();
-  const prefix = `/${category}`;
   const offers = firms.filter(f => f.promoPercent > 0).sort((a, b) => b.promoPercent - a.promoPercent);
 
   return (

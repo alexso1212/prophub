@@ -72,6 +72,18 @@ export default function GoPage() {
     copyCode(promoCode).then(ok => setCopied(ok ? "ok" : "fail"));
   }, [hasLink, promoCode]);
 
+  // No affiliate link → bounce back to detail page with a global toast
+  useEffect(() => {
+    if (!firm || hasLink) return;
+    const toast = document.createElement("div");
+    toast.className = "gw-toast";
+    toast.textContent = `${firm.name} 链接维护中，请稍后重试`;
+    document.body.appendChild(toast);
+    const removeT = setTimeout(() => toast.remove(), 3500);
+    const navT = setTimeout(() => navigate(detailHref), 800);
+    return () => { clearTimeout(removeT); clearTimeout(navT); toast.remove(); };
+  }, [firm, hasLink, detailHref, navigate]);
+
   // Countdown timer
   useEffect(() => {
     if (!hasLink || cancelled) return;
@@ -107,7 +119,7 @@ export default function GoPage() {
           {hasLink ? " 官网" : ""}
         </div>
 
-        {hasLink ? (
+        {hasLink && (
           <>
             <div className="go-countdown">
               <span className="go-num">{Math.max(seconds, 0)}</span>
@@ -131,33 +143,21 @@ export default function GoPage() {
               <button type="button" className="btn-buy" onClick={() => { setCancelled(true); jump(); }}>
                 立即跳转
               </button>
-              {!cancelled ? (
-                <button type="button" className="btn-pill" onClick={() => setCancelled(true)}>
-                  取消自动跳转
-                </button>
-              ) : (
-                <button type="button" className="btn-pill" onClick={() => navigate(detailHref)}>
-                  返回公司详情
-                </button>
-              )}
+              <button
+                type="button"
+                className="btn-pill"
+                onClick={() => { setCancelled(true); navigate(detailHref); }}
+              >
+                取消并返回详情页
+              </button>
             </div>
             <p className="go-foot">
               跳转后请认准 <strong>{new URL(firm.affiliateUrl!).hostname}</strong>，结账时使用上面的优惠码享受折扣。
             </p>
           </>
-        ) : (
-          <>
-            <p className="go-sub">
-              {firm.name} 的合作链接正在维护中。我们建议你先返回详情页查看完整规则、用户评价和出金记录，稍后再来购买。
-            </p>
-            <div className="go-actions">
-              <Link href={detailHref} className="btn-buy">查看公司详情</Link>
-              <Link href={`/${category}/all-prop-firms`} className="btn-pill">浏览同类公司</Link>
-            </div>
-            {promoCode && (
-              <div className="go-code-box" style={{ marginTop: 16 }}>{promoCode}</div>
-            )}
-          </>
+        )}
+        {!hasLink && (
+          <p className="go-sub">链接维护中，请稍后重试…正在返回公司详情页。</p>
         )}
       </div>
     </main>
