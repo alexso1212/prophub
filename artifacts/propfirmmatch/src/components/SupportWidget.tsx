@@ -62,7 +62,7 @@ export default function SupportWidget({ onClose }: Props) {
     const msg: Msg = { name: name.trim(), email: email.trim(), body: body.trim(), at: new Date().toISOString() };
     writeMsgs([msg, ...readMsgs()].slice(0, 50));
     setName(""); setEmail(""); setBody("");
-    setToast("已收到留言，我们 24 小时内邮件回复你。");
+    setToast("我们 24 小时内回复你");
     window.setTimeout(() => setToast(null), 3800);
   }
 
@@ -77,13 +77,13 @@ export default function SupportWidget({ onClose }: Props) {
             <div className="support-title">需要帮助？</div>
             <div className="support-sub">10 秒读完常见问题，或留言给我们</div>
           </div>
-          <button className="support-close" onClick={onClose} aria-label="关闭">×</button>
+          <button type="button" className="support-close" onClick={onClose} aria-label="关闭">×</button>
         </header>
 
         <nav className="support-tabs" role="tablist">
-          <button role="tab" aria-selected={tab === "faq"}       className={tab === "faq" ? "active" : ""}       onClick={() => setTab("faq")}>常见问题</button>
-          <button role="tab" aria-selected={tab === "message"}   className={tab === "message" ? "active" : ""}   onClick={() => setTab("message")}>留言</button>
-          <button role="tab" aria-selected={tab === "community"} className={tab === "community" ? "active" : ""} onClick={() => setTab("community")}>社区</button>
+          <button type="button" role="tab" aria-selected={tab === "faq"}       className={tab === "faq" ? "active" : ""}       onClick={() => setTab("faq")}>常见问题</button>
+          <button type="button" role="tab" aria-selected={tab === "message"}   className={tab === "message" ? "active" : ""}   onClick={() => setTab("message")}>留言</button>
+          <button type="button" role="tab" aria-selected={tab === "community"} className={tab === "community" ? "active" : ""} onClick={() => setTab("community")}>社区</button>
         </nav>
 
         <div className="support-body">
@@ -93,6 +93,7 @@ export default function SupportWidget({ onClose }: Props) {
                 {FAQ_GROUPS.map(g => (
                   <button
                     key={g}
+                    type="button"
                     className={`support-group ${g === group ? "active" : ""}`}
                     onClick={() => { setGroup(g); setOpenFaq(0); }}
                   >{g}</button>
@@ -104,6 +105,7 @@ export default function SupportWidget({ onClose }: Props) {
                   return (
                     <li key={f.q} className={`support-faq ${isOpen ? "open" : ""}`}>
                       <button
+                        type="button"
                         className="support-faq-q"
                         aria-expanded={isOpen}
                         onClick={() => setOpenFaq(isOpen ? null : i)}
