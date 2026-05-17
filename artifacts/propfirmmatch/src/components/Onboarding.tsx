@@ -4,6 +4,38 @@ import { onboardingTree, type Leaf } from "../data/onboardingCopy";
 import { ChevronDownIcon, CloseIcon, ExpandIcon, PlayIcon } from "./icons";
 
 const STORAGE_KEY = "pfm.onboarding.collapsed.v3";
+const EXPANDED_KEY = "pfm.onboarding.expanded.v1";
+
+function readExpanded(): number[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(EXPANDED_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((n): n is number => typeof n === "number" && Number.isInteger(n) && n >= 0);
+  } catch {
+    return [];
+  }
+}
+
+function writeExpanded(indices: Set<number>) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(EXPANDED_KEY, JSON.stringify(Array.from(indices)));
+  } catch {
+    /* ignore */
+  }
+}
+
+function clearExpanded() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(EXPANDED_KEY);
+  } catch {
+    /* ignore */
+  }
+}
 
 interface TreeProps {
   fullscreen: boolean;
@@ -93,6 +125,10 @@ export default function Onboarding() {
         }
       } else {
         setCollapsed(v === "1");
+        const saved = readExpanded();
+        if (saved.length) {
+          setExpandedInline(new Set(saved));
+        }
       }
     } catch {
       setCollapsed(false);
@@ -117,6 +153,7 @@ export default function Onboarding() {
     } catch {
       /* ignore */
     }
+    clearExpanded();
     setCollapsed(false);
     setFullscreen(false);
     setExpandedInline(new Set());
@@ -236,6 +273,7 @@ export default function Onboarding() {
     setExpandedInline(prev => {
       const next = new Set<number>();
       if (!prev.has(i)) next.add(i);
+      writeExpanded(next);
       return next;
     });
     setActiveTip(null);
