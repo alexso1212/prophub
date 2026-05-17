@@ -19,6 +19,7 @@ import SearchPage from "./pages/SearchPage";
 import SimplePage from "./pages/SimplePage";
 import GiveawaysPage from "./pages/GiveawaysPage";
 import CareersPage from "./pages/CareersPage";
+import JobDetailPage from "./pages/JobDetailPage";
 import TutorialsPage from "./pages/TutorialsPage";
 import TutorialDetailPage from "./pages/TutorialDetailPage";
 import LivePage from "./pages/LivePage";
@@ -205,6 +206,7 @@ function Router({ clerkEnabled }: { clerkEnabled: boolean }) {
         <Route path="/forex/giveaways" component={GiveawaysPage} />
         <Route path="/crypto/giveaways" component={GiveawaysPage} />
         <Route path="/careers" component={CareersPage} />
+        <Route path="/careers/:slug" component={JobDetailPage} />
         <Route path="/tutorials" component={TutorialsPage} />
         <Route path="/tutorials/:slug" component={TutorialDetailPage} />
         <Route path="/live" component={LivePage} />

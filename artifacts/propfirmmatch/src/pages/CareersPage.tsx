@@ -1,52 +1,86 @@
+import { Link } from "wouter";
 import { BriefcaseIcon } from "../components/icons";
+import { getJobsSorted, type Job } from "../data/jobs";
 
-type Job = {
-  id: string;
-  title: string;
-  team: string;
-  location: string;
-  type: "全职" | "兼职" | "实习";
-};
-
-const JOBS: Job[] = [
-  { id: "eng-fe-01", title: "高级前端工程师 (React / Next.js)", team: "工程团队", location: "远程 · 全球", type: "全职" },
-  { id: "eng-be-02", title: "后端工程师 (Node.js / PostgreSQL)", team: "工程团队", location: "远程 · 亚太", type: "全职" },
-  { id: "ops-bd-01", title: "商务拓展经理 - 自营公司", team: "商务团队", location: "远程 · 北美 / 欧洲", type: "全职" },
-  { id: "ops-cm-02", title: "中文社区运营", team: "运营团队", location: "远程 · 大中华区", type: "全职" },
-  { id: "des-ui-01", title: "产品设计师 (UI/UX)", team: "设计团队", location: "远程", type: "兼职" },
-  { id: "data-an-01", title: "数据分析实习生", team: "数据团队", location: "远程", type: "实习" },
+const BENEFITS = [
+  { icon: "🌏", title: "100% 远程", desc: "12 个国家，按结果而非打卡。" },
+  { icon: "📈", title: "期权激励", desc: "全员持股，与公司一起成长。" },
+  { icon: "📚", title: "学习预算", desc: "季度 USD 1,500，自由支配。" },
+  { icon: "⏰", title: "灵活时间", desc: "异步沟通为主，会议尽量留给重要决策。" },
 ];
 
-export default function CareersPage() {
+function JobCard({ job }: { job: Job }) {
   return (
-    <main className="container">
-      <div className="section-title"><BriefcaseIcon size={18} className="icon" /> 加入我们</div>
-      <p style={{ color: "var(--text-dim)", marginBottom: 28, maxWidth: 720 }}>
-        Prop Firm Match 是全球自营交易公司的导航与点评平台。我们 100% 远程，团队分布在 12 个国家，致力于让交易者更高效地找到适合自己的公司。
-      </p>
-
-      <div style={{ display: "grid", gap: 12 }}>
-        {JOBS.map(j => (
-          <div key={j.id} className="rule-card" style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 18, alignItems: "center" }}>
-            <div>
-              <div style={{ fontSize: 16, fontWeight: 600, color: "var(--text)" }}>{j.title}</div>
-              <div style={{ color: "var(--text-muted)", fontSize: 13, marginTop: 6 }}>
-                {j.team} · {j.location} · <span style={{ color: "var(--orange)" }}>{j.type}</span>
-              </div>
-            </div>
-            <button className="btn-firm" style={{ whiteSpace: "nowrap" }}>查看职位</button>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ marginTop: 32, padding: 18, border: "1px solid var(--border)", borderRadius: 12, background: "var(--card)" }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", marginBottom: 6 }}>找不到合适的职位？</div>
-        <div style={{ color: "var(--text-dim)", fontSize: 13 }}>
-          欢迎将简历发送至 <span style={{ color: "var(--orange)" }}>careers@propfirmmatch.example</span>，我们会在两周内回复你。
+    <article className="job-card">
+      <div className="job-card-main">
+        <div className="job-card-titlerow">
+          <h3 className="job-card-title">{job.title}</h3>
+          <span className={`job-type job-type-${job.type === "全职" ? "full" : job.type === "兼职" ? "part" : "intern"}`}>{job.type}</span>
+        </div>
+        <div className="job-card-meta">
+          <span>{job.team}</span><span>·</span><span>{job.location}</span><span>·</span><span>发布于 {job.postedAt}</span>
+        </div>
+        <p className="job-card-summary">{job.summary}</p>
+        <div className="job-card-skills">
+          {job.skills.map(s => <span key={s} className="job-skill">{s}</span>)}
         </div>
       </div>
+      <div className="job-card-action">
+        <Link href={`/careers/${job.slug}`} className="gw-btn-primary">查看详情</Link>
+      </div>
+    </article>
+  );
+}
 
-      <p style={{ color: "var(--text-muted)", fontSize: 12, marginTop: 24 }}>※ 招聘信息为演示数据。</p>
+export default function CareersPage() {
+  const jobs = getJobsSorted();
+
+  return (
+    <main className="container careers-page">
+      <div className="section-title"><BriefcaseIcon size={18} className="icon" /> 加入我们</div>
+
+      <section className="careers-hero">
+        <div className="careers-hero-left">
+          <h1 className="careers-hero-title">在全球远程团队，做交易者真正会用的产品。</h1>
+          <p className="careers-hero-desc">
+            Prop Firm Match 是全球自营交易公司的导航与点评平台。我们 100% 远程，团队分布在 12 个国家，
+            目标是让每一位交易者都能 5 分钟内找到适合自己的 prop firm。
+          </p>
+          <div className="careers-hero-tags">
+            <span className="careers-tag">🌐 Remote-first since day 1</span>
+            <span className="careers-tag">👥 团队 32 人 · 7 个时区</span>
+            <span className="careers-tag">💸 期权 + 项目奖金</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="careers-benefits">
+        {BENEFITS.map(b => (
+          <div key={b.title} className="benefit-card">
+            <div className="benefit-icon" aria-hidden>{b.icon}</div>
+            <div className="benefit-title">{b.title}</div>
+            <div className="benefit-desc">{b.desc}</div>
+          </div>
+        ))}
+      </section>
+
+      <section className="careers-jobs">
+        <div className="careers-jobs-head">
+          <h2 className="careers-jobs-title">在招职位</h2>
+          <span className="careers-jobs-count">{jobs.length} 个空缺</span>
+        </div>
+        <div className="job-list">
+          {jobs.map(j => <JobCard key={j.slug} job={j} />)}
+        </div>
+      </section>
+
+      <section className="careers-contact">
+        <div className="careers-contact-title">找不到合适的职位？</div>
+        <div className="careers-contact-desc">
+          欢迎将简历发送至 <a href="mailto:careers@propfirmmatch.example" className="firm-name-link">careers@propfirmmatch.example</a>，
+          我们会在两周内回复你。也可以附上你想为我们做什么的一段想法 —— 我们对自发性永远开放。
+        </div>
+      </section>
     </main>
   );
 }
