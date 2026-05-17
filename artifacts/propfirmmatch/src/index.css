@@ -347,9 +347,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   margin-top: 10px;
   display: flex; align-items: center; gap: 6px;
   font-weight: 700;
-  background: linear-gradient(90deg, var(--orange), var(--purple));
-  -webkit-background-clip: text; background-clip: text;
-  color: transparent;
+  color: var(--purple);
   font-size: 16px;
 }
 .offer-code {
@@ -801,9 +799,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: flex; flex-direction: column; gap: 4px; align-items: flex-start;
 }
 .promo-discount {
-  background: linear-gradient(90deg, var(--orange), var(--purple));
-  -webkit-background-clip: text; background-clip: text;
-  color: transparent;
+  color: var(--purple);
   font-weight: 700;
   font-size: 14px;
 }
@@ -828,10 +824,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   line-height: 1.15;
 }
 .promo-pill-percent {
-  background: linear-gradient(90deg, var(--orange), var(--purple));
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  color: var(--purple);
   font-weight: 800;
   font-size: 13px;
   letter-spacing: 0.2px;
