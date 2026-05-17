@@ -15,6 +15,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { setBaseUrl } from "@workspace/api-client-react";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { useColors } from "@/hooks/useColors";
+import { ThemeProvider } from "@/hooks/useTheme";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,19 +27,29 @@ if (process.env.EXPO_PUBLIC_DOMAIN) {
 const queryClient = new QueryClient();
 
 function RootLayoutNav() {
+  const c = useColors();
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: "#0b0a14" },
-        headerTintColor: "#ffffff",
-        headerTitleStyle: { color: "#ffffff", fontFamily: "Inter_600SemiBold" },
-        contentStyle: { backgroundColor: "#0b0a14" },
+        headerStyle: { backgroundColor: c.background },
+        headerTintColor: c.foreground,
+        headerTitleStyle: { color: c.foreground, fontFamily: "Inter_600SemiBold" },
+        contentStyle: { backgroundColor: c.background },
         headerBackTitle: "Back",
       }}
     >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="firm/[slug]" options={{ title: "" }} />
     </Stack>
+  );
+}
+
+function ThemedGestureRoot({ children }: { children: React.ReactNode }) {
+  const c = useColors();
+  return (
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: c.background }}>
+      {children}
+    </GestureHandlerRootView>
   );
 }
 
@@ -61,11 +73,13 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
-          <GestureHandlerRootView style={{ flex: 1, backgroundColor: "#0b0a14" }}>
-            <KeyboardProvider>
-              <RootLayoutNav />
-            </KeyboardProvider>
-          </GestureHandlerRootView>
+          <ThemeProvider>
+            <ThemedGestureRoot>
+              <KeyboardProvider>
+                <RootLayoutNav />
+              </KeyboardProvider>
+            </ThemedGestureRoot>
+          </ThemeProvider>
         </QueryClientProvider>
       </ErrorBoundary>
     </SafeAreaProvider>

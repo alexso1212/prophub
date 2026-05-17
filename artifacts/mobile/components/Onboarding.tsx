@@ -70,10 +70,10 @@ function Tree({
       {/* Root pill with gradient */}
       <View style={s.rootWrap}>
         <LinearGradient
-          colors={["rgba(255,106,61,0.18)", "rgba(168,85,247,0.18)"]}
+          colors={c.introGradient}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
-          style={[s.root, { borderColor: "rgba(255,106,61,0.4)" }]}
+          style={[s.root, { borderColor: c.accentSoftBorder }]}
         >
           <Text
             style={[
@@ -85,7 +85,7 @@ function Tree({
             {onboardingTree.root}
           </Text>
         </LinearGradient>
-        <View style={[s.trunk, { backgroundColor: "rgba(255,255,255,0.14)" }]} />
+        <View style={[s.trunk, { backgroundColor: c.trunk }]} />
       </View>
 
       <View style={s.branches}>
@@ -99,13 +99,13 @@ function Tree({
                   s.branchHead,
                   {
                     borderColor: isOpen
-                      ? "rgba(255,106,61,0.45)"
+                      ? c.accentSoftBorder
                       : c.cardBorder,
                     backgroundColor: isOpen
-                      ? "rgba(255,106,61,0.10)"
+                      ? c.accentSoftBgWeak
                       : pressed
-                      ? "rgba(255,255,255,0.07)"
-                      : "rgba(255,255,255,0.04)",
+                      ? c.surfaceStrong
+                      : c.surface,
                   },
                 ]}
               >
@@ -134,7 +134,7 @@ function Tree({
                   style={[
                     s.leaves,
                     {
-                      borderLeftColor: "rgba(255,255,255,0.08)",
+                      borderLeftColor: c.leafBorder,
                     },
                   ]}
                 >
@@ -154,13 +154,13 @@ function Tree({
                             s.leaf,
                             {
                               borderColor: tipOpen
-                                ? "rgba(168,85,247,0.45)"
-                                : "rgba(255,255,255,0.08)",
+                                ? c.purpleSoftBorder
+                                : c.leafBorder,
                               backgroundColor: tipOpen
-                                ? "rgba(168,85,247,0.10)"
+                                ? c.purpleSoftBg
                                 : pressed && hasTip
-                                ? "rgba(255,255,255,0.05)"
-                                : "rgba(255,255,255,0.025)",
+                                ? c.surface
+                                : c.surfaceMuted,
                             },
                           ]}
                         >
@@ -195,8 +195,8 @@ function Tree({
                             style={[
                               s.tip,
                               {
-                                backgroundColor: "#221b35",
-                                borderColor: "rgba(168,85,247,0.45)",
+                                backgroundColor: c.tipSurface,
+                                borderColor: c.purpleSoftBorder,
                               },
                             ]}
                           >
@@ -382,7 +382,7 @@ export default function Onboarding() {
       <View
         style={[
           s.collapsed,
-          { borderColor: c.cardBorder, backgroundColor: "rgba(255,255,255,0.03)" },
+          { borderColor: c.cardBorder, backgroundColor: c.surfaceCollapsed },
         ]}
       >
         <Text style={{ color: c.mutedForeground, fontSize: 12.5 }}>
@@ -394,9 +394,7 @@ export default function Onboarding() {
             style={({ pressed }) => [
               s.collapsedBtn,
               {
-                backgroundColor: pressed
-                  ? "rgba(255,255,255,0.1)"
-                  : "rgba(255,255,255,0.06)",
+                backgroundColor: pressed ? c.surfaceStrong : c.surface,
                 borderColor: c.cardBorder,
               },
             ]}
@@ -411,9 +409,7 @@ export default function Onboarding() {
             style={({ pressed }) => [
               s.collapsedBtn,
               {
-                backgroundColor: pressed
-                  ? "rgba(255,255,255,0.1)"
-                  : "rgba(255,255,255,0.06)",
+                backgroundColor: pressed ? c.surfaceStrong : c.surface,
                 borderColor: c.cardBorder,
               },
             ]}
@@ -435,7 +431,7 @@ export default function Onboarding() {
           s.card,
           {
             borderColor: c.cardBorder,
-            backgroundColor: "rgba(255,255,255,0.02)",
+            backgroundColor: c.surfaceSubtle,
           },
         ]}
       >
@@ -446,10 +442,8 @@ export default function Onboarding() {
               style={({ pressed }) => [
                 s.fsBtn,
                 {
-                  backgroundColor: pressed
-                    ? "rgba(255,106,61,0.18)"
-                    : "rgba(255,106,61,0.12)",
-                  borderColor: "rgba(255,106,61,0.45)",
+                  backgroundColor: pressed ? c.accentSoftBgStrong : c.accentSoftBg,
+                  borderColor: c.accentSoftBorder,
                 },
               ]}
               accessibilityLabel="跳过演示"
@@ -472,9 +466,7 @@ export default function Onboarding() {
               style={({ pressed }) => [
                 s.fsBtn,
                 {
-                  backgroundColor: pressed
-                    ? "rgba(255,255,255,0.08)"
-                    : "rgba(255,255,255,0.04)",
+                  backgroundColor: pressed ? c.surfaceStrong : c.surface,
                   borderColor: c.cardBorder,
                 },
               ]}
@@ -493,9 +485,7 @@ export default function Onboarding() {
             style={({ pressed }) => [
               s.fsBtn,
               {
-                backgroundColor: pressed
-                  ? "rgba(255,255,255,0.08)"
-                  : "rgba(255,255,255,0.04)",
+                backgroundColor: pressed ? c.surfaceStrong : c.surface,
                 borderColor: c.cardBorder,
               },
             ]}
@@ -510,9 +500,7 @@ export default function Onboarding() {
             style={({ pressed }) => [
               s.dismiss,
               {
-                backgroundColor: pressed
-                  ? "rgba(255,255,255,0.08)"
-                  : "transparent",
+                backgroundColor: pressed ? c.surfaceStrong : "transparent",
               },
             ]}
             accessibilityLabel="关闭新手引导"
@@ -535,9 +523,9 @@ export default function Onboarding() {
         transparent
         onRequestClose={closeFs}
       >
-        <Pressable style={s.overlay} onPress={closeFs}>
+        <Pressable style={[s.overlay, { backgroundColor: c.overlay }]} onPress={closeFs}>
           <Pressable
-            style={[s.fsCanvas, { borderColor: c.cardBorder }]}
+            style={[s.fsCanvas, { borderColor: c.cardBorder, backgroundColor: c.modalSurface }]}
             onPress={() => {}}
           >
             <Pressable
@@ -546,9 +534,7 @@ export default function Onboarding() {
                 s.fsClose,
                 {
                   borderColor: c.cardBorder,
-                  backgroundColor: pressed
-                    ? "rgba(255,255,255,0.12)"
-                    : "rgba(255,255,255,0.06)",
+                  backgroundColor: pressed ? c.surfaceStrong : c.surface,
                 },
               ]}
               accessibilityLabel="关闭全屏"
@@ -687,7 +673,6 @@ const s = StyleSheet.create({
 
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(8,6,16,0.78)",
     padding: 18,
     alignItems: "center",
     justifyContent: "center",
@@ -696,7 +681,6 @@ const s = StyleSheet.create({
     width: "100%",
     maxWidth: 720,
     maxHeight: "92%",
-    backgroundColor: "#100c1a",
     borderRadius: 18,
     borderWidth: 1,
     overflow: "hidden",

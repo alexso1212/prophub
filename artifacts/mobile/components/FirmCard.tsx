@@ -37,7 +37,7 @@ export function FirmCard({ firm, override, onPress, trophyTier, trophyRank }: Pr
       ]}
     >
       <View style={styles.row}>
-        <View style={[styles.logo, { backgroundColor: "#ffffff10" }]}>
+        <View style={[styles.logo, { backgroundColor: c.logoBg }]}>
           {firm.logo ? (
             <Image source={{ uri: firm.logo }} style={styles.logoImg} contentFit="contain" />
           ) : (

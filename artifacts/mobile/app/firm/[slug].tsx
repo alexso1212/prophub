@@ -83,7 +83,7 @@ export default function FirmDetail() {
 
       <View style={[styles.heroCard, { backgroundColor: c.cardSolid, borderColor: c.cardBorder }]}>
         <View style={styles.heroRow}>
-          <View style={[styles.logo, { backgroundColor: "#ffffff10" }]}>
+          <View style={[styles.logo, { backgroundColor: c.logoBg }]}>
             {firm.logo && (
               <Image source={{ uri: firm.logo }} style={styles.logoImg} contentFit="contain" />
             )}
