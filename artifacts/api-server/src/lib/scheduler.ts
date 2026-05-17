@@ -1,6 +1,6 @@
 import { runDailyScrapeSweep, runLinkHealth } from "../routes/admin";
 import { db } from "@workspace/db";
-import { offersTable } from "@workspace/db/schema";
+import { offersTable, firmsTable } from "@workspace/db/schema";
 import { eq, and } from "drizzle-orm";
 import { logger } from "./logger";
 
@@ -17,12 +17,17 @@ async function hourlyLinkHealth() {
       .select()
       .from(offersTable)
       .where(eq(offersTable.status, "published"));
+    const allFirms = await db.select().from(firmsTable);
+    const firmBySlug = new Map(allFirms.map((f) => [f.slug, f] as const));
     let auto_unpublished = 0;
     let checked = 0;
     for (const o of published) {
       if (!o.affiliateUrl) continue;
       checked++;
-      const h = await runLinkHealth(o.affiliateUrl, "ref=propfirmmatch");
+      const firm = firmBySlug.get(o.firmSlug);
+      const expectDomainSource =
+        firm?.officialUrl || firm?.affiliateBaseUrl || o.affiliateUrl;
+      const h = await runLinkHealth(o.affiliateUrl, "ref=propfirmmatch", expectDomainSource);
       if (!h.ok) {
         // Auto-archive broken offers and flag for re-review.
         await db

@@ -102,10 +102,17 @@ router.post("/admin/offers/:id/approve", async (req, res) => {
   const effectiveAffiliate = draft.affiliateUrl ?? current?.affiliateUrl ?? null;
 
   // Pre-publish link health gate. We refuse to publish a broken/affiliate-
-  // stripped link unless caller passes force=true.
+  // stripped link, or one that redirects off the firm's official domain,
+  // unless caller passes force=true.
   if (effectiveAffiliate) {
     const expectRef = "ref=propfirmmatch";
-    const health = await runLinkHealth(effectiveAffiliate, expectRef);
+    const [firm] = await db
+      .select()
+      .from(firmsTable)
+      .where(eq(firmsTable.slug, draft.firmSlug));
+    const expectDomainSource =
+      firm?.officialUrl || firm?.affiliateBaseUrl || effectiveAffiliate;
+    const health = await runLinkHealth(effectiveAffiliate, expectRef, expectDomainSource);
     if (!health.ok && !force) {
       return res.status(409).json({
         error: "Link health check failed; publish blocked",
@@ -250,21 +257,54 @@ export async function runDailyScrapeSweep(triggeredBy = "cron"): Promise<{ trigg
   return { triggered, skipped };
 }
 
+// Try Playwright (real browser) first if SCRAPE_USE_PLAYWRIGHT=1 and the
+// package is installed. Falls back to plain fetch+UA for hosts that don't
+// need JS rendering. Playwright is intentionally NOT a hard dependency so
+// the api-server bundle stays small; install separately when needed.
+async function fetchHtml(url: string): Promise<{ html: string; via: "playwright" | "fetch" }> {
+  if (process.env.SCRAPE_USE_PLAYWRIGHT === "1") {
+    try {
+      // Dynamic import with a runtime-only specifier so TS doesn't require
+      // playwright types/install. Using new Function avoids static analysis.
+      const dynamicImport = new Function("m", "return import(m)") as (m: string) => Promise<any>;
+      const pw: any = await dynamicImport("playwright").catch(() => null);
+      if (pw?.chromium) {
+        const browser = await pw.chromium.launch({ headless: true });
+        try {
+          const ctx = await browser.newContext({
+            userAgent:
+              "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+          });
+          const page = await ctx.newPage();
+          await page.goto(url, { waitUntil: "networkidle", timeout: 30000 });
+          const html = await page.content();
+          return { html, via: "playwright" };
+        } finally {
+          await browser.close().catch(() => {});
+        }
+      }
+    } catch (e) {
+      console.warn("Playwright path failed; falling back to fetch:", e);
+    }
+  }
+  const resp = await fetch(url, {
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+      Accept:
+        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+      "Accept-Language": "en-US,en;q=0.9",
+    },
+    redirect: "follow",
+  });
+  if (!resp.ok) throw new Error(`Fetch failed: ${resp.status}`);
+  return { html: await resp.text(), via: "fetch" };
+}
+
 async function runScrapeJob(jobId: number, slug: string, url: string) {
   const start = Date.now();
   try {
-    const resp = await fetch(url, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        "Accept":
-          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9",
-      },
-      redirect: "follow",
-    });
-    if (!resp.ok) throw new Error(`Fetch failed: ${resp.status}`);
-    const html = await resp.text();
+    const { html } = await fetchHtml(url);
     const text = textFromHtml(html);
     const snippet = text.slice(0, 2000);
 
@@ -339,10 +379,30 @@ async function runScrapeJob(jobId: number, slug: string, url: string) {
 }
 
 // ---------- Link health ----------
+export interface LinkHealthResult {
+  ok: boolean;
+  status?: number;
+  finalUrl?: string;
+  hasRef?: boolean;
+  domainOk?: boolean;
+  error?: string;
+  durationMs: number;
+}
+
+function rootDomain(host: string): string {
+  // Strip leading "www." and return the registrable-ish suffix (last two
+  // labels). Good enough for prop firm sites; not a full PSL parse.
+  const cleaned = host.toLowerCase().replace(/^www\./, "");
+  const parts = cleaned.split(".");
+  if (parts.length <= 2) return cleaned;
+  return parts.slice(-2).join(".");
+}
+
 export async function runLinkHealth(
   url: string,
   expectRef?: string,
-): Promise<{ ok: boolean; status?: number; finalUrl?: string; hasRef?: boolean; error?: string; durationMs: number }> {
+  expectDomainSource?: string,
+): Promise<LinkHealthResult> {
   const start = Date.now();
   if (!isPublicHttpUrl(url)) {
     return { ok: false, error: "Non-public URL blocked", durationMs: Date.now() - start };
@@ -354,11 +414,27 @@ export async function runLinkHealth(
     });
     const finalUrl = resp.url;
     const hasRef = expectRef ? finalUrl.includes(expectRef) : true;
+
+    // Redirect-domain validation: the final URL after all redirects must
+    // resolve to the same root domain as the expected source. This catches
+    // affiliate links that get hijacked to a different vendor.
+    let domainOk = true;
+    if (expectDomainSource) {
+      try {
+        const expected = rootDomain(new URL(expectDomainSource).hostname);
+        const actual = rootDomain(new URL(finalUrl).hostname);
+        domainOk = actual === expected;
+      } catch {
+        domainOk = false;
+      }
+    }
+
     return {
-      ok: resp.ok && hasRef,
+      ok: resp.ok && hasRef && domainOk,
       status: resp.status,
       finalUrl,
       hasRef,
+      domainOk,
       durationMs: Date.now() - start,
     };
   } catch (err: any) {
@@ -402,20 +478,15 @@ router.post("/admin/link-health/sweep", async (_req, res) => {
     .select()
     .from(offersTable)
     .where(eq(offersTable.status, "published"));
+  const allFirms = await db.select().from(firmsTable);
+  const firmBySlug = new Map(allFirms.map((f) => [f.slug, f] as const));
   const expectRef = "ref=propfirmmatch";
-  const results: Array<{
-    offerId: number;
-    firmSlug: string;
-    url: string;
-    ok: boolean;
-    status?: number;
-    finalUrl?: string;
-    hasRef?: boolean;
-    error?: string;
-  }> = [];
+  const results: Array<{ offerId: number; firmSlug: string; url: string } & LinkHealthResult> = [];
   for (const o of published) {
     if (!o.affiliateUrl) continue;
-    const h = await runLinkHealth(o.affiliateUrl, expectRef);
+    const firm = firmBySlug.get(o.firmSlug);
+    const expectDomainSource = firm?.officialUrl || firm?.affiliateBaseUrl || o.affiliateUrl;
+    const h = await runLinkHealth(o.affiliateUrl, expectRef, expectDomainSource);
     results.push({ offerId: o.id, firmSlug: o.firmSlug, url: o.affiliateUrl, ...h });
   }
   return res.json({ checked: results.length, results });
