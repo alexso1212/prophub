@@ -5,11 +5,12 @@ import { ChevronDownIcon, CloseIcon, ExpandIcon, PlayIcon } from "./icons";
 
 const STORAGE_KEY = "pfm.onboarding.collapsed.v3";
 const EXPANDED_KEY = "pfm.onboarding.expanded.v1";
+const EXPANDED_FS_KEY = "pfm.onboarding.expanded.fs.v1";
 
-function readExpanded(): number[] {
+function readExpandedFrom(key: string): number[] {
   if (typeof window === "undefined") return [];
   try {
-    const raw = window.localStorage.getItem(EXPANDED_KEY);
+    const raw = window.localStorage.getItem(key);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
@@ -19,19 +20,36 @@ function readExpanded(): number[] {
   }
 }
 
-function writeExpanded(indices: Set<number>) {
+function writeExpandedTo(key: string, indices: Set<number>) {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(EXPANDED_KEY, JSON.stringify(Array.from(indices)));
+    window.localStorage.setItem(key, JSON.stringify(Array.from(indices)));
   } catch {
     /* ignore */
   }
+}
+
+function readExpanded(): number[] {
+  return readExpandedFrom(EXPANDED_KEY);
+}
+
+function writeExpanded(indices: Set<number>) {
+  writeExpandedTo(EXPANDED_KEY, indices);
+}
+
+function readExpandedFs(): number[] {
+  return readExpandedFrom(EXPANDED_FS_KEY);
+}
+
+function writeExpandedFs(indices: Set<number>) {
+  writeExpandedTo(EXPANDED_FS_KEY, indices);
 }
 
 function clearExpanded() {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.removeItem(EXPANDED_KEY);
+    window.localStorage.removeItem(EXPANDED_FS_KEY);
   } catch {
     /* ignore */
   }
@@ -284,6 +302,7 @@ export default function Onboarding() {
       const next = new Set(prev);
       if (next.has(i)) next.delete(i);
       else next.add(i);
+      writeExpandedFs(next);
       return next;
     });
     setActiveTip(null);
@@ -291,6 +310,8 @@ export default function Onboarding() {
 
   function openFs() {
     cancelIntro();
+    const saved = readExpandedFs();
+    setExpandedFs(new Set(saved));
     setFullscreen(true);
     setActiveTip(null);
   }
