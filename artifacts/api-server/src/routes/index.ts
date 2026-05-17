@@ -4,6 +4,7 @@ import newsRouter from "./news";
 import firmsOverridesRouter from "./firmsOverrides";
 import firmReviewsRouter from "./firmReviews";
 import liveRouter from "./live";
+import adminRouter from "./admin";
 
 const router: IRouter = Router();
 
@@ -12,5 +13,6 @@ router.use(newsRouter);
 router.use(firmsOverridesRouter);
 router.use(firmReviewsRouter);
 router.use(liveRouter);
+router.use(adminRouter);
 
 export default router;

@@ -25,6 +25,8 @@ import TutorialDetailPage from "./pages/TutorialDetailPage";
 import LivePage from "./pages/LivePage";
 import GoPage from "./pages/GoPage";
 import AdminFirmsPage from "./pages/AdminFirmsPage";
+import AdminOffersPage from "./pages/admin/AdminOffersPage";
+import AdminScrapePage from "./pages/admin/AdminScrapePage";
 import { FirmsOverridesProvider } from "./contexts/FirmsOverridesContext";
 import { CategoryProvider, type Category } from "./contexts/CategoryContext";
 
@@ -108,12 +110,10 @@ function SignUpPage() {
   );
 }
 
-function AdminRouteWithClerk() {
+function AdminRouteWithClerk({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <Show when="signed-in">
-        <AdminFirmsPage clerkEnabled />
-      </Show>
+      <Show when="signed-in">{children}</Show>
       <Show when="signed-out">
         <Redirect to="/sign-in" />
       </Show>
@@ -138,7 +138,31 @@ function Router({ clerkEnabled }: { clerkEnabled: boolean }) {
         <Route path="/sign-in/*?" component={SignInPage} />
         <Route path="/sign-up/*?" component={SignUpPage} />
         <Route path="/admin/firms">
-          {clerkEnabled ? <AdminRouteWithClerk /> : <AdminFirmsPage clerkEnabled={false} />}
+          {clerkEnabled ? (
+            <AdminRouteWithClerk>
+              <AdminFirmsPage clerkEnabled />
+            </AdminRouteWithClerk>
+          ) : (
+            <AdminFirmsPage clerkEnabled={false} />
+          )}
+        </Route>
+        <Route path="/admin/offers">
+          {clerkEnabled ? (
+            <AdminRouteWithClerk>
+              <AdminOffersPage />
+            </AdminRouteWithClerk>
+          ) : (
+            <AdminOffersPage />
+          )}
+        </Route>
+        <Route path="/admin/scrape">
+          {clerkEnabled ? (
+            <AdminRouteWithClerk>
+              <AdminScrapePage />
+            </AdminRouteWithClerk>
+          ) : (
+            <AdminScrapePage />
+          )}
         </Route>
 
         {/* ======================== 期货板块 ======================== */}
