@@ -15,10 +15,33 @@ import { useColors } from "@/hooks/useColors";
 import { ChevronDownIcon, CloseIcon, ExpandIcon } from "./icons";
 
 const STORAGE_KEY = "pfm.onboarding.collapsed.v3";
+const EXPANDED_KEY = "pfm.onboarding.expanded.v1";
+const EXPANDED_FS_KEY = "pfm.onboarding.expanded.fs.v1";
 
 const collapseListeners = new Set<() => void>();
 function emitCollapse() {
   for (const l of collapseListeners) l();
+}
+
+async function readExpandedFrom(key: string): Promise<number[]> {
+  try {
+    const raw = await AsyncStorage.getItem(key);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (n): n is number =>
+        typeof n === "number" && Number.isInteger(n) && n >= 0,
+    );
+  } catch {
+    return [];
+  }
+}
+
+function writeExpandedTo(key: string, indices: Set<number>) {
+  AsyncStorage.setItem(key, JSON.stringify(Array.from(indices))).catch(
+    () => {},
+  );
 }
 
 interface TreeProps {
@@ -212,8 +235,14 @@ export default function Onboarding() {
   useEffect(() => {
     (async () => {
       try {
-        const v = await AsyncStorage.getItem(STORAGE_KEY);
+        const [v, savedInline] = await Promise.all([
+          AsyncStorage.getItem(STORAGE_KEY),
+          readExpandedFrom(EXPANDED_KEY),
+        ]);
         setCollapsed(v === "1");
+        if (savedInline.length) {
+          setExpandedInline(new Set(savedInline));
+        }
       } catch {
         setCollapsed(false);
       }
@@ -235,15 +264,23 @@ export default function Onboarding() {
 
   const closeFs = useCallback(() => {
     setFullscreen(false);
-    setExpandedFs(new Set());
-    setExpandedInline(new Set());
     setActiveTip(null);
   }, []);
+
+  const replayDemo = useCallback(() => {
+    AsyncStorage.multiRemove([EXPANDED_KEY, EXPANDED_FS_KEY]).catch(() => {});
+    setExpandedInline(new Set());
+    setExpandedFs(new Set());
+    setActiveTip(null);
+    setFullscreen(false);
+    setAndStore(false);
+  }, [setAndStore]);
 
   function toggleInline(i: number) {
     setExpandedInline((prev) => {
       const next = new Set<number>();
       if (!prev.has(i)) next.add(i);
+      writeExpandedTo(EXPANDED_KEY, next);
       return next;
     });
     setActiveTip(null);
@@ -254,10 +291,18 @@ export default function Onboarding() {
       const next = new Set(prev);
       if (next.has(i)) next.delete(i);
       else next.add(i);
+      writeExpandedTo(EXPANDED_FS_KEY, next);
       return next;
     });
     setActiveTip(null);
   }
+
+  const openFs = useCallback(async () => {
+    const saved = await readExpandedFrom(EXPANDED_FS_KEY);
+    setExpandedFs(new Set(saved));
+    setFullscreen(true);
+    setActiveTip(null);
+  }, []);
 
   if (collapsed === null) return null;
 
@@ -272,23 +317,42 @@ export default function Onboarding() {
         <Text style={{ color: c.mutedForeground, fontSize: 12.5 }}>
           再看看怎么运作？
         </Text>
-        <Pressable
-          onPress={() => setAndStore(false)}
-          style={({ pressed }) => [
-            s.collapsedBtn,
-            {
-              backgroundColor: pressed
-                ? "rgba(255,255,255,0.1)"
-                : "rgba(255,255,255,0.06)",
-              borderColor: c.cardBorder,
-            },
-          ]}
-        >
-          <Text style={{ color: c.foreground, fontSize: 12, fontWeight: "600" }}>
-            展开
-          </Text>
-          <ChevronDownIcon size={12} color={c.foreground} />
-        </Pressable>
+        <View style={s.collapsedActions}>
+          <Pressable
+            onPress={replayDemo}
+            style={({ pressed }) => [
+              s.collapsedBtn,
+              {
+                backgroundColor: pressed
+                  ? "rgba(255,255,255,0.1)"
+                  : "rgba(255,255,255,0.06)",
+                borderColor: c.cardBorder,
+              },
+            ]}
+            accessibilityLabel="重播演示"
+          >
+            <Text style={{ color: c.foreground, fontSize: 12, fontWeight: "600" }}>
+              重播演示
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setAndStore(false)}
+            style={({ pressed }) => [
+              s.collapsedBtn,
+              {
+                backgroundColor: pressed
+                  ? "rgba(255,255,255,0.1)"
+                  : "rgba(255,255,255,0.06)",
+                borderColor: c.cardBorder,
+              },
+            ]}
+          >
+            <Text style={{ color: c.foreground, fontSize: 12, fontWeight: "600" }}>
+              展开
+            </Text>
+            <ChevronDownIcon size={12} color={c.foreground} />
+          </Pressable>
+        </View>
       </View>
     );
   }
@@ -307,8 +371,7 @@ export default function Onboarding() {
         <View style={s.toolbar}>
           <Pressable
             onPress={() => {
-              setFullscreen(true);
-              setActiveTip(null);
+              openFs();
             }}
             style={({ pressed }) => [
               s.fsBtn,
@@ -323,6 +386,23 @@ export default function Onboarding() {
             <ExpandIcon size={14} color={c.mutedForeground} />
             <Text style={{ color: c.mutedForeground, fontSize: 12 }}>
               全屏查看
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={replayDemo}
+            style={({ pressed }) => [
+              s.fsBtn,
+              {
+                backgroundColor: pressed
+                  ? "rgba(255,255,255,0.08)"
+                  : "rgba(255,255,255,0.04)",
+                borderColor: c.cardBorder,
+              },
+            ]}
+            accessibilityLabel="重播演示"
+          >
+            <Text style={{ color: c.mutedForeground, fontSize: 12 }}>
+              重播演示
             </Text>
           </Pressable>
           <Pressable
@@ -436,6 +516,11 @@ const s = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     marginBottom: 12,
+  },
+  collapsedActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
   },
   collapsedBtn: {
     flexDirection: "row",
