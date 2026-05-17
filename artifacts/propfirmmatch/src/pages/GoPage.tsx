@@ -152,7 +152,7 @@ export default function GoPage() {
               </button>
             </div>
             <p className="go-foot">
-              跳转后请认准 <strong>{new URL(firm.affiliateUrl!).hostname}</strong>，结账时使用上面的优惠码享受折扣。
+              跳转后请认准 <strong>{(() => { try { return new URL(firm.affiliateUrl!).hostname; } catch { return firm.affiliateUrl!; } })()}</strong>，结账时使用上面的优惠码享受折扣。
             </p>
           </>
         )}
