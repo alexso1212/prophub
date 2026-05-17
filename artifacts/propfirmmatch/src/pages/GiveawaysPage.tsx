@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
-import { useCategory, useCategoryFirms } from "../contexts/CategoryContext";
+import { useCategory, findFirmAnyCategory } from "../contexts/CategoryContext";
 import { getBrandZh } from "../data/brandZh";
 import FirmLogo from "../components/FirmLogo";
 import { GiftIcon } from "../components/icons";
@@ -66,15 +66,17 @@ function StatusDot({ status }: { status: GiveawayStatus }) {
 
 interface CardProps {
   g: Giveaway;
-  prefix: string;
   signedUp: boolean;
   onSignup: (g: Giveaway) => void;
 }
 
-function GiveawayCard({ g, prefix, signedUp, onSignup }: CardProps) {
-  const firms = useCategoryFirms();
-  const sponsor = firms.find(f => f.slug === g.sponsorSlug);
-  const cosponsors = (g.cosponsorSlugs ?? []).map(s => firms.find(f => f.slug === s)).filter(Boolean);
+function GiveawayCard({ g, signedUp, onSignup }: CardProps) {
+  const sponsorRef = findFirmAnyCategory(g.sponsorSlug);
+  const sponsor = sponsorRef?.firm;
+  const sponsorCategory = sponsorRef?.category;
+  const cosponsorRefs = (g.cosponsorSlugs ?? [])
+    .map(s => findFirmAnyCategory(s))
+    .filter((r): r is NonNullable<typeof r> => !!r);
   const sponsorZh = sponsor ? getBrandZh(sponsor.slug) : "";
   const countdown = useCountdown(g.endsAt);
   const entries = useAnimatedNumber(g.entries);
@@ -83,8 +85,8 @@ function GiveawayCard({ g, prefix, signedUp, onSignup }: CardProps) {
   return (
     <article className="gw-card">
       <div className="gw-card-head">
-        {sponsor && (
-          <Link href={`${prefix}/prop-firms/${sponsor.slug}`} className="firm-logo-sm gw-card-logo" aria-label={sponsor.name}>
+        {sponsor && sponsorCategory && (
+          <Link href={`/${sponsorCategory}/prop-firms/${sponsor.slug}`} className="firm-logo-sm gw-card-logo" aria-label={sponsor.name}>
             <FirmLogo src={sponsor.logo} alt={sponsor.name} />
           </Link>
         )}
@@ -94,11 +96,11 @@ function GiveawayCard({ g, prefix, signedUp, onSignup }: CardProps) {
             <StatusDot status={g.status} />
           </div>
           <div className="gw-card-sponsor">
-            由 {sponsor ? (
-              <Link href={`${prefix}/prop-firms/${sponsor.slug}`} className="firm-name-link">{sponsorZh || sponsor.name}</Link>
+            由 {sponsor && sponsorCategory ? (
+              <Link href={`/${sponsorCategory}/prop-firms/${sponsor.slug}`} className="firm-name-link">{sponsorZh || sponsor.name}</Link>
             ) : <span>合作公司</span>}
-            {cosponsors.length > 0 && cosponsors.map(c => (
-              <span key={c!.slug}> × <Link href={`${prefix}/prop-firms/${c!.slug}`} className="firm-name-link">{getBrandZh(c!.slug) || c!.name}</Link></span>
+            {cosponsorRefs.map(({ firm, category }) => (
+              <span key={firm.slug}> × <Link href={`/${category}/prop-firms/${firm.slug}`} className="firm-name-link">{getBrandZh(firm.slug) || firm.name}</Link></span>
             ))}
             {" "}赞助
           </div>
@@ -167,10 +169,9 @@ function GiveawayCard({ g, prefix, signedUp, onSignup }: CardProps) {
   );
 }
 
-function Section({ title, items, prefix, signups, onSignup }: {
+function Section({ title, items, signups, onSignup }: {
   title: string;
   items: Giveaway[];
-  prefix: string;
   signups: Record<string, string>;
   onSignup: (g: Giveaway) => void;
 }) {
@@ -182,7 +183,7 @@ function Section({ title, items, prefix, signups, onSignup }: {
         <span className="gw-section-count">{items.length} 期</span>
       </div>
       <div className="gw-grid">
-        {items.map(g => <GiveawayCard key={g.id} g={g} prefix={prefix} signedUp={!!signups[g.id]} onSignup={onSignup} />)}
+        {items.map(g => <GiveawayCard key={g.id} g={g} signedUp={!!signups[g.id]} onSignup={onSignup} />)}
       </div>
     </section>
   );
@@ -190,14 +191,14 @@ function Section({ title, items, prefix, signups, onSignup }: {
 
 export default function GiveawaysPage() {
   const category = useCategory();
-  const prefix = `/${category}`;
   const [signups, setSignups] = useState<Record<string, string>>(() => readSignups());
   const [modalGiveaway, setModalGiveaway] = useState<Giveaway | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
-  const ongoing = useMemo(() => getOngoing(), []);
-  const ending = useMemo(() => getEnding(), []);
-  const ended = useMemo(() => getEnded(), []);
+  const matchesCat = (g: Giveaway) => g.category === "all" || g.category === category;
+  const ongoing = useMemo(() => getOngoing().filter(matchesCat), [category]);
+  const ending = useMemo(() => getEnding().filter(matchesCat), [category]);
+  const ended = useMemo(() => getEnded().filter(matchesCat), [category]);
 
   const totalPrize = useMemo(
     () => GIVEAWAYS.filter(g => g.status !== "已结束").reduce((s, g) => s + g.prizeValueUsd, 0),
@@ -232,9 +233,12 @@ export default function GiveawaysPage() {
         </div>
       </div>
 
-      <Section title="🟢 进行中" items={ongoing} prefix={prefix} signups={signups} onSignup={handleSignup} />
-      <Section title="🟠 即将开奖" items={ending} prefix={prefix} signups={signups} onSignup={handleSignup} />
-      <Section title="⚪ 已结束" items={ended} prefix={prefix} signups={signups} onSignup={handleSignup} />
+      {ongoing.length + ending.length + ended.length === 0 && (
+        <div className="gw-empty">本板块当前暂无抽奖活动，下一期上线时会自动出现在这里。</div>
+      )}
+      <Section title="🟢 进行中" items={ongoing} signups={signups} onSignup={handleSignup} />
+      <Section title="🟠 即将开奖" items={ending} signups={signups} onSignup={handleSignup} />
+      <Section title="⚪ 已结束" items={ended} signups={signups} onSignup={handleSignup} />
 
       <div className="gw-rules">
         <strong>活动规则：</strong>
