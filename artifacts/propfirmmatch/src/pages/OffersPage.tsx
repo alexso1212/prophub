@@ -23,7 +23,12 @@ export default function OffersPage() {
           const zh = findFirmZh(f.slug);
           const desc = zh?.offerDescriptionZh || f.offerDescription;
           return (
-            <Link key={f.slug} href={`${prefix}/prop-firms/${f.slug}`} className="offer-card">
+            <Link
+              key={f.slug}
+              href={`/go/${f.slug}`}
+              className="offer-card"
+              title="跳转到官网 + 自动复制优惠码"
+            >
               {f.isNew && <span className="offer-new-pill">新</span>}
               <div className="offer-logo"><FirmLogo src={f.logo} alt={f.name} /></div>
               <div className="offer-name">{f.name}{getBrandZh(f.slug) && <span className="brand-zh-sub">{getBrandZh(f.slug)}</span>}</div>

@@ -99,7 +99,7 @@ export default function FirmPage() {
   const goHref = `/go/${f.slug}`;
 
   const BuyButton = ({ className }: { className?: string }) => (
-    <Link href={goHref} className={className ?? "btn-buy"}>立即购买</Link>
+    <Link href={goHref} className={className ?? "btn-buy"} title="跳转到官网 + 自动复制优惠码">立即购买</Link>
   );
 
   return (
@@ -361,7 +361,7 @@ export default function FirmPage() {
                     <div key={i} className="challenge-card">
                       <div className="cc-head">
                         <div className="cc-title">
-                          <Link href={goHref} style={{ color: "inherit", textDecoration: "none" }}>
+                          <Link href={goHref} style={{ color: "inherit", textDecoration: "none" }} title="跳转到官网 + 自动复制优惠码">
                             {programZh(c.name.startsWith(f.name) ? c.name : `${f.name} - ${c.name}`)}
                           </Link>
                         </div>

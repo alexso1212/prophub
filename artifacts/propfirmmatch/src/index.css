@@ -3398,3 +3398,36 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   }
   .fab-help .fab-help-hint { display: none; }
 }
+
+/* /go outbound redirect page */
+.go-card {
+  margin-top: 40px;
+  padding: 36px 28px 28px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  text-align: center;
+}
+.go-logo { width: 80px; height: 80px; margin: 0 auto 18px; border-radius: 16px; overflow: hidden; background: #fff; display: flex; align-items: center; justify-content: center; }
+.go-logo img { max-width: 70%; max-height: 70%; }
+.go-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.go-brand { color: var(--orange); }
+.go-sub { color: var(--text-dim); font-size: 14px; line-height: 1.7; margin: 10px 0 22px; }
+.go-countdown { margin: 18px 0 22px; display: flex; align-items: baseline; justify-content: center; gap: 6px; }
+.go-num { font-size: 56px; font-weight: 800; color: var(--orange); line-height: 1; font-variant-numeric: tabular-nums; }
+.go-unit { font-size: 18px; color: var(--text); font-weight: 600; }
+.go-tip { font-size: 13px; color: var(--text-dim); margin-left: 8px; }
+.go-code-label { font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
+.go-code-box {
+  margin: 0 auto 10px; padding: 14px 18px; max-width: 320px;
+  border: 1.5px dashed var(--orange); border-radius: 10px;
+  background: rgba(255,140,0,0.06);
+  font-size: 22px; font-weight: 700; letter-spacing: 2px; color: var(--orange);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.go-copy-toast { font-size: 12px; color: var(--text-dim); margin-bottom: 18px; min-height: 18px; }
+.go-copy-toast.ok { color: #22c55e; }
+.go-copy-toast.fail { color: #ef4444; }
+.go-actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+.go-foot { margin-top: 18px; font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+.go-foot strong { color: var(--text); }
