@@ -1,5 +1,15 @@
 import type { Firm } from "./firms";
 
+const BASE = import.meta.env.BASE_URL;
+const FX_PLATFORM_ICONS = {
+  mt4: `${BASE}platforms/metatrader4.png`,
+  mt5: `${BASE}platforms/metatrader5.png`,
+  ctrader: `${BASE}platforms/ctrader.png`,
+  dxtrade: `${BASE}platforms/dxtrade.png`,
+  matchTrader: `${BASE}platforms/match-trader.png`,
+  tradeLocker: `${BASE}platforms/tradelocker.png`,
+};
+
 // 演示数据 —— 外汇板块的代表性 prop firm。
 // slug 以 "fx-" 前缀，避免与期货板块的 firm_reviews 表撞车。
 export const firmsForex: Firm[] = [
@@ -15,7 +25,7 @@ export const firmsForex: Firm[] = [
     yearsInOperation: 10, trackingId: "fx-1001",
     promoPercent: 10, promoCode: "MATCH10",
     maxAllocation: "$2M", numAssets: 60,
-    platforms: [{name:"MetaTrader 4"},{name:"MetaTrader 5"},{name:"cTrader"},{name:"DXTrade"}],
+    platforms: [{name:"MetaTrader 4",icon:FX_PLATFORM_ICONS.mt4},{name:"MetaTrader 5",icon:FX_PLATFORM_ICONS.mt5},{name:"cTrader",icon:FX_PLATFORM_ICONS.ctrader},{name:"DXTrade",icon:FX_PLATFORM_ICONS.dxtrade}],
     spreadType: "Raw",
     currencyPairs: 50,
     maxLeverage: "1:100",
@@ -44,7 +54,7 @@ export const firmsForex: Firm[] = [
     yearsInOperation: 9, trackingId: "fx-1002",
     promoPercent: 20, promoCode: "MATCH20",
     maxAllocation: "$4M", numAssets: 50,
-    platforms: [{name:"MetaTrader 5"},{name:"Match-Trader"}],
+    platforms: [{name:"MetaTrader 5",icon:FX_PLATFORM_ICONS.mt5},{name:"Match-Trader",icon:FX_PLATFORM_ICONS.matchTrader}],
     spreadType: "Raw",
     currencyPairs: 38,
     maxLeverage: "1:30",
@@ -72,7 +82,7 @@ export const firmsForex: Firm[] = [
     yearsInOperation: 3, trackingId: "fx-1003",
     promoPercent: 25, promoCode: "MATCH25",
     maxAllocation: "$4M", numAssets: 70,
-    platforms: [{name:"MetaTrader 4"},{name:"MetaTrader 5"},{name:"cTrader"}],
+    platforms: [{name:"MetaTrader 4",icon:FX_PLATFORM_ICONS.mt4},{name:"MetaTrader 5",icon:FX_PLATFORM_ICONS.mt5},{name:"cTrader",icon:FX_PLATFORM_ICONS.ctrader}],
     spreadType: "ECN",
     currencyPairs: 60,
     maxLeverage: "1:100",
@@ -99,7 +109,7 @@ export const firmsForex: Firm[] = [
     yearsInOperation: 2, trackingId: "fx-1004",
     promoPercent: 30, promoCode: "MATCH30",
     maxAllocation: "$1.5M", numAssets: 45,
-    platforms: [{name:"MetaTrader 4"},{name:"MetaTrader 5"}],
+    platforms: [{name:"MetaTrader 4",icon:FX_PLATFORM_ICONS.mt4},{name:"MetaTrader 5",icon:FX_PLATFORM_ICONS.mt5}],
     spreadType: "Raw",
     currencyPairs: 45,
     maxLeverage: "1:100",
@@ -123,7 +133,7 @@ export const firmsForex: Firm[] = [
     yearsInOperation: 4, trackingId: "fx-1005",
     isNew: false, promoPercent: 15, promoCode: "MATCH",
     maxAllocation: "$1M", numAssets: 40,
-    platforms: [{name:"MetaTrader 5"},{name:"TradeLocker"}],
+    platforms: [{name:"MetaTrader 5",icon:FX_PLATFORM_ICONS.mt5},{name:"TradeLocker",icon:FX_PLATFORM_ICONS.tradeLocker}],
     spreadType: "Raw",
     currencyPairs: 40,
     maxLeverage: "1:50",
@@ -147,7 +157,7 @@ export const firmsForex: Firm[] = [
     yearsInOperation: 2, trackingId: "fx-1006",
     isNew: true, promoPercent: 35, promoCode: "MATCH35",
     maxAllocation: "$200K", numAssets: 30,
-    platforms: [{name:"cTrader"},{name:"DXTrade"}],
+    platforms: [{name:"cTrader",icon:FX_PLATFORM_ICONS.ctrader},{name:"DXTrade",icon:FX_PLATFORM_ICONS.dxtrade}],
     spreadType: "ECN",
     currencyPairs: 28,
     maxLeverage: "1:100",
@@ -171,7 +181,7 @@ export const firmsForex: Firm[] = [
     yearsInOperation: 1, trackingId: "fx-1007",
     isNew: true, promoPercent: 50, promoCode: "MATCH50", promoLabel: "SPECIAL",
     maxAllocation: "$1M", numAssets: 50,
-    platforms: [{name:"MetaTrader 5"},{name:"Match-Trader"}],
+    platforms: [{name:"MetaTrader 5",icon:FX_PLATFORM_ICONS.mt5},{name:"Match-Trader",icon:FX_PLATFORM_ICONS.matchTrader}],
     spreadType: "Raw",
     currencyPairs: 48,
     maxLeverage: "1:100",
@@ -196,7 +206,7 @@ export const firmsForex: Firm[] = [
     yearsInOperation: 1, trackingId: "fx-1008",
     isNew: true, promoPercent: 40, promoCode: "MATCH40",
     maxAllocation: "$500K", numAssets: 35,
-    platforms: [{name:"MetaTrader 5"},{name:"DXTrade"}],
+    platforms: [{name:"MetaTrader 5",icon:FX_PLATFORM_ICONS.mt5},{name:"DXTrade",icon:FX_PLATFORM_ICONS.dxtrade}],
     spreadType: "ECN",
     currencyPairs: 35,
     maxLeverage: "1:100",
