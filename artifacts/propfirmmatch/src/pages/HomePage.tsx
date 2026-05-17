@@ -6,7 +6,7 @@ import { getBrandZh } from "../data/brandZh";
 import { countryZh } from "../data/i18nZh";
 import NewsFeed from "../components/NewsFeed";
 import FirmLogo from "../components/FirmLogo";
-import { SparkleIcon, SettingsIcon, HeartIcon, TrophyIcon, StarRow, StarIcon } from "../components/icons";
+import { SparkleIcon, SettingsIcon, HeartIcon, TrophyIcon, StarRow, StarIcon, ClipboardIcon, CheckIcon } from "../components/icons";
 import Onboarding from "../components/Onboarding";
 import FirmsFilterSidebar from "../components/FirmsFilterSidebar";
 import { useFirmsOverrides } from "../contexts/FirmsOverridesContext";
@@ -92,6 +92,49 @@ function PopularCard({ f, place, prefix }: { f: Firm; place: 1 | 2 | 3; prefix: 
         <span>{f.reviews} 条评价</span>
       </div>
       {promoPercent > 0 && <div className="discount">{promoPercent}% 折扣 — {promoCode}</div>}
+    </div>
+  );
+}
+
+function PromoPill({ percent, code, compact }: { percent: number; code: string; compact?: boolean }) {
+  const [copied, setCopied] = useState(false);
+  const copy = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(code);
+      } else {
+        const ta = document.createElement("textarea");
+        ta.value = code;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
+    } catch {
+      /* ignore */
+    }
+  };
+  return (
+    <div className={`promo-pill-wrap${compact ? " compact" : ""}`}>
+      <div className="promo-pill" aria-label={`${percent}% 折扣 ${code}`}>
+        <span className="promo-pill-percent">{percent}% {compact ? "OFF" : "折扣"}</span>
+        <span className="promo-pill-code">{code}</span>
+      </div>
+      <button
+        type="button"
+        className={`promo-copy-btn${copied ? " copied" : ""}`}
+        onClick={copy}
+        aria-label={copied ? "已复制" : "复制优惠码"}
+        title={copied ? "已复制" : "复制优惠码"}
+      >
+        {copied ? <CheckIcon size={14} /> : <ClipboardIcon size={14} />}
+      </button>
     </div>
   );
 }
@@ -321,10 +364,7 @@ export default function HomePage() {
                   <td style={{ fontWeight: 600 }}>{f.maxAllocation}</td>
                   <td>
                     {promoPercent > 0 ? (
-                      <div className="promo-cell">
-                        <span className="promo-discount">{promoPercent}% 折扣</span>
-                        <span className="promo-code">{promoCode}</span>
-                      </div>
+                      <PromoPill percent={promoPercent} code={promoCode} />
                     ) : <span style={{ color: "var(--text-muted)" }}>—</span>}
                   </td>
                   <td>
@@ -412,10 +452,7 @@ export default function HomePage() {
                     <td style={{ fontWeight: 600 }}>{f.maxAllocation}</td>
                     <td>
                       {promoPercent > 0 ? (
-                        <div className="promo-cell">
-                          <span className="promo-discount">{promoPercent}%</span>
-                          <span className="promo-code">{promoCode}</span>
-                        </div>
+                        <PromoPill percent={promoPercent} code={promoCode} compact />
                       ) : <span style={{ color: "var(--text-muted)" }}>—</span>}
                     </td>
                     <td>
