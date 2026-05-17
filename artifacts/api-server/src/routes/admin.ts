@@ -330,6 +330,9 @@ router.post("/admin/offers/:id/approve", async (req, res) => {
         hint: "Re-submit with { force: true } to override.",
       });
     }
+    // Stash health result so we can record force-override context in the
+    // audit trail below.
+    (req as unknown as { _health?: typeof health })._health = health;
   }
 
   // Wrap archive + publish + audit in a single transaction so a partial
@@ -353,16 +356,41 @@ router.post("/admin/offers/:id/approve", async (req, res) => {
           updatedAt: new Date(),
         })
         .where(eq(offersTable.id, id));
+      const health = (req as unknown as { _health?: { ok: boolean; reason?: string } })._health;
+      const forcedNote =
+        force && health && !health.ok
+          ? ` [FORCE-OVERRIDE link health: ${health.reason ?? "failed"}]`
+          : "";
       await tx.insert(offerChangesTable).values({
         offerId: id,
         firmSlug: draft.firmSlug,
         beforeJson: current ?? null,
         afterJson: { ...draft, status: "published" },
-        diffSummary: `Approved by ${actor}`,
+        diffSummary: `Approved by ${actor}${forcedNote}`,
         actor,
-        action: "approve",
+        action: force && health && !health.ok ? "approve_forced" : "approve",
       });
     });
+    // Fire a webhook alert for force-publish so ops can audit out-of-band.
+    if (force) {
+      const health = (req as unknown as { _health?: { ok: boolean; reason?: string } })._health;
+      if (health && !health.ok) {
+        const hook = process.env.LINK_HEALTH_ALERT_WEBHOOK;
+        if (hook) {
+          fetch(hook, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: "force_publish",
+              firmSlug: draft.firmSlug,
+              offerId: id,
+              actor,
+              healthReason: health.reason,
+            }),
+          }).catch(() => undefined);
+        }
+      }
+    }
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     return res.status(500).json({ error: `Publish transaction failed: ${msg}` });

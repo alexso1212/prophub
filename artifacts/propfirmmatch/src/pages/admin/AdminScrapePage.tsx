@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Fragment } from "react";
 import AdminNav from "./AdminNav";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
@@ -299,8 +299,8 @@ export default function AdminScrapePage() {
               </thead>
               <tbody>
                 {jobs.map((j) => (
-                  <>
-                    <tr key={j.id}>
+                  <Fragment key={j.id}>
+                    <tr>
                       <td>#{j.id}</td>
                       <td>{j.firmSlug}</td>
                       <td>
@@ -362,7 +362,7 @@ export default function AdminScrapePage() {
                         </td>
                       </tr>
                     )}
-                  </>
+                  </Fragment>
                 ))}
               </tbody>
             </table>
