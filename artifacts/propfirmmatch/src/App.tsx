@@ -27,6 +27,7 @@ import GoPage from "./pages/GoPage";
 import AdminFirmsPage from "./pages/AdminFirmsPage";
 import AdminOffersPage from "./pages/admin/AdminOffersPage";
 import AdminScrapePage from "./pages/admin/AdminScrapePage";
+import KnowledgePage from "./pages/KnowledgePage";
 import { FirmsOverridesProvider } from "./contexts/FirmsOverridesContext";
 import { CategoryProvider, type Category } from "./contexts/CategoryContext";
 
@@ -135,6 +136,8 @@ function Router({ clerkEnabled }: { clerkEnabled: boolean }) {
     <CategoryProvider value={category}>
       <Switch>
         <Route path="/" component={HomePage} />
+        <Route path="/knowledge" component={KnowledgePage} />
+        <Route path="/knowledge/:tab" component={KnowledgePage} />
         <Route path="/sign-in/*?" component={SignInPage} />
         <Route path="/sign-up/*?" component={SignUpPage} />
         <Route path="/admin/firms">
