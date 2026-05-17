@@ -6,7 +6,7 @@ import {
   offerChangesTable,
   scrapeJobsTable,
 } from "@workspace/db/schema";
-import { eq, desc, and, sql } from "drizzle-orm";
+import { eq, desc, and, sql, inArray } from "drizzle-orm";
 import { requireAdmin, getActor } from "../lib/requireAdmin";
 import { extractOfferFromText, textFromHtml } from "../lib/aiExtract";
 import { z } from "zod";
@@ -221,7 +221,15 @@ router.post("/admin/offers/rollback/:firmSlug", async (req, res) => {
   const history = await db
     .select()
     .from(offerChangesTable)
-    .where(and(eq(offerChangesTable.firmSlug, firmSlug), eq(offerChangesTable.action, "approve")))
+    .where(
+      and(
+        eq(offerChangesTable.firmSlug, firmSlug),
+        // Include both normal and force-overridden approves so rollback works
+        // even when the most recent publish was forced through a failed
+        // link-health check.
+        inArray(offerChangesTable.action, ["approve", "approve_forced"]),
+      ),
+    )
     .orderBy(desc(offerChangesTable.detectedAt))
     .limit(1);
 
@@ -657,6 +665,9 @@ export interface LinkHealthResult {
   hasRef?: boolean;
   domainOk?: boolean;
   error?: string;
+  // Coarse reason code so audit/webhook can record *why* a check failed.
+  // One of: blocked_url | http_status | missing_ref | domain_mismatch | fetch_error
+  reason?: string;
   durationMs: number;
 }
 
@@ -676,7 +687,12 @@ export async function runLinkHealth(
 ): Promise<LinkHealthResult> {
   const start = Date.now();
   if (!isPublicHttpUrl(url)) {
-    return { ok: false, error: "Non-public URL blocked", durationMs: Date.now() - start };
+    return {
+      ok: false,
+      error: "Non-public URL blocked",
+      reason: "blocked_url",
+      durationMs: Date.now() - start,
+    };
   }
   try {
     const resp = await fetch(url, {
@@ -700,17 +716,25 @@ export async function runLinkHealth(
       }
     }
 
+    const ok = resp.ok && hasRef && domainOk;
+    let reason: string | undefined;
+    if (!ok) {
+      if (!resp.ok) reason = "http_status";
+      else if (!hasRef) reason = "missing_ref";
+      else if (!domainOk) reason = "domain_mismatch";
+    }
     return {
-      ok: resp.ok && hasRef && domainOk,
+      ok,
       status: resp.status,
       finalUrl,
       hasRef,
       domainOk,
+      reason,
       durationMs: Date.now() - start,
     };
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
-    return { ok: false, error: msg, durationMs: Date.now() - start };
+    return { ok: false, error: msg, reason: "fetch_error", durationMs: Date.now() - start };
   }
 }
 
