@@ -5,6 +5,7 @@ import {
   SparkleIcon, SearchIcon, BookIcon, GiftIcon, TvIcon, HeartIcon,
   ChartIcon, BitcoinIcon,
 } from "./icons";
+import SupportWidget from "./SupportWidget";
 
 function buildNav(cat: Category) {
   const p = `/${cat}`;
@@ -34,14 +35,9 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [fabToast, setFabToast] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
 
-  useEffect(() => { setMobileOpen(false); setDrawerOpen(false); }, [path]);
-  useEffect(() => {
-    if (!fabToast) return;
-    const t = setTimeout(() => setFabToast(false), 2200);
-    return () => clearTimeout(t);
-  }, [fabToast]);
+  useEffect(() => { setMobileOpen(false); setDrawerOpen(false); setSupportOpen(false); }, [path]);
 
   const submitSearch = (e?: FormEvent) => {
     if (e) e.preventDefault();
@@ -190,15 +186,20 @@ export default function Layout({ children }: { children: ReactNode }) {
 
       <button
         type="button"
-        className="fab-help"
-        aria-label="客服助手"
-        onClick={() => setFabToast(true)}
+        className={`fab-help ${supportOpen ? "active" : ""}`}
+        aria-label={supportOpen ? "关闭客服" : "打开客服"}
+        aria-expanded={supportOpen}
+        title="需要帮助？"
+        onClick={() => setSupportOpen(o => !o)}
       >
-        P
+        {supportOpen ? (
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        ) : (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        )}
+        {!supportOpen && <span className="fab-help-hint" aria-hidden>需要帮助？</span>}
       </button>
-      {fabToast && (
-        <div className="fab-toast" role="status">客服功能即将上线，敬请期待</div>
-      )}
+      {supportOpen && <SupportWidget onClose={() => setSupportOpen(false)} />}
 
       <footer className="site-footer">
         <div className="footer-inner">
