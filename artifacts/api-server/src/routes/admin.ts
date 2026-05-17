@@ -128,9 +128,16 @@ router.patch("/admin/firms-v2/:slug", async (req, res) => {
     return;
   }
   const allowed: FirmUpdate = { ...parsed.data, updatedAt: new Date() };
-  await db.update(firmsTable).set(allowed).where(eq(firmsTable.slug, slug));
-  const [row] = await db.select().from(firmsTable).where(eq(firmsTable.slug, slug));
-  res.json(row);
+  const updated = await db
+    .update(firmsTable)
+    .set(allowed)
+    .where(eq(firmsTable.slug, slug))
+    .returning();
+  if (updated.length === 0) {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
+  res.json(updated[0]);
 });
 
 // ---------- Offers ----------
@@ -228,45 +235,55 @@ router.post("/admin/offers/rollback/:firmSlug", async (req, res) => {
     .from(offersTable)
     .where(and(eq(offersTable.firmSlug, firmSlug), eq(offersTable.status, "published")));
 
-  if (current) {
-    await db
-      .update(offersTable)
-      .set({ status: "expired", updatedAt: new Date() })
-      .where(eq(offersTable.id, current.id));
+  // Same transactional invariants as approve: archive + insert + audit
+  // must all succeed or none. The partial unique index will block double-
+  // publish if the archive step somehow gets skipped.
+  let restoredId: number;
+  try {
+    restoredId = await db.transaction(async (tx) => {
+      if (current) {
+        await tx
+          .update(offersTable)
+          .set({ status: "expired", updatedAt: new Date() })
+          .where(eq(offersTable.id, current.id));
+      }
+      const [restored] = await tx
+        .insert(offersTable)
+        .values({
+          firmSlug,
+          discountPercent: (prev.discountPercent as number | null) ?? null,
+          code: (prev.code as string | null) ?? null,
+          label: (prev.label as string | null) ?? null,
+          validUntil: prev.validUntil ? new Date(prev.validUntil as string) : null,
+          planScope: (prev.planScope as string[] | null) ?? [],
+          affiliateUrl: (prev.affiliateUrl as string | null) ?? null,
+          sourceUrl: (prev.sourceUrl as string | null) ?? null,
+          sourceType: "rollback",
+          status: "published",
+          confidenceScore: (prev.confidenceScore as number | null) ?? null,
+          notes: (prev.notes as string | null) ?? null,
+          createdBy: actor,
+          reviewedBy: actor,
+          publishedAt: new Date(),
+        })
+        .returning();
+      await tx.insert(offerChangesTable).values({
+        offerId: restored.id,
+        firmSlug,
+        beforeJson: current ?? null,
+        afterJson: restored,
+        diffSummary: `Rolled back to previous published snapshot by ${actor}`,
+        actor,
+        action: "rollback",
+      });
+      return restored.id;
+    });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return res.status(500).json({ error: `Rollback transaction failed: ${msg}` });
   }
 
-  const [restored] = await db
-    .insert(offersTable)
-    .values({
-      firmSlug,
-      discountPercent: (prev.discountPercent as number | null) ?? null,
-      code: (prev.code as string | null) ?? null,
-      label: (prev.label as string | null) ?? null,
-      validUntil: prev.validUntil ? new Date(prev.validUntil as string) : null,
-      planScope: (prev.planScope as string[] | null) ?? [],
-      affiliateUrl: (prev.affiliateUrl as string | null) ?? null,
-      sourceUrl: (prev.sourceUrl as string | null) ?? null,
-      sourceType: "rollback",
-      status: "published",
-      confidenceScore: (prev.confidenceScore as number | null) ?? null,
-      notes: (prev.notes as string | null) ?? null,
-      createdBy: actor,
-      reviewedBy: actor,
-      publishedAt: new Date(),
-    })
-    .returning();
-
-  await db.insert(offerChangesTable).values({
-    offerId: restored.id,
-    firmSlug,
-    beforeJson: current ?? null,
-    afterJson: restored,
-    diffSummary: `Rolled back to previous published snapshot by ${actor}`,
-    actor,
-    action: "rollback",
-  });
-
-  return res.json({ ok: true, restoredOfferId: restored.id });
+  return res.json({ ok: true, restoredOfferId: restoredId });
 });
 
 router.post("/admin/offers/:id/approve", async (req, res) => {
@@ -315,34 +332,41 @@ router.post("/admin/offers/:id/approve", async (req, res) => {
     }
   }
 
-  // archive current
-  if (current) {
-    await db
-      .update(offersTable)
-      .set({ status: "expired", updatedAt: new Date() })
-      .where(eq(offersTable.id, current.id));
+  // Wrap archive + publish + audit in a single transaction so a partial
+  // failure can't leave the firm with two published rows. The partial unique
+  // index `offers_one_published_per_firm` is the DB-level backstop.
+  try {
+    await db.transaction(async (tx) => {
+      if (current) {
+        await tx
+          .update(offersTable)
+          .set({ status: "expired", updatedAt: new Date() })
+          .where(eq(offersTable.id, current.id));
+      }
+      await tx
+        .update(offersTable)
+        .set({
+          status: "published",
+          reviewedBy: actor,
+          affiliateUrl: effectiveAffiliate,
+          publishedAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .where(eq(offersTable.id, id));
+      await tx.insert(offerChangesTable).values({
+        offerId: id,
+        firmSlug: draft.firmSlug,
+        beforeJson: current ?? null,
+        afterJson: { ...draft, status: "published" },
+        diffSummary: `Approved by ${actor}`,
+        actor,
+        action: "approve",
+      });
+    });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return res.status(500).json({ error: `Publish transaction failed: ${msg}` });
   }
-
-  await db
-    .update(offersTable)
-    .set({
-      status: "published",
-      reviewedBy: actor,
-      affiliateUrl: effectiveAffiliate,
-      publishedAt: new Date(),
-      updatedAt: new Date(),
-    })
-    .where(eq(offersTable.id, id));
-
-  await db.insert(offerChangesTable).values({
-    offerId: id,
-    firmSlug: draft.firmSlug,
-    beforeJson: current ?? null,
-    afterJson: { ...draft, status: "published" },
-    diffSummary: `Approved by ${actor}`,
-    actor,
-    action: "approve",
-  });
 
   return res.json({ ok: true });
 });

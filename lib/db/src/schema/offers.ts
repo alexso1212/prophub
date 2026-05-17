@@ -1,4 +1,5 @@
-import { pgTable, text, integer, timestamp, jsonb, serial, real, index } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, timestamp, jsonb, serial, real, index, uniqueIndex } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 export const offersTable = pgTable(
   "offers",
@@ -26,6 +27,12 @@ export const offersTable = pgTable(
   (t) => ({
     firmSlugIdx: index("offers_firm_slug_idx").on(t.firmSlug),
     statusIdx: index("offers_status_idx").on(t.status),
+    // DB-level invariant: at most one published offer per firm. Catches
+    // races between concurrent approve calls and any manual SQL fixups
+    // that forget to archive the previous published row.
+    onePublishedPerFirm: uniqueIndex("offers_one_published_per_firm")
+      .on(t.firmSlug)
+      .where(sql`${t.status} = 'published'`),
   }),
 );
 
