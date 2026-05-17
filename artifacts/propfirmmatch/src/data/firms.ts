@@ -97,6 +97,7 @@ export interface Firm {
   promoCode: string;
   promoLabel?: string;
   affiliateUrl?: string;
+  promoUrl?: string;
   maxAllocation: string;
   numAssets: number | string;
   platforms: Platform[];

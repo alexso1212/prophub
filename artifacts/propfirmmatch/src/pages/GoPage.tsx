@@ -51,7 +51,8 @@ export default function GoPage() {
   const category = found?.category ?? "futures";
   const brandZh = firm ? getBrandZh(firm.slug) : "";
   const detailHref = firm ? `/${category}/prop-firms/${firm.slug}` : `/${category}/all-prop-firms`;
-  const hasLink = !!firm?.affiliateUrl;
+  const outboundUrl = firm?.affiliateUrl ?? firm?.promoUrl;
+  const hasLink = !!outboundUrl;
   const promoCode = firm?.promoCode ?? "";
 
   const [seconds, setSeconds] = useState(COUNTDOWN_SECONDS);
@@ -60,10 +61,10 @@ export default function GoPage() {
   const jumpedRef = useRef(false);
 
   const jump = () => {
-    if (jumpedRef.current || !firm?.affiliateUrl) return;
+    if (jumpedRef.current || !firm || !outboundUrl) return;
     jumpedRef.current = true;
-    logClick({ slug: firm.slug, at: Date.now(), promoCode, affiliateUrl: firm.affiliateUrl });
-    window.location.assign(firm.affiliateUrl);
+    logClick({ slug: firm.slug, at: Date.now(), promoCode, affiliateUrl: outboundUrl });
+    window.location.assign(outboundUrl);
   };
 
   // Copy promo code on mount
@@ -152,7 +153,7 @@ export default function GoPage() {
               </button>
             </div>
             <p className="go-foot">
-              跳转后请认准 <strong>{(() => { try { return new URL(firm.affiliateUrl!).hostname; } catch { return firm.affiliateUrl!; } })()}</strong>，结账时使用上面的优惠码享受折扣。
+              跳转后请认准 <strong>{(() => { try { return new URL(outboundUrl!).hostname; } catch { return outboundUrl!; } })()}</strong>，结账时使用上面的优惠码享受折扣。
             </p>
           </>
         )}
