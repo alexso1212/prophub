@@ -23,6 +23,7 @@ interface ScrapeJob {
 interface FirmV2 {
   slug: string;
   name: string;
+  officialUrl: string | null;
   scrapeUrl: string | null;
   scrapeEnabled: number;
 }
@@ -75,6 +76,52 @@ export default function AdminScrapePage() {
     loadAll();
   };
 
+  const updateFirm = async (slug: string, patch: Partial<FirmV2>) => {
+    const res = await fetch(`${API_BASE}/api/admin/firms-v2/${slug}`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(patch),
+    });
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      alert(`保存失败: ${j.error ?? res.status}`);
+    }
+    loadAll();
+  };
+
+  const deleteFirm = async (slug: string) => {
+    if (!confirm(`确认删除公司 ${slug}？相关历史 (offers / scrape_jobs / offer_changes) 会一起清空。`)) return;
+    const res = await fetch(`${API_BASE}/api/admin/firms-v2/${slug}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      alert(`删除失败: ${j.error ?? res.status}`);
+    }
+    loadAll();
+  };
+
+  const createFirm = async () => {
+    const slug = prompt("slug (小写英文数字+短横，唯一)")?.trim().toLowerCase();
+    if (!slug) return;
+    const name = prompt("公司名")?.trim();
+    if (!name) return;
+    const officialUrl = prompt("官网 URL（可选）")?.trim() || null;
+    const res = await fetch(`${API_BASE}/api/admin/firms-v2`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug, name, officialUrl }),
+    });
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      alert(`新增失败: ${j.error ?? res.status}`);
+    }
+    loadAll();
+  };
+
   const scrapeReady = firms.filter((f) => f.scrapeUrl);
 
   return (
@@ -97,6 +144,90 @@ export default function AdminScrapePage() {
       )}
 
       <section style={{ marginBottom: 32 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+          <h2 style={{ fontSize: 16, fontWeight: 600 }}>公司注册表 ({firms.length})</h2>
+          <button
+            onClick={createFirm}
+            style={{
+              background: "#22c55e",
+              color: "#000",
+              border: "none",
+              borderRadius: 6,
+              padding: "6px 14px",
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: 600,
+            }}
+          >
+            ＋ 新增公司
+          </button>
+        </div>
+        <div className="table-wrap" style={{ marginBottom: 24 }}>
+          <table className="firms-table" style={{ fontSize: 12 }}>
+            <thead>
+              <tr>
+                <th>Slug</th>
+                <th>名称</th>
+                <th>抓取 URL</th>
+                <th>抓取开关</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              {firms.map((f) => (
+                <tr key={f.slug}>
+                  <td>{f.slug}</td>
+                  <td>{f.name}</td>
+                  <td>
+                    <input
+                      defaultValue={f.scrapeUrl ?? ""}
+                      placeholder="https://…"
+                      onBlur={(e) => {
+                        const v = e.currentTarget.value.trim() || null;
+                        if (v !== (f.scrapeUrl ?? null)) updateFirm(f.slug, { scrapeUrl: v });
+                      }}
+                      style={{
+                        width: "100%",
+                        padding: "4px 8px",
+                        background: "var(--card-bg)",
+                        border: "1px solid var(--border)",
+                        borderRadius: 4,
+                        color: "var(--text)",
+                        fontSize: 12,
+                      }}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={f.scrapeEnabled === 1}
+                      onChange={(e) =>
+                        updateFirm(f.slug, { scrapeEnabled: e.currentTarget.checked ? 1 : 0 })
+                      }
+                    />
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => deleteFirm(f.slug)}
+                      style={{
+                        background: "transparent",
+                        color: "#ef4444",
+                        border: "1px solid #ef4444",
+                        borderRadius: 4,
+                        padding: "3px 8px",
+                        cursor: "pointer",
+                        fontSize: 11,
+                      }}
+                    >
+                      删除
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
         <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12 }}>
           已开启抓取的公司 ({scrapeReady.length})
         </h2>

@@ -276,6 +276,15 @@ router.post("/admin/offers/:id/approve", async (req, res) => {
   const [draft] = await db.select().from(offersTable).where(eq(offersTable.id, id));
   if (!draft) return res.status(404).json({ error: "Not found" });
 
+  // Status guard: only allow publishing from draft / pending_review. Refuse
+  // republish from expired/superseded/rejected/published (use rollback for
+  // those flows). Prevents accidental republishes via direct API calls.
+  if (draft.status !== "draft" && draft.status !== "pending_review") {
+    return res
+      .status(409)
+      .json({ error: `Cannot approve from status=${draft.status}; use rollback to restore prior published.` });
+  }
+
   const [current] = await db
     .select()
     .from(offersTable)
