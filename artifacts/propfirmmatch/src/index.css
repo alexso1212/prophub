@@ -566,6 +566,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   position: sticky; left: 0; z-index: 2;
   background: #18152e;
 }
+/* Optional second sticky column (e.g. rank + firm name pair) */
+.firms-table .firm-col-2 {
+  left: 56px;
+}
+.firms-table thead th.firm-col-2 {
+  z-index: 2;
+  background: #18152e;
+}
 
 .cell-firm { display: flex; align-items: center; gap: 10px; min-width: 220px; }
 .firm-logo-sm {
@@ -1311,7 +1319,32 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px 14px;
   border-top: 1px solid var(--border); padding-top: 10px;
 }
-@media (max-width: 480px) { .challenge-card .cc-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 768px) {
+  /* On mobile, render challenge metrics as a single horizontal-scroll row
+     so labels/values stay aligned instead of compressing into 2–3 lines. */
+  .challenge-card .cc-grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(96px, max-content);
+    grid-template-columns: none;
+    gap: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    padding-top: 10px;
+    margin: 0 -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .challenge-card .cc-grid::-webkit-scrollbar { height: 6px; }
+  .challenge-card .cc-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+  .challenge-card .cc-grid > div {
+    border-right: 1px solid var(--border);
+    padding: 0 12px;
+    white-space: nowrap;
+  }
+  .challenge-card .cc-grid > div:last-child { border-right: none; }
+}
 .challenge-card .cc-grid > div { display: flex; flex-direction: column; gap: 2px; }
 .challenge-card .cc-grid label { color: var(--text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
 .challenge-card .cc-grid span { font-size: 13px; font-weight: 500; }

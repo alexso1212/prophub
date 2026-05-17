@@ -50,12 +50,13 @@ export default function LeaderboardPage() {
         })}
       </div>
 
+      <div className="table-scroll-hint" aria-hidden="true">← 左右滑动查看更多 →</div>
       <div className="table-wrap">
         <table className="firms-table">
           <thead>
             <tr>
-              <th>排名</th>
-              <th>公司</th>
+              <th className="firm-col">排名</th>
+              <th className="firm-col firm-col-2">公司</th>
               <th>累计出金</th>
               <th>出金笔数</th>
               <th>最大单笔</th>
@@ -68,8 +69,8 @@ export default function LeaderboardPage() {
               const f = firms.find(x => x.slug === t.slug || x.name === t.name);
               return (
                 <tr key={t.slug}>
-                  <td><span className="rank-num">{i + 1}</span></td>
-                  <td>
+                  <td className="firm-col"><span className="rank-num">{i + 1}</span></td>
+                  <td className="firm-col firm-col-2">
                     {f ? (
                       <div className="cell-firm">
                         <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-logo-sm">

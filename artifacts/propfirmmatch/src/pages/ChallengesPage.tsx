@@ -57,11 +57,12 @@ export default function ChallengesPage() {
 
       <div className="firms-count">挑战赛 <span className="num">{filtered.length}</span></div>
 
+      <div className="table-scroll-hint" aria-hidden="true">← 左右滑动查看更多 →</div>
       <div className="table-wrap">
         <table className="firms-table">
           <thead>
             <tr>
-              <th>公司</th>
+              <th className="firm-col">公司</th>
               <th>挑战赛方案</th>
               <th>原价</th>
               <th>现价</th>
@@ -71,7 +72,7 @@ export default function ChallengesPage() {
           <tbody>
             {filtered.slice(0, 200).map((c, i) => (
               <tr key={i}>
-                <td>
+                <td className="firm-col">
                   <div className="cell-firm">
                     <Link href={`${prefix}/prop-firms/${c.firmSlug}`} className="firm-logo-sm">
                       <FirmLogo src={c.logo} alt={c.firmName} />
