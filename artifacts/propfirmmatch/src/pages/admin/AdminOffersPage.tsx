@@ -80,6 +80,17 @@ export default function AdminOffersPage() {
     });
     load();
   };
+  const promote = async (id: number) => {
+    const res = await fetch(`${API_BASE}/api/admin/offers/${id}/promote`, {
+      method: "POST",
+      credentials: "include",
+    });
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      alert(`推进失败：${j.error ?? res.status}`);
+    }
+    load();
+  };
   const rollback = async (firmSlug: string) => {
     if (!confirm(`确认回滚 ${firmSlug} 到上一个已发布的版本？当前正式版会被归档。`)) return;
     const res = await fetch(`${API_BASE}/api/admin/offers/rollback/${firmSlug}`, {
@@ -138,6 +149,7 @@ export default function AdminOffersPage() {
         <OffersTable
           rows={items as Offer[]}
           onRollback={tab === "published" ? rollback : undefined}
+          onPromote={tab === "draft" ? promote : undefined}
         />
       )}
     </main>
@@ -289,10 +301,13 @@ function DiffCol({ title, offer, highlight }: { title: string; offer: Offer | nu
 function OffersTable({
   rows,
   onRollback,
+  onPromote,
 }: {
   rows: Offer[];
   onRollback?: (firmSlug: string) => void;
+  onPromote?: (id: number) => void;
 }) {
+  const showActions = Boolean(onRollback || onPromote);
   if (!rows || rows.length === 0) {
     return (
       <div style={{ textAlign: "center", padding: 40, color: "var(--text-dim)" }}>暂无记录。</div>
@@ -310,7 +325,7 @@ function OffersTable({
             <th>状态</th>
             <th>置信度</th>
             <th>更新于</th>
-            {onRollback && <th>操作</th>}
+            {showActions && <th>操作</th>}
           </tr>
         </thead>
         <tbody>
@@ -327,11 +342,21 @@ function OffersTable({
               <td style={{ color: "var(--text-dim)", fontSize: 12 }}>
                 {new Date(o.updatedAt).toLocaleString()}
               </td>
-              {onRollback && (
+              {showActions && (
                 <td>
-                  <button onClick={() => onRollback(o.firmSlug)} style={btnStyle("#f59e0b", "#000")}>
-                    回滚上一版
-                  </button>
+                  {onPromote && (
+                    <button onClick={() => onPromote(o.id)} style={btnStyle("#a855f7", "#fff")}>
+                      推进到审核
+                    </button>
+                  )}
+                  {onRollback && (
+                    <button
+                      onClick={() => onRollback(o.firmSlug)}
+                      style={btnStyle("#f59e0b", "#000")}
+                    >
+                      回滚上一版
+                    </button>
+                  )}
                 </td>
               )}
             </tr>

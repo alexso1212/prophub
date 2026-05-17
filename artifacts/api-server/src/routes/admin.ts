@@ -9,6 +9,39 @@ import {
 import { eq, desc, and, sql } from "drizzle-orm";
 import { requireAdmin, getActor } from "../lib/requireAdmin";
 import { extractOfferFromText, textFromHtml } from "../lib/aiExtract";
+import { z } from "zod";
+
+type Firm = typeof firmsTable.$inferSelect;
+type Offer = typeof offersTable.$inferSelect;
+type FirmUpdate = Partial<typeof firmsTable.$inferInsert>;
+type OfferUpdate = Partial<typeof offersTable.$inferInsert>;
+
+const FirmPatchSchema = z
+  .object({
+    name: z.string(),
+    officialUrl: z.string().nullable(),
+    affiliateBaseUrl: z.string().nullable(),
+    affiliateId: z.string().nullable(),
+    logo: z.string().nullable(),
+    country: z.string().nullable(),
+    countryCode: z.string().nullable(),
+    category: z.string().nullable(),
+    status: z.string(),
+    scrapeUrl: z.string().nullable(),
+    scrapeEnabled: z.number().int(),
+  })
+  .partial();
+
+const OfferPatchSchema = z
+  .object({
+    discountPercent: z.number().nullable(),
+    code: z.string().nullable(),
+    label: z.string().nullable(),
+    affiliateUrl: z.string().nullable(),
+    notes: z.string().nullable(),
+    validUntil: z.string().nullable(),
+  })
+  .partial();
 
 const router: IRouter = Router();
 
@@ -22,23 +55,12 @@ router.get("/admin/firms-v2", async (_req, res) => {
 
 router.patch("/admin/firms-v2/:slug", async (req, res) => {
   const { slug } = req.params;
-  const updates = req.body ?? {};
-  const allowed: any = { updatedAt: new Date() };
-  for (const k of [
-    "name",
-    "officialUrl",
-    "affiliateBaseUrl",
-    "affiliateId",
-    "logo",
-    "country",
-    "countryCode",
-    "category",
-    "status",
-    "scrapeUrl",
-    "scrapeEnabled",
-  ]) {
-    if (k in updates) allowed[k] = updates[k];
+  const parsed = FirmPatchSchema.safeParse(req.body ?? {});
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid firm patch", issues: parsed.error.issues });
+    return;
   }
+  const allowed: FirmUpdate = { ...parsed.data, updatedAt: new Date() };
   await db.update(firmsTable).set(allowed).where(eq(firmsTable.slug, slug));
   const [row] = await db.select().from(firmsTable).where(eq(firmsTable.slug, slug));
   res.json(row);
@@ -72,7 +94,7 @@ router.get("/admin/offers/queue", async (_req, res) => {
     .orderBy(desc(offersTable.createdAt));
 
   const slugs = [...new Set(pending.map((o) => o.firmSlug))];
-  const currentMap: Record<string, any> = {};
+  const currentMap: Record<string, Offer> = {};
   if (slugs.length > 0) {
     const currents = await db
       .select()
@@ -273,12 +295,15 @@ router.post("/admin/offers/:id/reject", async (req, res) => {
 
 router.patch("/admin/offers/:id", async (req, res) => {
   const id = Number(req.params.id);
-  const allowed: any = { updatedAt: new Date() };
-  for (const k of ["discountPercent", "code", "label", "affiliateUrl", "notes", "validUntil"]) {
-    if (k in req.body) allowed[k] = req.body[k];
+  const parsed = OfferPatchSchema.safeParse(req.body ?? {});
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid offer patch", issues: parsed.error.issues });
+    return;
   }
-  if (allowed.validUntil && typeof allowed.validUntil === "string") {
-    allowed.validUntil = new Date(allowed.validUntil);
+  const { validUntil, ...rest } = parsed.data;
+  const allowed: OfferUpdate = { ...rest, updatedAt: new Date() };
+  if (validUntil !== undefined) {
+    allowed.validUntil = validUntil ? new Date(validUntil) : null;
   }
   await db.update(offersTable).set(allowed).where(eq(offersTable.id, id));
   const [row] = await db.select().from(offersTable).where(eq(offersTable.id, id));
@@ -411,10 +436,24 @@ async function runScrapeJob(jobId: number, slug: string, url: string) {
       .from(offersTable)
       .where(and(eq(offersTable.firmSlug, slug), eq(offersTable.status, "published")));
 
+    // Diff against all user-relevant fields so the reviewer is alerted to
+    // marketing copy / deadline / plan-scope changes too, not just the code
+    // or discount headline.
+    const sameArr = (a: string[] | null, b: string[] | null) =>
+      JSON.stringify((a ?? []).slice().sort()) === JSON.stringify((b ?? []).slice().sort());
+    const sameDate = (a: Date | null, b: string | null) => {
+      const aIso = a ? new Date(a).toISOString().slice(0, 10) : null;
+      const bIso = b ? new Date(b).toISOString().slice(0, 10) : null;
+      return aIso === bIso;
+    };
     const changed =
       !current ||
       current.discountPercent !== extracted.discountPercent ||
-      current.code !== extracted.code;
+      current.code !== extracted.code ||
+      (current.label ?? null) !== (extracted.label ?? null) ||
+      !sameDate(current.validUntil ?? null, extracted.validUntil) ||
+      !sameArr((current.planScope as string[] | null) ?? null, extracted.applicablePlans) ||
+      (current.notes ?? null) !== (extracted.summary ?? null);
 
     let offerId: number | null = null;
     if (changed) {
@@ -463,19 +502,20 @@ async function runScrapeJob(jobId: number, slug: string, url: string) {
         finishedAt: new Date(),
         durationMs: Date.now() - start,
         rawSnippet: snippet,
-        extractedJson: extracted as any,
+        extractedJson: extracted,
         confidenceScore: Math.round((extracted.confidence ?? 0) * 100),
         offerId,
       })
       .where(eq(scrapeJobsTable.id, jobId));
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
     await db
       .update(scrapeJobsTable)
       .set({
         status: "failed",
         finishedAt: new Date(),
         durationMs: Date.now() - start,
-        errorMessage: err?.message ?? String(err),
+        errorMessage: msg,
       })
       .where(eq(scrapeJobsTable.id, jobId));
   }
@@ -540,8 +580,9 @@ export async function runLinkHealth(
       domainOk,
       durationMs: Date.now() - start,
     };
-  } catch (err: any) {
-    return { ok: false, error: err?.message ?? String(err), durationMs: Date.now() - start };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { ok: false, error: msg, durationMs: Date.now() - start };
   }
 }
 
