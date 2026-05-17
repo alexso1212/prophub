@@ -70,8 +70,12 @@ export const SNAPSHOT_DATE = "2026-05-17";
 
 // 将源站日期 "May 16, 2026" 解析为 UTC 毫秒
 function parseSourceDate(s: string): number {
-  const t = Date.parse(s + " UTC");
-  return isNaN(t) ? NaN : t;
+  // Try ISO date first (YYYY-MM-DD parses as UTC midnight)
+  const iso = Date.parse(s);
+  if (!isNaN(iso)) return iso;
+  // Fall back to "Mon DD, YYYY" style by appending UTC offset
+  const fallback = Date.parse(s + " UTC");
+  return isNaN(fallback) ? NaN : fallback;
 }
 
 // 锚定 30 天窗口：以快照日期为基准（数据是相对快照日的近 30 天）。
