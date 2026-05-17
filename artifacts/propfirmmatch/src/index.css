@@ -26,13 +26,10 @@
   --promo-pill-code: rgba(255,255,255,0.92);
 }
 
-/* Light-theme overrides for the promo badge. Activated ONLY by an explicit
-   [data-theme="light"] attribute on the root. We deliberately do NOT key off
-   `prefers-color-scheme` here: the rest of the page is still dark-only, so
-   flipping promo tokens on OS preference alone would put dark-purple text on
-   the existing dark background and tank contrast. Once a full light palette
-   exists for --bg/--card/--text, the page can opt in by setting
-   <html data-theme="light"> and these tokens will follow. */
+/* Promo badge tokens for the light theme.
+   The full light palette (--bg / --card / --text, etc.) lives in the
+   consolidated [data-theme="light"] block at the bottom of this file —
+   activated by the ThemeToggle component writing data-theme on <html>. */
 :root[data-theme="light"] {
   --promo-accent: #6b21a8;
   --promo-accent-strong: #581c87;
@@ -3863,3 +3860,153 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .kg-empty { color: var(--text-muted); padding: 40px; text-align: center; }
+
+/* ============== Theme toggle (header) ============== */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+}
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.theme-toggle-btn:hover { color: var(--text); }
+.theme-toggle-btn.is-active {
+  background: var(--gradient-pp-2);
+  color: #fff;
+}
+.theme-toggle-label { white-space: nowrap; }
+@media (max-width: 1100px) {
+  .theme-toggle-label { display: none; }
+  .theme-toggle-btn { padding: 6px; }
+}
+@media (max-width: 640px) {
+  .theme-toggle { display: none; }
+}
+
+/* ============== Light theme palette ============== */
+:root[data-theme="light"] {
+  --bg: #f6f5fb;
+  --bg-2: #ffffff;
+  --card: #ffffffcc;
+  --card-2: #ffffff;
+  --card-border: rgba(15,12,40,0.08);
+  --border: rgba(15,12,40,0.10);
+  --text: #1a1535;
+  --text-dim: #4b4566;
+  --text-muted: #6b6688;
+  --orange: #7c3aed;
+  --orange-2: #6d28d9;
+  --purple: #7c3aed;
+  --purple-2: #6d28d9;
+  --green: #047857;
+  --gradient-pp: linear-gradient(90deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%);
+  --gradient-pp-2: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+}
+
+/* Overlays / hard-coded dark surfaces re-tinted for light mode */
+:root[data-theme="light"] .header,
+:root[data-theme="light"] .subnav,
+:root[data-theme="light"] .cat-tabs-mobile {
+  background: #ffffff;
+}
+:root[data-theme="light"] .search,
+:root[data-theme="light"] .tabs-pill,
+:root[data-theme="light"] .btn-pill,
+:root[data-theme="light"] .filter-pill,
+:root[data-theme="light"] .theme-toggle,
+:root[data-theme="light"] .offers-nav-btn {
+  background: #f0eef7;
+}
+:root[data-theme="light"] .btn-pill.primary,
+:root[data-theme="light"] .tabs-pill .tab.active,
+:root[data-theme="light"] .filter-pill.active,
+:root[data-theme="light"] .theme-toggle-btn.is-active {
+  background: var(--gradient-pp-2);
+  color: #fff;
+}
+:root[data-theme="light"] .firms-table .firm-col,
+:root[data-theme="light"] .firms-table thead th:first-child,
+:root[data-theme="light"] .firms-table .firm-col-2,
+:root[data-theme="light"] .firms-table thead th.firm-col-2 {
+  background: #ffffff;
+}
+:root[data-theme="light"] .firms-table tbody tr:hover .firm-col {
+  background: #f4f1fb;
+}
+:root[data-theme="light"] .firms-table thead th,
+:root[data-theme="light"] .firms-table-mobile thead th {
+  background: #faf9fd;
+}
+:root[data-theme="light"] .firms-table tbody tr:hover {
+  background: rgba(124,58,237,0.04);
+}
+:root[data-theme="light"] .firm-logo-sm { background: #ffffff; }
+:root[data-theme="light"] .table-wrap::-webkit-scrollbar-thumb,
+:root[data-theme="light"] .firms-mobile-right::-webkit-scrollbar-thumb,
+:root[data-theme="light"] .firm-filter-body::-webkit-scrollbar-thumb {
+  background: rgba(15,12,40,0.18);
+}
+:root[data-theme="light"] .onb,
+:root[data-theme="light"] .news-modal,
+:root[data-theme="light"] .side-drawer {
+  background: #ffffff;
+  border-color: var(--card-border);
+}
+:root[data-theme="light"] .drawer-mask,
+:root[data-theme="light"] .news-modal-mask {
+  background: rgba(15,12,40,0.45);
+}
+:root[data-theme="light"] .top-bar,
+:root[data-theme="light"] .top-bar a,
+:root[data-theme="light"] .top-bar .check-now {
+  color: #ffffff;
+}
+:root[data-theme="light"] .top-bar .check-now {
+  background: #ffffff;
+  color: #4c1d95;
+}
+:root[data-theme="light"] .site-footer {
+  background: #ffffff;
+  border-top: 1px solid var(--card-border);
+}
+:root[data-theme="light"] .pfm-hero-title {
+  background: linear-gradient(90deg, #1a1535 0%, #6d28d9 100%);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+}
+:root[data-theme="light"] .offer-card,
+:root[data-theme="light"] .popular-card,
+:root[data-theme="light"] .review-row-card,
+:root[data-theme="light"] .news-card,
+:root[data-theme="light"] .challenge-card,
+:root[data-theme="light"] .table-wrap,
+:root[data-theme="light"] .firms-mobile,
+:root[data-theme="light"] .firms-mobile-empty,
+:root[data-theme="light"] .firms-mobile-left {
+  background: #ffffff;
+}
+:root[data-theme="light"] body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Ensure ThemeToggle stays visible inside the mobile side drawer */
+.side-drawer .theme-toggle { display: inline-flex !important; }
+.side-drawer .theme-toggle .theme-toggle-label { display: inline !important; }
+.side-drawer .theme-toggle .theme-toggle-btn { padding: 6px 10px !important; }

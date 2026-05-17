@@ -6,6 +6,7 @@ import {
   ChartIcon, BitcoinIcon,
 } from "./icons";
 import SupportWidget from "./SupportWidget";
+import ThemeToggle from "./ThemeToggle";
 import { useBilibiliLiveStatus } from "../hooks/useBilibiliLiveStatus";
 
 const BILIBILI_ROOM_ID = "1874453448";
@@ -157,6 +158,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           <Link className="btn-pill hide-on-mobile" href="/tutorials"><BookIcon size={14} /> 教程</Link>
           <Link href="/sign-in" className="btn-pill hide-on-mobile">登录</Link>
           <Link href="/sign-up" className="btn-pill primary">注册</Link>
+          <ThemeToggle />
           <button
             type="button"
             className="header-drawer-toggle"
@@ -201,6 +203,8 @@ export default function Layout({ children }: { children: ReactNode }) {
             <Link className="drawer-link" href="/forex/all-prop-firms">外汇</Link>
             <Link className="drawer-link" href="/futures/all-prop-firms">期货</Link>
             <Link className="drawer-link" href="/crypto/all-prop-firms">加密 <span className="badge-new" style={{ marginLeft: 4 }}>新</span></Link>
+            <div className="drawer-section">主题</div>
+            <div style={{ padding: "8px 16px" }}><ThemeToggle /></div>
           </aside>
         </>
       )}
