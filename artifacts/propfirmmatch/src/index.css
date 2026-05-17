@@ -1896,6 +1896,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   color: var(--text-dim);
 }
 .onb-collapsed-left { display: inline-flex; align-items: center; gap: 8px; }
+.onb-collapsed-actions { display: inline-flex; align-items: center; gap: 8px; }
 .onb-collapsed-btn {
   display: inline-flex; align-items: center; gap: 4px;
   background: rgba(255,255,255,0.06);

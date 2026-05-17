@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { onboardingTree, type Leaf } from "../data/onboardingCopy";
-import { ChevronDownIcon, CloseIcon, ExpandIcon } from "./icons";
+import { ChevronDownIcon, CloseIcon, ExpandIcon, PlayIcon } from "./icons";
 
 const STORAGE_KEY = "pfm.onboarding.collapsed.v3";
 
@@ -105,6 +105,33 @@ export default function Onboarding() {
       introTimersRef.current = [];
     }
     setIntroPlaying(false);
+  }, []);
+
+  const replayIntro = useCallback(() => {
+    if (introTimersRef.current.length) {
+      introTimersRef.current.forEach(t => clearTimeout(t));
+      introTimersRef.current = [];
+    }
+    try {
+      window.localStorage.setItem(STORAGE_KEY, "0");
+    } catch {
+      /* ignore */
+    }
+    setCollapsed(false);
+    setFullscreen(false);
+    setExpandedInline(new Set());
+    setExpandedFs(new Set());
+    setActiveTip(null);
+    setIntroPlaying(false);
+    if (typeof window !== "undefined") {
+      const kickoff = window.setTimeout(() => {
+        introTimersRef.current = introTimersRef.current.filter(t => t !== kickoff);
+        setIntroPlaying(true);
+      }, 30);
+      introTimersRef.current.push(kickoff);
+    } else {
+      setIntroPlaying(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -236,10 +263,15 @@ export default function Onboarding() {
     return (
       <div className="onb-collapsed" role="region" aria-label="新手引导">
         <span className="onb-collapsed-left">再看看怎么运作？</span>
-        <button type="button" className="onb-collapsed-btn" onClick={() => setAndStore(false)}>
-          展开
-          <ChevronDownIcon size={12} />
-        </button>
+        <div className="onb-collapsed-actions">
+          <button type="button" className="onb-collapsed-btn" onClick={replayIntro}>
+            重播演示
+          </button>
+          <button type="button" className="onb-collapsed-btn" onClick={() => setAndStore(false)}>
+            展开
+            <ChevronDownIcon size={12} />
+          </button>
+        </div>
       </div>
     );
   }
@@ -257,6 +289,17 @@ export default function Onboarding() {
             >
               <span className="onb-skip-dot" aria-hidden="true" />
               <span>演示中 · 点击跳过</span>
+            </button>
+          )}
+          {!introPlaying && (
+            <button
+              type="button"
+              className="onb-fs-btn"
+              onClick={replayIntro}
+              aria-label="重播演示"
+            >
+              <PlayIcon size={14} />
+              <span>重播演示</span>
             </button>
           )}
           <button type="button" className="onb-fs-btn" onClick={openFs} aria-label="全屏查看">
