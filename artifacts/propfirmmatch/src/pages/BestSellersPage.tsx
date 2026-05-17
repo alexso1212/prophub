@@ -43,11 +43,12 @@ export default function BestSellersPage() {
       </div>
 
       <div className="table-wrap">
+        <div className="table-scroll-hint" aria-hidden="true">← 左右滑动查看更多 →</div>
         <table className="firms-table">
           <thead>
             <tr>
               <th>排名</th>
-              <th>公司</th>
+              <th className="firm-col firm-col-2">公司</th>
               <th>评分</th>
               <th>热门挑战</th>
               <th>价格</th>
@@ -60,8 +61,8 @@ export default function BestSellersPage() {
               const top = f.challenges?.[0];
               return (
                 <tr key={f.slug}>
-                  <td><span className="rank-num">{i + 1}</span></td>
-                  <td>
+                  <td className="firm-col"><span className="rank-num">{i + 1}</span></td>
+                  <td className="firm-col firm-col-2">
                     <div className="cell-firm">
                       <Link href={`${prefix}/prop-firms/${f.slug}`} className="firm-logo-sm">
                         <FirmLogo src={f.logo} alt={f.name} />

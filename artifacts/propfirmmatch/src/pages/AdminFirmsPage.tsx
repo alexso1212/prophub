@@ -204,6 +204,7 @@ function FirmsTable() {
         </div>
       ) : (
         <div className="table-wrap">
+          <div className="table-scroll-hint" aria-hidden="true">← 左右滑动查看更多 →</div>
           <table className="firms-table" style={{ fontSize: 13 }}>
             <thead>
               <tr>
@@ -228,7 +229,7 @@ function FirmsTable() {
                 };
                 return (
                   <tr key={firm.slug}>
-                    <td>
+                    <td className="firm-col">
                       <div className="cell-firm" style={{ gap: 8 }}>
                         <div className="firm-logo-sm" style={{ width: 32, height: 32 }}>
                           <img src={firm.logo} alt={firm.name} />
