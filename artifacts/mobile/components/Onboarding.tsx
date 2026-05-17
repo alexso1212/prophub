@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Modal,
   Pressable,
@@ -231,6 +231,8 @@ export default function Onboarding() {
   const [expandedFs, setExpandedFs] = useState<Set<number>>(new Set());
   const [activeTip, setActiveTip] = useState<string | null>(null);
   const [fullscreen, setFullscreen] = useState(false);
+  const [introPlaying, setIntroPlaying] = useState(false);
+  const introTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -249,6 +251,59 @@ export default function Onboarding() {
     })();
   }, []);
 
+  const cancelIntro = useCallback(() => {
+    if (introTimersRef.current.length) {
+      introTimersRef.current.forEach((t) => clearTimeout(t));
+      introTimersRef.current = [];
+    }
+    setIntroPlaying(false);
+  }, []);
+
+  useEffect(() => {
+    if (!introPlaying) return;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    const branches = onboardingTree.branches;
+    const startDelay = 600;
+    const perBranch = 3600;
+
+    branches.forEach((b, i) => {
+      const base = startDelay + i * perBranch;
+      timers.push(
+        setTimeout(() => {
+          setExpandedInline(new Set([i]));
+          setActiveTip(null);
+        }, base),
+      );
+      const tipIdx = b.leaves.findIndex((l) => l.tip);
+      if (tipIdx >= 0) {
+        timers.push(
+          setTimeout(() => {
+            setActiveTip(`${i}-${tipIdx}`);
+          }, base + 1500),
+        );
+        timers.push(
+          setTimeout(() => {
+            setActiveTip(null);
+          }, base + 3000),
+        );
+      }
+    });
+
+    timers.push(
+      setTimeout(() => {
+        setExpandedInline(new Set());
+        setActiveTip(null);
+        setIntroPlaying(false);
+        introTimersRef.current = [];
+      }, startDelay + branches.length * perBranch),
+    );
+
+    introTimersRef.current = timers;
+    return () => {
+      timers.forEach((t) => clearTimeout(t));
+    };
+  }, [introPlaying]);
+
   useEffect(() => {
     const onCollapse = () => setCollapsed(true);
     collapseListeners.add(onCollapse);
@@ -257,10 +312,14 @@ export default function Onboarding() {
     };
   }, []);
 
-  const setAndStore = useCallback((next: boolean) => {
-    setCollapsed(next);
-    AsyncStorage.setItem(STORAGE_KEY, next ? "1" : "0").catch(() => {});
-  }, []);
+  const setAndStore = useCallback(
+    (next: boolean) => {
+      cancelIntro();
+      setCollapsed(next);
+      AsyncStorage.setItem(STORAGE_KEY, next ? "1" : "0").catch(() => {});
+    },
+    [cancelIntro],
+  );
 
   const closeFs = useCallback(() => {
     setFullscreen(false);
@@ -268,15 +327,27 @@ export default function Onboarding() {
   }, []);
 
   const replayDemo = useCallback(() => {
+    if (introTimersRef.current.length) {
+      introTimersRef.current.forEach((t) => clearTimeout(t));
+      introTimersRef.current = [];
+    }
     AsyncStorage.multiRemove([EXPANDED_KEY, EXPANDED_FS_KEY]).catch(() => {});
+    setCollapsed(false);
+    AsyncStorage.setItem(STORAGE_KEY, "0").catch(() => {});
+    setFullscreen(false);
     setExpandedInline(new Set());
     setExpandedFs(new Set());
     setActiveTip(null);
-    setFullscreen(false);
-    setAndStore(false);
-  }, [setAndStore]);
+    setIntroPlaying(false);
+    const kickoff = setTimeout(() => {
+      introTimersRef.current = introTimersRef.current.filter((t) => t !== kickoff);
+      setIntroPlaying(true);
+    }, 30);
+    introTimersRef.current.push(kickoff);
+  }, []);
 
   function toggleInline(i: number) {
+    cancelIntro();
     setExpandedInline((prev) => {
       const next = new Set<number>();
       if (!prev.has(i)) next.add(i);
@@ -369,8 +440,54 @@ export default function Onboarding() {
         ]}
       >
         <View style={s.toolbar}>
+          {introPlaying ? (
+            <Pressable
+              onPress={cancelIntro}
+              style={({ pressed }) => [
+                s.fsBtn,
+                {
+                  backgroundColor: pressed
+                    ? "rgba(255,106,61,0.18)"
+                    : "rgba(255,106,61,0.12)",
+                  borderColor: "rgba(255,106,61,0.45)",
+                },
+              ]}
+              accessibilityLabel="跳过演示"
+            >
+              <View
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: 3,
+                  backgroundColor: c.orange,
+                }}
+              />
+              <Text style={{ color: c.foreground, fontSize: 12 }}>
+                演示中 · 点击跳过
+              </Text>
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={replayDemo}
+              style={({ pressed }) => [
+                s.fsBtn,
+                {
+                  backgroundColor: pressed
+                    ? "rgba(255,255,255,0.08)"
+                    : "rgba(255,255,255,0.04)",
+                  borderColor: c.cardBorder,
+                },
+              ]}
+              accessibilityLabel="重播演示"
+            >
+              <Text style={{ color: c.mutedForeground, fontSize: 12 }}>
+                ▶  重播演示
+              </Text>
+            </Pressable>
+          )}
           <Pressable
             onPress={() => {
+              cancelIntro();
               openFs();
             }}
             style={({ pressed }) => [
@@ -386,23 +503,6 @@ export default function Onboarding() {
             <ExpandIcon size={14} color={c.mutedForeground} />
             <Text style={{ color: c.mutedForeground, fontSize: 12 }}>
               全屏查看
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={replayDemo}
-            style={({ pressed }) => [
-              s.fsBtn,
-              {
-                backgroundColor: pressed
-                  ? "rgba(255,255,255,0.08)"
-                  : "rgba(255,255,255,0.04)",
-                borderColor: c.cardBorder,
-              },
-            ]}
-            accessibilityLabel="重播演示"
-          >
-            <Text style={{ color: c.mutedForeground, fontSize: 12 }}>
-              重播演示
             </Text>
           </Pressable>
           <Pressable
