@@ -243,7 +243,7 @@ export default function GiveawaysPage() {
       <div className="gw-rules">
         <strong>活动规则：</strong>
         每个邮箱仅可报名同一期一次；中奖结果开奖后 24 小时内邮件通知，并在本页「已结束」区块公示脱敏邮箱与发奖凭证。
-        奖品由对应 prop firm 直接发放至中奖账户，propfirmmatch 不收取任何手续费。
+        奖品由对应 prop firm 直接发放至中奖账户，Prophub 不收取任何手续费。
       </div>
 
       {modalGiveaway && (

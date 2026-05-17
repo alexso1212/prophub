@@ -157,7 +157,7 @@ export default function SupportWidget({ onClose }: Props) {
                 );
               })}
               <div className="support-faq-tip">
-                所有官方账号均以 <strong>@propfirmmatch</strong> 开头，谨防仿冒。
+                所有官方账号均以 <strong>@prophub</strong> 开头，谨防仿冒。
               </div>
             </div>
           )}

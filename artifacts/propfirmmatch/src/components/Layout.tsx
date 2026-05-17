@@ -115,9 +115,9 @@ export default function Layout({ children }: { children: ReactNode }) {
       </div>
 
       <header className="header">
-        <Link href={homePath} className="logo" aria-label="Prop Firm Match 首页">
-          <span className="logo-mark">P</span>
-          <span className="logo-text">Prop Firm Match<span className="logo-sub">自营公司大全</span></span>
+        <Link href={homePath} className="logo" aria-label="Prophub · PF 群英 首页">
+          <img src="/prophub-logo.svg" alt="" className="logo-img" aria-hidden="true" />
+          <span className="logo-text">Prophub<span className="logo-sub">PF 群英 · 自营公司大全</span></span>
         </Link>
 
         <button
@@ -182,8 +182,8 @@ export default function Layout({ children }: { children: ReactNode }) {
           <div className="drawer-mask" onClick={() => setDrawerOpen(false)} />
           <aside className="side-drawer" aria-label="更多菜单">
             <div className="side-drawer-head">
-              <span className="logo-mark">P</span>
-              <span style={{ fontWeight: 700 }}>Prop Firm Match</span>
+              <img src="/prophub-logo.svg" alt="" className="logo-img" aria-hidden="true" />
+              <span style={{ fontWeight: 700 }}>Prophub · PF 群英</span>
               <button
                 className="side-drawer-close"
                 aria-label="关闭"
@@ -246,8 +246,8 @@ export default function Layout({ children }: { children: ReactNode }) {
         <div className="footer-inner">
           <div className="footer-col">
             <div className="logo" style={{ marginBottom: 14 }}>
-              <span className="logo-mark">P</span>
-              <span>Prop Firm Match</span>
+              <img src="/prophub-logo.svg" alt="" className="logo-img" aria-hidden="true" />
+              <span>Prophub · PF 群英</span>
             </div>
             <p style={{ color: "var(--text-dim)", fontSize: 13, lineHeight: 1.6 }}>
               最值得信赖的自营交易公司导航站。一站对比挑战赛、阅读真实评价，找到适合你交易风格的合作公司。
@@ -277,7 +277,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             <a href="https://www.linkedin.com/company/prop-firm-match/" target="_blank" rel="noreferrer">LinkedIn</a>
           </div>
         </div>
-        <div className="footer-bottom">© {new Date().getFullYear()} Prop Firm Match · 保留所有权利</div>
+        <div className="footer-bottom">© {new Date().getFullYear()} Prophub · PF 群英 · 保留所有权利</div>
       </footer>
     </>
   );

@@ -17,7 +17,7 @@ export default function BestSellersPage() {
     <main className="container">
       <div className="section-title"><TrophyIcon size={18} className="icon" /> 热销榜</div>
       <p style={{ color: "var(--text-dim)", marginBottom: 24, maxWidth: 720 }}>
-        本月交易员购买最多的挑战赛排行，按 Prop Firm Match 销售量排序。
+        本月交易员购买最多的挑战赛排行，按 Prophub · PF 群英 销售量排序。
       </p>
       <div className="popular-row" style={{ marginBottom: 24 }}>
         {ranked.slice(0, 3).map((f, i) => {

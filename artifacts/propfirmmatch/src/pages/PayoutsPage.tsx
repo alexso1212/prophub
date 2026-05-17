@@ -29,7 +29,7 @@ export default function PayoutsPage() {
       </p>
 
       <div className="popular-row" style={{ marginBottom: 30 }}>
-        <div className="popular-card" style={{ background: "linear-gradient(135deg, rgba(255,106,61,0.08), rgba(168,85,247,0.04))" }}>
+        <div className="popular-card" style={{ background: "linear-gradient(135deg, rgba(192,132,252,0.08), rgba(168,85,247,0.04))" }}>
           <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 6 }}>累计出金额度</div>
           <div style={{ fontSize: 32, fontWeight: 700, color: "var(--orange)" }}>${isFutures ? totalTrackedPayouts.toLocaleString() : "—"}</div>
         </div>
@@ -165,7 +165,7 @@ export default function PayoutsPage() {
                     >
                       <img
                         src={proofs.screenshotPath}
-                        alt={`${f.name} PropFirmMatch 出金追踪页快照（${SNAPSHOT_DATE}）`}
+                        alt={`${f.name} Prophub 出金追踪页快照（${SNAPSHOT_DATE}）`}
                         loading="lazy"
                         style={{ display: "block", width: "100%", height: "auto" }}
                       />
@@ -189,8 +189,8 @@ export default function PayoutsPage() {
                           <span key={m} style={{
                             padding: "4px 10px",
                             borderRadius: 999,
-                            background: "rgba(255,106,61,0.08)",
-                            border: "1px solid rgba(255,106,61,0.25)",
+                            background: "rgba(192,132,252,0.08)",
+                            border: "1px solid rgba(192,132,252,0.25)",
                             color: "var(--orange)",
                             fontSize: 12,
                             whiteSpace: "nowrap",
@@ -236,7 +236,7 @@ export default function PayoutsPage() {
                     </table>
                   </div>
                   <div style={{ marginTop: 10, fontSize: 12, color: "var(--text-muted)" }}>
-                    全部记录抓自源站 PropFirmMatch 公开追踪页：
+                    全部记录抓自源站公开追踪页：
                     <a
                       href={proofs.sourceUrl}
                       target="_blank"

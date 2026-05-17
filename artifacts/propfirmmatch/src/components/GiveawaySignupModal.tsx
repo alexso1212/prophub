@@ -65,7 +65,7 @@ export default function GiveawaySignupModal({ giveaway, onClose, onSuccess }: Pr
           />
           <label className="gw-modal-check">
             <input type="checkbox" checked={agree} onChange={e => setAgree(e.target.checked)} />
-            <span>我已阅读并同意活动规则，授权 propfirmmatch 在开奖后通过邮件联系我。</span>
+            <span>我已阅读并同意活动规则，授权 Prophub 在开奖后通过邮件联系我。</span>
           </label>
           <div className="gw-modal-rules">
             {giveaway.rules.slice(0, 3).map((r, i) => <div key={i}>· {r}</div>)}

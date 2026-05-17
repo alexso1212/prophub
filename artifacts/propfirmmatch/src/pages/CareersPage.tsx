@@ -43,7 +43,7 @@ export default function CareersPage() {
         <div className="careers-hero-left">
           <h1 className="careers-hero-title">在全球远程团队，做交易者真正会用的产品。</h1>
           <p className="careers-hero-desc">
-            Prop Firm Match 是全球自营交易公司的导航与点评平台。我们 100% 远程，团队分布在 12 个国家，
+            Prophub · PF 群英 是全球自营交易公司的导航与点评平台。我们 100% 远程，团队分布在 12 个国家，
             目标是让每一位交易者都能 5 分钟内找到适合自己的 prop firm。
           </p>
           <div className="careers-hero-tags">
@@ -77,7 +77,7 @@ export default function CareersPage() {
       <section className="careers-contact">
         <div className="careers-contact-title">找不到合适的职位？</div>
         <div className="careers-contact-desc">
-          欢迎将简历发送至 <a href="mailto:careers@propfirmmatch.example" className="firm-name-link">careers@propfirmmatch.example</a>，
+          欢迎将简历发送至 <a href="mailto:careers@prophub.example" className="firm-name-link">careers@prophub.example</a>，
           我们会在两周内回复你。也可以附上你想为我们做什么的一段想法 —— 我们对自发性永远开放。
         </div>
       </section>

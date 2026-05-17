@@ -21,7 +21,7 @@ export const JOBS: Job[] = [
     type: "全职",
     skills: ["React", "TypeScript", "Next.js", "性能优化", "可访问性"],
     postedAt: "2026-05-12",
-    summary: "主导 propfirmmatch 主站的前端架构演进，负责性能、可访问性与组件体系。",
+    summary: "主导 Prophub 主站的前端架构演进，负责性能、可访问性与组件体系。",
     body: `## 关于团队
 工程团队 18 人，全部远程，覆盖 7 个时区。前端用 React + TypeScript + Vite，后端 Node + Postgres。我们重视代码评审、可观测性和小步发布。
 
@@ -125,7 +125,7 @@ export const JOBS: Job[] = [
     type: "全职",
     skills: ["Figma", "设计系统", "信息架构", "原型动效"],
     postedAt: "2026-05-06",
-    summary: "和 PM/工程一起打磨 propfirmmatch 的体验，建立和迭代设计系统。",
+    summary: "和 PM/工程一起打磨 Prophub 的体验，建立和迭代设计系统。",
     body: `## 关于团队
 设计团队 3 人，每周一次评审会，每两周一次跨职能同步。所有设计资源开放给工程团队，争议用真实用户访谈而非主观打分。
 
@@ -193,7 +193,7 @@ export const JOBS: Job[] = [
     type: "全职",
     skills: ["社区运营", "内容选题", "B 站", "小红书", "Discord"],
     postedAt: "2026-05-02",
-    summary: "经营 propfirmmatch 的中文社区，做选题、写稿、回评论、做活动。",
+    summary: "经营 Prophub 的中文社区，做选题、写稿、回评论、做活动。",
     body: `## 关于团队
 内容与社区团队 4 人，与设计、市场、商务紧密协作。中文是主战场，目标是把月活社区用户从 1.2 万做到 5 万。
 
@@ -227,7 +227,7 @@ export const JOBS: Job[] = [
     type: "全职",
     skills: ["Playwright", "测试设计", "自动化", "可观测性"],
     postedAt: "2026-04-28",
-    summary: "搭建 propfirmmatch 的端到端测试体系，让发布安心。",
+    summary: "搭建 Prophub 的端到端测试体系，让发布安心。",
     body: `## 关于团队
 工程团队没有专职 QA，目前的端到端测试由工程师轮值。我们希望这个位置成为质量的引擎，而不是看门人。
 
