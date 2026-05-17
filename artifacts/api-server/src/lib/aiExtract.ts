@@ -1,25 +1,60 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-const EXTRACT_SCHEMA_INSTRUCTIONS = `You are an expert at extracting structured promo/offer data from prop trading firm websites.
-
-You will be given the visible text content of a firm's pricing or promotion page. Return ONLY a single JSON object (no prose, no markdown fences) matching this schema:
-
-{
-  "discountPercent": number | null,      // e.g. 90 for 90% off; null if not advertised
-  "code": string | null,                 // promo code, uppercase; null if none
-  "label": string | null,                // short marketing label, e.g. "Black Friday", "Limited Time"
-  "validUntil": string | null,           // ISO 8601 date if a deadline is mentioned, else null
-  "applicablePlans": string[],           // e.g. ["25K","50K","100K"]; empty array if not specified
-  "summary": string,                     // 1-sentence Chinese summary of the offer
-  "confidence": number                   // 0..1 your confidence that the extracted data is accurate
-}
-
-Rules:
-- If discount appears as a range (e.g. "up to 90%"), use the largest number.
+const SYSTEM_PROMPT = `You extract structured promo/offer data from prop trading firm websites. Always call the \`record_offer\` tool with your findings. Rules:
+- If a discount appears as a range (e.g. "up to 90%"), use the largest number.
 - If multiple codes are listed, pick the one with highest discount.
-- If you can't find any offer at all, set discountPercent=null, code=null, confidence<=0.3.
+- If no offer is found, set discountPercent=null, code=null, confidence<=0.3.
 - Never invent codes. If unsure, return null and lower confidence.
-- summary must be in Chinese (Simplified) regardless of source language.`;
+- summary must be in Simplified Chinese regardless of source language.`;
+
+const OFFER_TOOL = {
+  name: "record_offer",
+  description:
+    "Record the structured promo/offer data extracted from the prop firm page. Must be called exactly once.",
+  input_schema: {
+    type: "object" as const,
+    properties: {
+      discountPercent: {
+        type: ["number", "null"],
+        description: "Discount percent, e.g. 90 for 90% off. null if not advertised.",
+      },
+      code: {
+        type: ["string", "null"],
+        description: "Promo code (will be uppercased). null if none.",
+      },
+      label: {
+        type: ["string", "null"],
+        description: "Short marketing label, e.g. 'Black Friday'. null if none.",
+      },
+      validUntil: {
+        type: ["string", "null"],
+        description: "ISO 8601 date if deadline mentioned, else null.",
+      },
+      applicablePlans: {
+        type: "array",
+        items: { type: "string" },
+        description: "List of plan sizes like ['25K','50K']. Empty if not specified.",
+      },
+      summary: {
+        type: "string",
+        description: "One-sentence Simplified Chinese summary of the offer.",
+      },
+      confidence: {
+        type: "number",
+        description: "0..1 confidence that the extracted data is accurate.",
+      },
+    },
+    required: [
+      "discountPercent",
+      "code",
+      "label",
+      "validUntil",
+      "applicablePlans",
+      "summary",
+      "confidence",
+    ],
+  },
+};
 
 export interface ExtractedOffer {
   discountPercent: number | null;
@@ -45,30 +80,34 @@ export async function extractOfferFromText(text: string): Promise<ExtractedOffer
   const response = await client.messages.create({
     model: "claude-haiku-4-5",
     max_tokens: 1024,
-    system: EXTRACT_SCHEMA_INSTRUCTIONS,
+    system: SYSTEM_PROMPT,
+    tools: [OFFER_TOOL as any],
+    tool_choice: { type: "tool", name: "record_offer" } as any,
     messages: [
       {
         role: "user",
-        content: `Page content:\n\n${trimmed}\n\nReturn the JSON now.`,
+        content: `Page content:\n\n${trimmed}\n\nCall record_offer with the extracted fields now.`,
       },
     ],
   });
 
-  const block = response.content.find((b: any) => b.type === "text") as any;
-  if (!block) throw new Error("No text block in AI response");
-  const raw = (block.text as string).trim();
-  const jsonMatch = raw.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) throw new Error("AI response did not contain JSON");
-  const parsed = JSON.parse(jsonMatch[0]) as ExtractedOffer;
+  const toolBlock = response.content.find((b: any) => b.type === "tool_use") as any;
+  if (!toolBlock) throw new Error("AI did not call record_offer tool");
+  const parsed = toolBlock.input as ExtractedOffer;
 
   return {
     discountPercent: typeof parsed.discountPercent === "number" ? parsed.discountPercent : null,
     code: parsed.code ? String(parsed.code).trim().toUpperCase() : null,
     label: parsed.label ? String(parsed.label).trim() : null,
     validUntil: parsed.validUntil ? String(parsed.validUntil) : null,
-    applicablePlans: Array.isArray(parsed.applicablePlans) ? parsed.applicablePlans.map(String) : [],
+    applicablePlans: Array.isArray(parsed.applicablePlans)
+      ? parsed.applicablePlans.map(String)
+      : [],
     summary: parsed.summary ? String(parsed.summary).trim() : "",
-    confidence: typeof parsed.confidence === "number" ? Math.max(0, Math.min(1, parsed.confidence)) : 0.5,
+    confidence:
+      typeof parsed.confidence === "number"
+        ? Math.max(0, Math.min(1, parsed.confidence))
+        : 0.5,
   };
 }
 

@@ -88,6 +88,7 @@ router.get("/admin/offers/queue", async (_req, res) => {
 router.post("/admin/offers/:id/approve", async (req, res) => {
   const id = Number(req.params.id);
   const actor = getActor(req);
+  const force = req.body?.force === true;
   const [draft] = await db.select().from(offersTable).where(eq(offersTable.id, id));
   if (!draft) return res.status(404).json({ error: "Not found" });
 
@@ -95,6 +96,24 @@ router.post("/admin/offers/:id/approve", async (req, res) => {
     .select()
     .from(offersTable)
     .where(and(eq(offersTable.firmSlug, draft.firmSlug), eq(offersTable.status, "published")));
+
+  // Carry affiliateUrl forward from current published offer if the draft
+  // doesn't have one. Preserves `?ref=propfirmmatch` tracking params.
+  const effectiveAffiliate = draft.affiliateUrl ?? current?.affiliateUrl ?? null;
+
+  // Pre-publish link health gate. We refuse to publish a broken/affiliate-
+  // stripped link unless caller passes force=true.
+  if (effectiveAffiliate) {
+    const expectRef = "ref=propfirmmatch";
+    const health = await runLinkHealth(effectiveAffiliate, expectRef);
+    if (!health.ok && !force) {
+      return res.status(409).json({
+        error: "Link health check failed; publish blocked",
+        health,
+        hint: "Re-submit with { force: true } to override.",
+      });
+    }
+  }
 
   // archive current
   if (current) {
@@ -109,6 +128,7 @@ router.post("/admin/offers/:id/approve", async (req, res) => {
     .set({
       status: "published",
       reviewedBy: actor,
+      affiliateUrl: effectiveAffiliate,
       publishedAt: new Date(),
       updatedAt: new Date(),
     })
@@ -173,34 +193,62 @@ router.get("/admin/scrape/jobs", async (_req, res) => {
   res.json(rows);
 });
 
-router.post("/admin/scrape/run", async (req, res) => {
-  const { slug } = req.body ?? {};
-  if (!slug || typeof slug !== "string") {
-    return res.status(400).json({ error: "slug required" });
-  }
+// Reusable trigger used by HTTP route AND cron scheduler.
+export async function triggerScrapeForFirm(
+  slug: string,
+  triggeredBy: string,
+): Promise<
+  | { ok: true; jobId: number }
+  | { ok: false; status: number; error: string }
+> {
   const [firm] = await db.select().from(firmsTable).where(eq(firmsTable.slug, slug));
-  if (!firm) return res.status(404).json({ error: "Firm not found" });
-  if (!firm.scrapeUrl) return res.status(400).json({ error: "Firm has no scrapeUrl configured" });
-
-  const actor = getActor(req);
+  if (!firm) return { ok: false, status: 404, error: "Firm not found" };
+  if (!firm.scrapeUrl) return { ok: false, status: 400, error: "Firm has no scrapeUrl configured" };
   const [job] = await db
     .insert(scrapeJobsTable)
     .values({
       firmSlug: slug,
       status: "running",
-      triggeredBy: actor,
+      triggeredBy,
       startedAt: new Date(),
       sourceUrl: firm.scrapeUrl,
     })
     .returning();
-
-  // Run async (don't await), but capture result via promise
   runScrapeJob(job.id, slug, firm.scrapeUrl).catch((e) => {
     console.error("Scrape job failed", e);
   });
+  return { ok: true, jobId: job.id };
+}
 
-  return res.json({ jobId: job.id, status: "running" });
+router.post("/admin/scrape/run", async (req, res) => {
+  const { slug } = req.body ?? {};
+  if (!slug || typeof slug !== "string") {
+    return res.status(400).json({ error: "slug required" });
+  }
+  const actor = getActor(req);
+  const result = await triggerScrapeForFirm(slug, actor);
+  if (!result.ok) return res.status(result.status).json({ error: result.error });
+  return res.json({ jobId: result.jobId, status: "running" });
 });
+
+// Run scrapes for every firm where scrapeEnabled=1 and scrapeUrl is set.
+export async function runDailyScrapeSweep(triggeredBy = "cron"): Promise<{ triggered: number; skipped: number }> {
+  const firms = await db.select().from(firmsTable);
+  let triggered = 0;
+  let skipped = 0;
+  for (const f of firms) {
+    if (!f.scrapeUrl || f.scrapeEnabled !== 1) {
+      skipped++;
+      continue;
+    }
+    const r = await triggerScrapeForFirm(f.slug, triggeredBy);
+    if (r.ok) triggered++;
+    else skipped++;
+    // Small delay to avoid hammering the AI provider or upstreams.
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+  }
+  return { triggered, skipped };
+}
 
 async function runScrapeJob(jobId: number, slug: string, url: string) {
   const start = Date.now();
@@ -250,6 +298,10 @@ async function runScrapeJob(jobId: number, slug: string, url: string) {
           label: extracted.label,
           validUntil: extracted.validUntil ? new Date(extracted.validUntil) : null,
           planScope: extracted.applicablePlans,
+          // Carry affiliateUrl from the current published offer so `?ref=` is
+          // preserved through scrape -> draft -> approve. The scraper only
+          // updates marketing fields; affiliate URL is managed manually.
+          affiliateUrl: current?.affiliateUrl ?? null,
           sourceUrl: url,
           sourceType: "ai_scrape",
           status: "pending_review",
@@ -287,6 +339,33 @@ async function runScrapeJob(jobId: number, slug: string, url: string) {
 }
 
 // ---------- Link health ----------
+export async function runLinkHealth(
+  url: string,
+  expectRef?: string,
+): Promise<{ ok: boolean; status?: number; finalUrl?: string; hasRef?: boolean; error?: string; durationMs: number }> {
+  const start = Date.now();
+  if (!isPublicHttpUrl(url)) {
+    return { ok: false, error: "Non-public URL blocked", durationMs: Date.now() - start };
+  }
+  try {
+    const resp = await fetch(url, {
+      redirect: "follow",
+      headers: { "User-Agent": "ProphubLinkChecker/1.0" },
+    });
+    const finalUrl = resp.url;
+    const hasRef = expectRef ? finalUrl.includes(expectRef) : true;
+    return {
+      ok: resp.ok && hasRef,
+      status: resp.status,
+      finalUrl,
+      hasRef,
+      durationMs: Date.now() - start,
+    };
+  } catch (err: any) {
+    return { ok: false, error: err?.message ?? String(err), durationMs: Date.now() - start };
+  }
+}
+
 function isPublicHttpUrl(raw: string): boolean {
   try {
     const u = new URL(raw);
@@ -313,25 +392,33 @@ function isPublicHttpUrl(raw: string): boolean {
 router.post("/admin/link-health/check", async (req, res) => {
   const { url, expectRef } = req.body ?? {};
   if (!url || typeof url !== "string") return res.status(400).json({ error: "url required" });
-  if (!isPublicHttpUrl(url)) return res.status(400).json({ error: "Only public http(s) URLs allowed" });
-  const start = Date.now();
-  try {
-    const resp = await fetch(url, {
-      redirect: "follow",
-      headers: { "User-Agent": "ProphubLinkChecker/1.0" },
-    });
-    const finalUrl = resp.url;
-    const hasRef = expectRef ? finalUrl.includes(expectRef) : true;
-    return res.json({
-      ok: resp.ok && hasRef,
-      status: resp.status,
-      finalUrl,
-      hasRef,
-      durationMs: Date.now() - start,
-    });
-  } catch (err: any) {
-    return res.json({ ok: false, error: err?.message ?? String(err), durationMs: Date.now() - start });
+  const result = await runLinkHealth(url, expectRef);
+  return res.json(result);
+});
+
+// Bulk health: run against all currently-published offers with an affiliateUrl.
+router.post("/admin/link-health/sweep", async (_req, res) => {
+  const published = await db
+    .select()
+    .from(offersTable)
+    .where(eq(offersTable.status, "published"));
+  const expectRef = "ref=propfirmmatch";
+  const results: Array<{
+    offerId: number;
+    firmSlug: string;
+    url: string;
+    ok: boolean;
+    status?: number;
+    finalUrl?: string;
+    hasRef?: boolean;
+    error?: string;
+  }> = [];
+  for (const o of published) {
+    if (!o.affiliateUrl) continue;
+    const h = await runLinkHealth(o.affiliateUrl, expectRef);
+    results.push({ offerId: o.id, firmSlug: o.firmSlug, url: o.affiliateUrl, ...h });
   }
+  return res.json({ checked: results.length, results });
 });
 
 export default router;

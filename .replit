@@ -50,3 +50,6 @@ channel = "stable-25_05"
 
 [userenv.shared]
 ADMIN_EMAILS = ""
+
+[userenv.development]
+ADMIN_DEV_BYPASS = "1"
