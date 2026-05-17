@@ -81,6 +81,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   width: auto;
   display: block;
   flex-shrink: 0;
+  background: #ffffff;
+  padding: 4px 8px;
+  border-radius: 8px;
+  box-sizing: content-box;
 }
 .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
 .logo-sub {
