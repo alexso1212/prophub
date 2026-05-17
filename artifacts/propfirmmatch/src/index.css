@@ -2295,3 +2295,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .firm-filter-body { padding: 4px 16px 16px; }
   .firm-filter-foot { padding: 12px 16px calc(14px + env(safe-area-inset-bottom)); }
 }
+
+.ff-hint {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}

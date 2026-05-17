@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { useLocation } from "wouter";
 import type { Firm } from "../data/firms";
 import { countryZh } from "../data/i18nZh";
 import {
@@ -9,7 +10,14 @@ import {
   uniquePlatforms,
   type FirmFilters,
 } from "../hooks/useFirmFilters";
+import { useCategory, CATEGORY_META, type Category } from "../contexts/CategoryContext";
 import { CloseIcon, StarIcon, HeartIcon } from "./icons";
+
+const ASSET_CLASSES: { value: Category; label: string }[] = [
+  { value: "futures", label: "期货" },
+  { value: "forex", label: "外汇" },
+  { value: "crypto", label: "加密" },
+];
 
 interface Props {
   open: boolean;
@@ -29,6 +37,8 @@ const TIERS = [
 
 export default function FirmsFilterSidebar({ open, onClose, firms, value, onApply }: Props) {
   const [draft, setDraft] = useState<FirmFilters>(value);
+  const category = useCategory();
+  const [, setLocation] = useLocation();
 
   useEffect(() => {
     if (open) setDraft(value);
@@ -88,6 +98,28 @@ export default function FirmsFilterSidebar({ open, onClose, firms, value, onAppl
         </header>
 
         <div className="firm-filter-body">
+          <section className="ff-group">
+            <h4>资产类别</h4>
+            <div className="ff-chips">
+              {ASSET_CLASSES.map(a => (
+                <button
+                  key={a.value}
+                  type="button"
+                  className={`ff-chip ${category === a.value ? "is-active" : ""}`}
+                  onClick={() => {
+                    if (a.value === category) return;
+                    onClose();
+                    setLocation(CATEGORY_META[a.value].pathPrefix);
+                  }}
+                  aria-pressed={category === a.value}
+                >
+                  {a.label}
+                </button>
+              ))}
+            </div>
+            <p className="ff-hint">切换到其他资产类别会跳转到对应的公司列表页。</p>
+          </section>
+
           <section className="ff-group">
             <h4>显示</h4>
             <label className="ff-check">
