@@ -25,7 +25,7 @@ const requireAdmin = (req: any, res: any, next: any) => {
   }
   const email = (auth?.sessionClaims?.email as string | undefined)?.toLowerCase();
   const adminEmails = getAdminEmails();
-  if (adminEmails.length > 0 && (!email || !adminEmails.includes(email))) {
+  if (adminEmails.length === 0 || !email || !adminEmails.includes(email)) {
     return res.status(403).json({ error: "Forbidden: not an admin" });
   }
   next();
