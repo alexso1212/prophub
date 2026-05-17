@@ -17,6 +17,28 @@
   --gradient-pp: linear-gradient(90deg, #c084fc 0%, #a855f7 50%, #7c3aed 100%);
   --gradient-pp-2: linear-gradient(135deg, #c084fc 0%, #7c3aed 100%);
   --radius: 12px;
+
+  /* Promo discount badge tokens — tuned per theme to meet WCAG AA contrast */
+  --promo-accent: #c4b5fd;
+  --promo-accent-strong: #ddd6fe;
+  --promo-pill-bg: linear-gradient(135deg, rgba(192,132,252,0.18), rgba(168,85,247,0.22));
+  --promo-pill-border: rgba(168,85,247,0.45);
+  --promo-pill-code: rgba(255,255,255,0.92);
+}
+
+/* Light-theme overrides for the promo badge. Activated ONLY by an explicit
+   [data-theme="light"] attribute on the root. We deliberately do NOT key off
+   `prefers-color-scheme` here: the rest of the page is still dark-only, so
+   flipping promo tokens on OS preference alone would put dark-purple text on
+   the existing dark background and tank contrast. Once a full light palette
+   exists for --bg/--card/--text, the page can opt in by setting
+   <html data-theme="light"> and these tokens will follow. */
+:root[data-theme="light"] {
+  --promo-accent: #6b21a8;
+  --promo-accent-strong: #581c87;
+  --promo-pill-bg: linear-gradient(135deg, rgba(168,85,247,0.10), rgba(126,34,206,0.14));
+  --promo-pill-border: rgba(107,33,168,0.55);
+  --promo-pill-code: #4c1d95;
 }
 
 * { box-sizing: border-box; }
@@ -799,7 +821,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: flex; flex-direction: column; gap: 4px; align-items: flex-start;
 }
 .promo-discount {
-  color: var(--purple);
+  color: var(--promo-accent);
   font-weight: 700;
   font-size: 14px;
 }
@@ -816,15 +838,15 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .promo-pill {
   display: inline-flex; flex-direction: column; align-items: center;
-  background: linear-gradient(135deg, rgba(192,132,252,0.18), rgba(168,85,247,0.22));
-  border: 1px solid rgba(168,85,247,0.45);
+  background: var(--promo-pill-bg);
+  border: 1px solid var(--promo-pill-border);
   border-radius: 10px;
   padding: 4px 10px;
   min-width: 72px;
   line-height: 1.15;
 }
 .promo-pill-percent {
-  color: var(--purple);
+  color: var(--promo-accent-strong);
   font-weight: 800;
   font-size: 13px;
   letter-spacing: 0.2px;
@@ -832,10 +854,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .promo-pill-code {
   font-size: 10px;
   font-weight: 700;
-  color: var(--text);
+  color: var(--promo-pill-code);
   letter-spacing: 0.6px;
   text-transform: uppercase;
-  opacity: 0.85;
+  opacity: 0.95;
 }
 .promo-copy-btn {
   width: 26px; height: 26px;
