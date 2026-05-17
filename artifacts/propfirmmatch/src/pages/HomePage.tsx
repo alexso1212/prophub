@@ -8,8 +8,11 @@ import NewsFeed from "../components/NewsFeed";
 import FirmLogo from "../components/FirmLogo";
 import { SparkleIcon, SettingsIcon, HeartIcon, TrophyIcon, StarRow, StarIcon } from "../components/icons";
 import Onboarding from "../components/Onboarding";
+import FirmsFilterSidebar from "../components/FirmsFilterSidebar";
 import { useFirmsOverrides } from "../contexts/FirmsOverridesContext";
 import { useCategory, useCategoryFirms, useCategoryMeta } from "../contexts/CategoryContext";
+import { useFavorites } from "../store/favs";
+import { applyFilters, useFirmFilters } from "../hooks/useFirmFilters";
 
 function Stars({ rating }: { rating: number }) {
   return <StarRow rating={rating} className="stars" />;
@@ -126,21 +129,26 @@ function RankBadge({ place }: { place: number }) {
 }
 
 export default function HomePage() {
-  const [filter, setFilter] = useState<"popular" | "new" | "all" | "favorite">("all");
-  const [favorites] = useState<string[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { favs: favorites } = useFavorites();
   const overrides = useFirmsOverrides();
   const category = useCategory();
   const meta = useCategoryMeta();
   const firms = useCategoryFirms();
   const prefix = `/${category}`;
+  const { filters, setFilters, reset, activeCount } = useFirmFilters();
 
-  const sorted = useMemo(() => {
-    const arr = [...firms];
-    if (filter === "new") return arr.filter(f => f.isNew);
-    if (filter === "favorite") return arr.filter(f => favorites.includes(f.slug));
-    if (filter === "popular") return arr.sort((a, b) => (a.rank ?? a.popularRank ?? 99) - (b.rank ?? b.popularRank ?? 99));
-    return arr;
-  }, [filter, favorites, firms]);
+  const promoPercentFor = (slug: string) => {
+    const ov = overrides[slug];
+    const f = firms.find(x => x.slug === slug);
+    return ov?.discountPercent ?? ov?.promoPercent ?? f?.promoPercent ?? 0;
+  };
+
+  const sorted = useMemo(
+    () => applyFilters(firms, filters, { favorites, promoPercentFor }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [filters, favorites, firms, overrides]
+  );
 
   const top3 = useMemo(
     () => [...firms].sort((a, b) => (a.popularRank ?? 99) - (b.popularRank ?? 99)).slice(0, 3),
@@ -169,13 +177,54 @@ export default function HomePage() {
       </div>
 
       <div className="filter-bar">
-        <button className="filter-pill"><SettingsIcon size={13} /> 筛选</button>
-        <button className={`filter-pill ${filter === "popular" ? "active" : ""}`} onClick={() => setFilter("popular")}>人气</button>
-        <button className={`filter-pill ${filter === "favorite" ? "active" : ""}`} onClick={() => setFilter("favorite")}><HeartIcon size={13} /> 收藏 {favorites.length}/3</button>
-        <button className={`filter-pill ${filter === "new" ? "active" : ""}`} onClick={() => setFilter("new")}>新上线</button>
-        <button className={`filter-pill ${filter === "all" ? "active" : ""}`} onClick={() => setFilter("all")}>全部</button>
+        <button
+          type="button"
+          className={`filter-pill ${activeCount > 0 ? "active" : ""}`}
+          onClick={() => setSidebarOpen(true)}
+        >
+          <SettingsIcon size={13} /> 筛选
+          {activeCount > 0 && <span className="filter-count-badge">{activeCount}</span>}
+        </button>
+        <button
+          type="button"
+          className={`filter-pill ${filters.sort === "popular" ? "active" : ""}`}
+          onClick={() =>
+            setFilters(f => ({ ...f, sort: f.sort === "popular" ? "default" : "popular" }))
+          }
+        >
+          人气
+        </button>
+        <button
+          type="button"
+          className={`filter-pill ${filters.showFav ? "active" : ""}`}
+          onClick={() => setFilters(f => ({ ...f, showFav: !f.showFav }))}
+        >
+          <HeartIcon size={13} /> 收藏 {favorites.length}/3
+        </button>
+        <button
+          type="button"
+          className={`filter-pill ${filters.showNew ? "active" : ""}`}
+          onClick={() => setFilters(f => ({ ...f, showNew: !f.showNew }))}
+        >
+          新上线
+        </button>
+        <button
+          type="button"
+          className={`filter-pill ${activeCount === 0 && filters.sort === "default" ? "active" : ""}`}
+          onClick={() => reset()}
+        >
+          全部
+        </button>
         <span className="live-tag">数据 1 分钟前更新</span>
       </div>
+
+      <FirmsFilterSidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        firms={firms}
+        value={filters}
+        onApply={setFilters}
+      />
 
       <div className="firms-count">
         <span>全部{meta.label}自营公司</span> <span className="count-pill">{sorted.length}</span>
