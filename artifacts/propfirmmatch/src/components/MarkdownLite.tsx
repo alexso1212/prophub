@@ -13,6 +13,13 @@ function slugify(text: string): string {
     .replace(/^-|-$/g, "");
 }
 
+function safeUrl(url: string): string | null {
+  const u = url.trim();
+  if (/^(https?:|data:image\/)/i.test(u)) return u;
+  if (u.startsWith("/")) return u;
+  return null;
+}
+
 function renderInline(text: string): ReactNode[] {
   const out: ReactNode[] = [];
   const re = /\*\*(.+?)\*\*|`([^`]+?)`/g;
@@ -27,6 +34,21 @@ function renderInline(text: string): ReactNode[] {
   }
   if (last < text.length) out.push(text.slice(last));
   return out;
+}
+
+function tryImage(line: string, key: number): ReactNode | null {
+  const m = /^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)$/.exec(line.trim());
+  if (!m) return null;
+  const src = safeUrl(m[2]);
+  if (!src) return null;
+  const alt = m[1] || "";
+  const caption = m[3] || alt;
+  return (
+    <figure key={key} className="md-figure">
+      <img src={src} alt={alt} loading="lazy" className="md-img" />
+      {caption && <figcaption className="md-figcaption">{caption}</figcaption>}
+    </figure>
+  );
 }
 
 export function extractSections(md: string): MdSection[] {
@@ -52,6 +74,9 @@ export default function MarkdownLite({ source }: { source: string }) {
 
   while (i < lines.length) {
     const line = lines[i];
+
+    const imgNode = tryImage(line, key);
+    if (imgNode) { nodes.push(imgNode); key++; i++; continue; }
 
     if (line.startsWith("```")) {
       const buf: string[] = [];

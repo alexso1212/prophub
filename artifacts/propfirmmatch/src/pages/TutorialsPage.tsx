@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { useCategory } from "../contexts/CategoryContext";
 import { BookIcon } from "../components/icons";
-import { TUTORIALS, TUTORIAL_CATEGORIES, type Tutorial, type TutorialCategory } from "../data/tutorials";
+import { TUTORIALS, TUTORIAL_CATEGORIES, coverFor, type Tutorial, type TutorialCategory } from "../data/tutorials";
 
 const levelColor = (lv: Tutorial["level"]) =>
   lv === "新手" ? "#22c55e" : lv === "进阶" ? "var(--orange)" : "#a855f7";
@@ -45,6 +45,9 @@ export default function TutorialsPage() {
       <div className="tut-grid">
         {list.map(t => (
           <Link key={t.slug} href={`/tutorials/${t.slug}`} className="tut-card">
+            <div className="tut-card-cover">
+              <img src={coverFor(t)} alt={`${t.title} 封面图`} loading="lazy" />
+            </div>
             <div className="tut-card-meta">
               <span className="tut-card-level" style={{ color: levelColor(t.level) }}>● {t.level}</span>
               <span className="tut-card-cat">{t.category}</span>

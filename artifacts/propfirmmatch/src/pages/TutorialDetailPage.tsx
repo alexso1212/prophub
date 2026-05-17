@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Link, useRoute } from "wouter";
 import { useCategory } from "../contexts/CategoryContext";
 import { BookIcon, ArrowLeftIcon, ChevronRightIcon } from "../components/icons";
-import { getTutorial, getRelated, getAdjacent, type Tutorial } from "../data/tutorials";
+import { getTutorial, getRelated, getAdjacent, coverFor, type Tutorial } from "../data/tutorials";
 import MarkdownLite, { extractSections } from "../components/MarkdownLite";
 import SimplePage from "./SimplePage";
 
@@ -54,7 +54,7 @@ export default function TutorialDetailPage() {
             </aside>
           )}
           <div className="tut-body-wrap">
-            <MarkdownLite source={tut.body} />
+            <MarkdownLite source={`![${tut.title} 封面图](${coverFor(tut)} "${tut.category} · ${tut.minutes} 分钟阅读")\n\n${tut.body}`} />
           </div>
         </div>
 

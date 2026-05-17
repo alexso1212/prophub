@@ -10,6 +10,24 @@ export interface Tutorial {
   category: TutorialCategory;
   updatedAt: string;
   body: string;
+  cover?: string;
+}
+
+function makeCover(label: string, c1: string, c2: string): string {
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 320'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='${c1}'/><stop offset='1' stop-color='${c2}'/></linearGradient><pattern id='p' x='0' y='0' width='40' height='40' patternUnits='userSpaceOnUse'><circle cx='1' cy='1' r='1' fill='rgba(255,255,255,0.07)'/></pattern></defs><rect width='800' height='320' fill='url(%23g)'/><rect width='800' height='320' fill='url(%23p)'/><text x='44' y='178' font-family='Inter,Helvetica,sans-serif' font-size='56' font-weight='800' fill='rgba(255,255,255,0.96)' letter-spacing='1'>${label}</text><text x='44' y='220' font-family='Inter,Helvetica,sans-serif' font-size='20' font-weight='500' fill='rgba(255,255,255,0.72)'>propfirmmatch · 教程中心</text></svg>`;
+  const b64 = typeof btoa !== "undefined" ? btoa(unescape(encodeURIComponent(svg))) : Buffer.from(svg, "utf8").toString("base64");
+  return `data:image/svg+xml;base64,${b64}`;
+}
+
+export const COVER_BY_CATEGORY: Record<TutorialCategory, string> = {
+  "新手入门": makeCover("新手入门 · Start Here", "#ff6a3d", "#1a1a2e"),
+  "考核技巧": makeCover("考核技巧 · Pass Faster", "#7c3aed", "#1a1a2e"),
+  "出金": makeCover("出金通道 · Get Paid", "#22c55e", "#0f1f1a"),
+  "平台对比": makeCover("平台对比 · Pick Right", "#0ea5e9", "#0a1a2e"),
+};
+
+export function coverFor(t: Tutorial): string {
+  return t.cover ?? COVER_BY_CATEGORY[t.category];
 }
 
 export const TUTORIAL_CATEGORIES: TutorialCategory[] = [
