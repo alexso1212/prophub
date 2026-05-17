@@ -338,11 +338,11 @@ export default function AdminFirmsPage({ clerkEnabled = false }: Props) {
       {!clerkEnabled && (
         <div
           style={{
-            background: "rgba(249,115,22,0.08)",
-            border: "1px solid rgba(249,115,22,0.25)",
+            background: "rgba(168,85,247,0.08)",
+            border: "1px solid rgba(168,85,247,0.25)",
             borderRadius: 8,
             padding: "10px 16px",
-            color: "#f97316",
+            color: "#a855f7",
             marginBottom: 16,
             fontSize: 13,
           }}
