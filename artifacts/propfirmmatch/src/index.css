@@ -1746,21 +1746,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   transition: transform .15s;
 }
 .fab-help:hover { transform: scale(1.06); }
-.fab-toast {
-  position: fixed;
-  right: 18px; bottom: 80px;
-  background: var(--card-2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 10px 14px;
-  border-radius: 10px;
-  font-size: 13px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  z-index: 81;
-  animation: fadein .15s ease;
-  max-width: calc(100vw - 36px);
-}
-
 /* ============== Demo banner (slim on desktop) ============== */
 .demo-banner {
   background: linear-gradient(90deg, rgba(168,85,247,0.18), rgba(255,106,61,0.18));
@@ -3362,15 +3347,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 7px 10px;
   border-radius: 7px;
 }
-.support-success {
-  margin-top: 10px;
-  color: var(--green);
-  font-size: 12px;
-  background: rgba(16,185,129,0.08);
-  border: 1px solid rgba(16,185,129,0.3);
-  padding: 7px 10px;
-  border-radius: 7px;
-}
 .support-submit {
   margin-top: 14px;
   padding: 10px 16px;
@@ -3396,10 +3372,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 8px;
   display: grid; place-items: center;
   color: #fff;
-  font-weight: 700;
-  font-size: 14px;
   flex-shrink: 0;
 }
+.support-comm-icon svg { display: block; }
 .support-comm-info { flex: 1; min-width: 0; }
 .support-comm-name { font-size: 13px; font-weight: 600; color: var(--text); }
 .support-comm-desc { font-size: 11.5px; color: var(--text-dim); margin-top: 2px; }
