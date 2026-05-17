@@ -1,12 +1,11 @@
 import { Link } from "wouter";
 import { findFirmZh } from "../data/firms.zh";
 import { getBrandZh } from "../data/brandZh";
-import { useCategory, useCategoryFirms, useCategoryMeta } from "../contexts/CategoryContext";
+import { useCategoryFirms, useCategoryMeta } from "../contexts/CategoryContext";
 import FirmLogo from "../components/FirmLogo";
 import { SparkleIcon, StarRow } from "../components/icons";
 
 export default function OffersPage() {
-  const category = useCategory();
   const meta = useCategoryMeta();
   const firms = useCategoryFirms();
   const offers = firms.filter(f => f.promoPercent > 0).sort((a, b) => b.promoPercent - a.promoPercent);
