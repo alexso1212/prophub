@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Firm, getDiscountedPrices, formatUsd } from "../data/firms";
 import { findFirmZh } from "../data/firms.zh";
 import { getBrandZh } from "../data/brandZh";
@@ -155,18 +155,48 @@ export default function HomePage() {
     [firms]
   );
 
+  const offerFirms = useMemo(
+    () => firms.filter(f => {
+      const ov = overrides[f.slug];
+      const pct = ov?.discountPercent ?? ov?.promoPercent ?? f.promoPercent;
+      return pct > 0;
+    }).slice(0, 8),
+    [firms, overrides]
+  );
+
+  const carouselRef = useRef<HTMLDivElement | null>(null);
+  const scrollCarousel = (dir: -1 | 1) => {
+    const el = carouselRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * Math.round(el.clientWidth * 0.9), behavior: "smooth" });
+  };
+
   return (
     <main className="container">
       <Onboarding />
-      <div id="homepage-offers" className="section-title">
+
+      <section className="pfm-hero">
+        <h1 className="pfm-hero-title">2026 年最值得对比的{meta.label}自营公司</h1>
+        <p className="pfm-hero-sub">基于真实数据与交易员评价，帮你对比规则、点差、出金与折扣，一站挑出最适合自己的{meta.label}自营公司。</p>
+        <div className="pfm-trust-badges">
+          <span className="pfm-trust-badge"><strong>200+</strong> 收录公司</span>
+          <span className="pfm-trust-badge"><strong>1,000+</strong> 挑战赛</span>
+          <span className="pfm-trust-badge"><strong>10,500+</strong> 真实评价</span>
+          <span className="pfm-trust-badge"><strong>4M+</strong> 月访问量</span>
+        </div>
+      </section>
+
+      <div id="homepage-offers" className="section-title offers-section-title">
         <SparkleIcon size={18} className="icon" /> 本月{meta.label}专属优惠
+        {offerFirms.length > 0 && (
+          <div className="offers-nav" aria-hidden={false}>
+            <button type="button" className="offers-nav-btn" aria-label="上一组优惠" onClick={() => scrollCarousel(-1)}>‹</button>
+            <button type="button" className="offers-nav-btn" aria-label="下一组优惠" onClick={() => scrollCarousel(1)}>›</button>
+          </div>
+        )}
       </div>
-      <div className="offers-carousel">
-        {firms.filter(f => {
-          const ov = overrides[f.slug];
-          const pct = ov?.discountPercent ?? ov?.promoPercent ?? f.promoPercent;
-          return pct > 0;
-        }).slice(0, 8).map(f => <OfferCard key={f.slug} f={f} prefix={prefix} />)}
+      <div className="offers-carousel" ref={carouselRef}>
+        {offerFirms.map(f => <OfferCard key={f.slug} f={f} prefix={prefix} />)}
       </div>
 
       <div className="section-title" style={{ marginTop: 50 }}>
