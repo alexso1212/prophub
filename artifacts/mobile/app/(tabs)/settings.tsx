@@ -23,7 +23,7 @@ export default function SettingsScreen() {
           <Text style={[styles.title, { color: c.foreground }]}>外观</Text>
         </View>
         <Text style={[styles.subtitle, { color: c.mutedForeground }]}>
-          选择适合你的配色。「跟随系统」会随手机的浅色 / 深色设置自动切换。
+          选择适合你的配色。「高对比度」使用纯黑底配纯白字与高饱和黄色，适合弱视用户；「跟随系统」会随手机的浅色 / 深色设置自动切换。
         </Text>
         <ThemeToggle />
       </View>

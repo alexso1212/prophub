@@ -10,6 +10,11 @@ import { useThemeMode } from "@/hooks/useTheme";
  */
 export function useColors(): Palette & { radius: number } {
   const { resolved } = useThemeMode();
-  const palette = resolved === "light" ? colors.light : colors.dark;
+  const palette =
+    resolved === "hc"
+      ? colors.hc
+      : resolved === "light"
+        ? colors.light
+        : colors.dark;
   return { ...palette, radius: colors.radius };
 }

@@ -7,6 +7,7 @@ import { useThemeMode, type ThemeMode } from "@/hooks/useTheme";
 const OPTIONS: { value: ThemeMode; label: string }[] = [
   { value: "light", label: "浅色" },
   { value: "dark", label: "深色" },
+  { value: "hc", label: "高对比度" },
   { value: "system", label: "跟随系统" },
 ];
 
@@ -58,15 +59,17 @@ export function ThemeToggle() {
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
+    flexWrap: "wrap",
     borderWidth: 1,
-    borderRadius: 999,
+    borderRadius: 16,
     padding: 4,
     gap: 4,
   },
   btn: {
-    flex: 1,
+    flexGrow: 1,
+    flexBasis: "45%",
     alignItems: "center",
     paddingVertical: 9,
-    borderRadius: 999,
+    borderRadius: 12,
   },
 });

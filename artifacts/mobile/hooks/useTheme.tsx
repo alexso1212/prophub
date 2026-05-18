@@ -8,8 +8,8 @@ import React, {
 } from "react";
 import { Appearance } from "react-native";
 
-export type ThemeMode = "light" | "dark" | "system";
-export type ResolvedTheme = "light" | "dark";
+export type ThemeMode = "light" | "dark" | "system" | "hc";
+export type ResolvedTheme = "light" | "dark" | "hc";
 
 const STORAGE_KEY = "pfm.theme.v1";
 
@@ -25,25 +25,30 @@ const ThemeContext = createContext<ThemeContextValue>({
   setMode: () => {},
 });
 
-function readSystemScheme(): ResolvedTheme {
+function readSystemScheme(): "light" | "dark" {
   return Appearance.getColorScheme() === "light" ? "light" : "dark";
 }
 
-function resolve(mode: ThemeMode, system: ResolvedTheme): ResolvedTheme {
+function resolve(mode: ThemeMode, system: "light" | "dark"): ResolvedTheme {
   return mode === "system" ? system : mode;
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Default to dark to match the previous mobile look until we read storage.
   const [mode, setModeState] = useState<ThemeMode>("dark");
-  const [system, setSystem] = useState<ResolvedTheme>(readSystemScheme);
+  const [system, setSystem] = useState<"light" | "dark">(readSystemScheme);
 
   useEffect(() => {
     let cancelled = false;
     AsyncStorage.getItem(STORAGE_KEY)
       .then((raw) => {
         if (cancelled) return;
-        if (raw === "light" || raw === "dark" || raw === "system") {
+        if (
+          raw === "light" ||
+          raw === "dark" ||
+          raw === "system" ||
+          raw === "hc"
+        ) {
           setModeState(raw);
         }
       })

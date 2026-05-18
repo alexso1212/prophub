@@ -130,7 +130,74 @@ const light: typeof dark = {
   introGradient: ["rgba(124,58,237,0.14)", "rgba(168,85,247,0.14)"] as [string, string],
 };
 
-const colors = { light, dark, radius };
+// High contrast theme — pure black background, pure white text, saturated
+// yellow accents. Designed to mirror the Web 端 "高对比度" theme so 弱视用户
+// get the same legibility boost on mobile.
+const hc: typeof dark = {
+  text: "#ffffff",
+  tint: "#ffeb3b",
+
+  background: "#000000",
+  foreground: "#ffffff",
+
+  card: "#000000",
+  cardSolid: "#000000",
+  cardForeground: "#ffffff",
+
+  primary: "#ffeb3b",
+  primaryForeground: "#000000",
+
+  secondary: "#000000",
+  secondaryForeground: "#ffffff",
+
+  muted: "#000000",
+  mutedForeground: "#ffeb3b",
+  textMuted: "#ffeb3b",
+
+  accent: "#ffeb3b",
+  accentForeground: "#000000",
+
+  destructive: "#ff5252",
+  destructiveForeground: "#000000",
+
+  border: "#ffffff",
+  cardBorder: "#ffffff",
+  input: "#ffffff",
+
+  orange: "#ffeb3b",
+  orange2: "#ffeb3b",
+  purple: "#ffeb3b",
+  purple2: "#ffeb3b",
+  pink: "#ffeb3b",
+  green: "#00ff7f",
+  star: "#ffeb3b",
+
+  surface: "rgba(255,255,255,0.10)",
+  surfaceStrong: "rgba(255,255,255,0.22)",
+  surfaceMuted: "rgba(255,255,255,0.08)",
+  surfaceSubtle: "rgba(255,255,255,0.06)",
+  surfaceCollapsed: "rgba(255,255,255,0.10)",
+
+  overlay: "rgba(0,0,0,0.92)",
+  modalSurface: "#000000",
+  tipSurface: "#000000",
+
+  accentSoftBg: "rgba(255,235,59,0.18)",
+  accentSoftBgStrong: "rgba(255,235,59,0.28)",
+  accentSoftBgWeak: "rgba(255,235,59,0.12)",
+  accentSoftBorder: "#ffeb3b",
+
+  purpleSoftBg: "rgba(255,235,59,0.18)",
+  purpleSoftBorder: "#ffeb3b",
+
+  logoBg: "rgba(255,255,255,0.10)",
+  trunk: "#ffffff",
+  leafBorder: "#ffffff",
+
+  introGradient: ["rgba(255,235,59,0.22)", "rgba(255,235,59,0.22)"] as [string, string],
+};
+
+const colors = { light, dark, hc, radius };
 
 export type Palette = typeof dark;
 export default colors;
