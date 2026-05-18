@@ -1,17 +1,21 @@
 import { useEffect, useState, useCallback } from "react";
 
-export type ThemeMode = "light" | "dark" | "system";
+export type ThemeMode = "light" | "dark" | "system" | "hc";
 
 const STORAGE_KEY = "prophub-theme";
+
+function isThemeMode(value: unknown): value is ThemeMode {
+  return value === "light" || value === "dark" || value === "system" || value === "hc";
+}
 
 export function getStoredTheme(): ThemeMode {
   if (typeof window === "undefined") return "dark";
   const raw = window.localStorage.getItem(STORAGE_KEY);
-  if (raw === "light" || raw === "dark" || raw === "system") return raw;
+  if (isThemeMode(raw)) return raw;
   return "dark";
 }
 
-export function resolveTheme(mode: ThemeMode): "light" | "dark" {
+export function resolveTheme(mode: ThemeMode): "light" | "dark" | "hc" {
   if (mode === "system") {
     if (typeof window === "undefined") return "dark";
     return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
@@ -45,14 +49,14 @@ export function useTheme() {
     applyTheme(mode);
     const onExternalChange = (e: Event) => {
       const next = (e as CustomEvent<ThemeMode>).detail;
-      if (next === "light" || next === "dark" || next === "system") {
+      if (isThemeMode(next)) {
         setModeState(next);
       }
     };
     const onStorage = (e: StorageEvent) => {
       if (e.key !== STORAGE_KEY) return;
       const next = e.newValue;
-      if (next === "light" || next === "dark" || next === "system") {
+      if (isThemeMode(next)) {
         setModeState(next);
       }
     };

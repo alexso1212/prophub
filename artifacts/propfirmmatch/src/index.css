@@ -3999,6 +3999,99 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   --promo-pill-code: #4c1d95;
 }
 
+/* ============== High contrast theme palette ==============
+   Pure-black base with pure-white text and saturated yellow accents.
+   Designed for low-vision visitors: every border is thicker / brighter,
+   surface tints sit far above WCAG AA, and gradients flatten to single
+   tones so subtle hue shifts cannot disappear against the background. */
+:root[data-theme="hc"] {
+  --bg: #000000;
+  --bg-2: #000000;
+  --card: #000000;
+  --card-2: #000000;
+  --card-border: #ffffff;
+  --border: #ffffff;
+  --text: #ffffff;
+  --text-dim: #ffffff;
+  --text-muted: #ffeb3b;
+  --orange: #ffeb3b;
+  --orange-2: #ffeb3b;
+  --purple: #ffeb3b;
+  --purple-2: #ffeb3b;
+  --green: #00ff7f;
+  --gradient-pp: linear-gradient(90deg, #ffeb3b 0%, #ffeb3b 100%);
+  --gradient-pp-2: linear-gradient(135deg, #ffeb3b 0%, #ffeb3b 100%);
+
+  /* Surface overlays bumped to opaque whites/yellows so panels, hovers
+     and scrollbars are unmistakable on the pure-black canvas. */
+  --surface-1: rgba(255,255,255,0.10);
+  --surface-2: rgba(255,255,255,0.14);
+  --surface-3: rgba(255,255,255,0.18);
+  --surface-4: rgba(255,255,255,0.22);
+  --surface-5: rgba(255,255,255,0.26);
+  --surface-5b: rgba(255,255,255,0.30);
+  --surface-6: rgba(255,255,255,0.34);
+  --surface-7: rgba(255,255,255,0.40);
+  --surface-8: rgba(255,255,255,0.50);
+  --surface-9: rgba(255,255,255,0.60);
+  --surface-9b: rgba(255,255,255,0.70);
+  --surface-strong: rgba(255,255,255,0.80);
+  --surface-stronger: rgba(255,255,255,0.90);
+  --surface-strongest: #ffffff;
+  --surface-overlay-text: #000000;
+
+  /* Elevated solid surfaces stay black with bright borders elsewhere. */
+  --surface-sticky: #000000;
+  --surface-sticky-hover: #1a1a00;
+  --surface-tooltip: #000000;
+  --header-bg: #000000;
+
+  /* Stronger scrim so modals/drawers fully isolate from background. */
+  --mask-bg: rgba(0,0,0,0.85);
+  --mask-bg-strong: rgba(0,0,0,0.95);
+
+  /* Top-bar CTA: yellow chip with black text — max contrast pair. */
+  --topbar-cta-bg: #ffeb3b;
+  --topbar-cta-text: #000000;
+
+  /* Hero title becomes flat yellow so the gradient cannot wash out. */
+  --gradient-hero-title: linear-gradient(90deg, #ffeb3b 0%, #ffeb3b 100%);
+
+  /* Onboarding panels are solid black; borders carry the structure. */
+  --gradient-onb-panel: linear-gradient(180deg, #000000 0%, #000000 100%);
+  --gradient-onb-fs-canvas: linear-gradient(180deg, #000000 0%, #000000 100%);
+
+  /* Promo discount badge tokens — flat yellow on black for maximum legibility */
+  --promo-accent: #ffeb3b;
+  --promo-accent-strong: #ffeb3b;
+  --promo-pill-bg: linear-gradient(135deg, #ffeb3b 0%, #ffeb3b 100%);
+  --promo-pill-border: #ffeb3b;
+  --promo-pill-code: #000000;
+}
+
+/* Thicker borders and bolder type tighten the high-contrast feel. */
+:root[data-theme="hc"] body { font-weight: 500; }
+:root[data-theme="hc"] .card,
+:root[data-theme="hc"] .panel,
+:root[data-theme="hc"] .modal,
+:root[data-theme="hc"] .drawer,
+:root[data-theme="hc"] .side-drawer,
+:root[data-theme="hc"] table,
+:root[data-theme="hc"] th,
+:root[data-theme="hc"] td,
+:root[data-theme="hc"] .btn-pill,
+:root[data-theme="hc"] .tabs-pill,
+:root[data-theme="hc"] .search { border-width: 2px; }
+:root[data-theme="hc"] a,
+:root[data-theme="hc"] button { text-decoration: none; }
+:root[data-theme="hc"] a:focus-visible,
+:root[data-theme="hc"] button:focus-visible,
+:root[data-theme="hc"] input:focus-visible,
+:root[data-theme="hc"] [role="button"]:focus-visible {
+  outline: 3px solid #ffeb3b;
+  outline-offset: 2px;
+}
+
 /* Ensure ThemeToggle stays visible inside the mobile side drawer */
 .side-drawer .theme-toggle { display: inline-flex !important; }
 .side-drawer .theme-toggle .theme-toggle-label { display: inline !important; }
