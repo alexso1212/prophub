@@ -4,6 +4,7 @@ import { useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Image,
   KeyboardAvoidingView,
@@ -601,6 +602,7 @@ function ChannelView({
   );
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
+  const [reportTarget, setReportTarget] = useState<LocalMessage | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -717,13 +719,40 @@ function ChannelView({
         style={{ flex: 1 }}
         contentContainerStyle={{ padding: 12, gap: 8, flexDirection: "column-reverse" }}
         renderItem={({ item }) => (
-          <MessageBubble msg={item} myId={client.userID || ""} />
+          <MessageBubble
+            msg={item}
+            myId={client.userID || ""}
+            onReport={() => setReportTarget(item)}
+          />
         )}
         ListEmptyComponent={
           <View style={{ paddingVertical: 32, alignItems: "center" }}>
             <Text style={{ color: c.mutedForeground }}>暂无消息,来打个招呼吧</Text>
           </View>
         }
+      />
+
+      <ReportMessageModal
+        target={reportTarget}
+        myId={client.userID || ""}
+        onClose={() => setReportTarget(null)}
+        onSubmit={async (reason) => {
+          const id = reportTarget?.id;
+          if (!id) return;
+          try {
+            await client.flagMessage(id, reason ? { reason } : undefined);
+            Alert.alert("已提交举报", "管理员会尽快在后台审核。感谢你的反馈!");
+          } catch (err) {
+            const m = (err as Error)?.message || "未知错误";
+            if (/already.*flagged|duplicate/i.test(m)) {
+              Alert.alert("提示", "你已经举报过这条消息了。");
+            } else {
+              Alert.alert("举报失败", m);
+            }
+          } finally {
+            setReportTarget(null);
+          }
+        }}
       />
 
       <View
@@ -762,13 +791,33 @@ function ChannelView({
   );
 }
 
-function MessageBubble({ msg, myId }: { msg: LocalMessage; myId: string }) {
+function MessageBubble({
+  msg,
+  myId,
+  onReport,
+}: {
+  msg: LocalMessage;
+  myId: string;
+  onReport: () => void;
+}) {
   const c = useColors();
   const mine = msg.user?.id === myId;
   const attachments = msg.attachments || [];
   const imageAttachments = attachments.filter((a) => a?.type === "image");
+
+  const handleLongPress = () => {
+    if (mine) return; // can't report your own
+    const buttons: Parameters<typeof Alert.alert>[2] = [
+      { text: "举报这条消息", style: "destructive", onPress: onReport },
+      { text: "取消", style: "cancel" },
+    ];
+    Alert.alert("操作", "选择对这条消息的操作", buttons);
+  };
+
   return (
-    <View
+    <Pressable
+      onLongPress={handleLongPress}
+      delayLongPress={350}
       style={[
         styles.bubbleRow,
         { justifyContent: mine ? "flex-end" : "flex-start" },
@@ -833,8 +882,125 @@ function MessageBubble({ msg, myId }: { msg: LocalMessage; myId: string }) {
             {msg.text}
           </Text>
         )}
+        {!mine && (
+          <TouchableOpacity
+            onPress={onReport}
+            hitSlop={8}
+            style={styles.reportBtn}
+          >
+            <Text style={[styles.reportBtnText, { color: c.mutedForeground }]}>
+              举报
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
-    </View>
+    </Pressable>
+  );
+}
+
+function ReportMessageModal({
+  target,
+  myId,
+  onClose,
+  onSubmit,
+}: {
+  target: LocalMessage | null;
+  myId: string;
+  onClose: () => void;
+  onSubmit: (reason: string) => Promise<void> | void;
+}) {
+  const c = useColors();
+  const [reason, setReason] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (target) setReason("");
+  }, [target]);
+
+  const open = Boolean(target);
+  const isMine = target?.user?.id === myId;
+  const preview = (target?.text || "[图片或附件]").slice(0, 120);
+
+  return (
+    <Modal visible={open} animationType="fade" transparent onRequestClose={onClose}>
+      <Pressable
+        style={[styles.modalMask, { backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", padding: 24 }]}
+        onPress={onClose}
+      >
+        <Pressable
+          onPress={(e) => e.stopPropagation()}
+          style={{
+            backgroundColor: c.background,
+            borderRadius: 14,
+            padding: 18,
+            gap: 12,
+            borderWidth: StyleSheet.hairlineWidth,
+            borderColor: c.border,
+          }}
+        >
+          <Text style={[styles.title, { color: c.foreground }]}>举报这条消息</Text>
+          {isMine ? (
+            <Text style={{ color: c.mutedForeground }}>不能举报自己发的消息。</Text>
+          ) : (
+            <>
+              <Text style={{ color: c.mutedForeground, fontSize: 13 }} numberOfLines={3}>
+                内容预览:{preview}
+              </Text>
+              <TextInput
+                value={reason}
+                onChangeText={setReason}
+                placeholder="可选:简单描述举报理由"
+                placeholderTextColor={c.textMuted}
+                multiline
+                maxLength={200}
+                style={[
+                  styles.input,
+                  {
+                    color: c.foreground,
+                    backgroundColor: c.cardSolid,
+                    borderColor: c.border,
+                    minHeight: 72,
+                    textAlignVertical: "top",
+                    marginBottom: 0,
+                  },
+                ]}
+              />
+            </>
+          )}
+          <View style={{ flexDirection: "row", justifyContent: "flex-end", gap: 8 }}>
+            <TouchableOpacity onPress={onClose} disabled={busy} style={{ padding: 10 }}>
+              <Text style={{ color: c.mutedForeground, fontFamily: "Inter_600SemiBold" }}>
+                取消
+              </Text>
+            </TouchableOpacity>
+            {!isMine && (
+              <TouchableOpacity
+                onPress={async () => {
+                  setBusy(true);
+                  try {
+                    await onSubmit(reason.trim().slice(0, 200));
+                  } finally {
+                    setBusy(false);
+                  }
+                }}
+                disabled={busy}
+                style={{
+                  backgroundColor: c.primary,
+                  paddingVertical: 10,
+                  paddingHorizontal: 16,
+                  borderRadius: 10,
+                  opacity: busy ? 0.6 : 1,
+                }}
+              >
+                <Text style={{ color: c.primaryForeground, fontFamily: "Inter_600SemiBold" }}>
+                  {busy ? "提交中…" : "提交举报"}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </Pressable>
+      </Pressable>
+    </Modal>
   );
 }
 
@@ -972,5 +1138,15 @@ const styles = StyleSheet.create({
     height: 180,
     borderRadius: 8,
     marginBottom: 4,
+  },
+  reportBtn: {
+    alignSelf: "flex-end",
+    marginTop: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  reportBtnText: {
+    fontSize: 11,
+    fontFamily: "Inter_500Medium",
   },
 });

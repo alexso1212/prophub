@@ -331,3 +331,36 @@
   border: 1px solid var(--border) !important;
   color: var(--text) !important;
 }
+
+/* "举报" button injected on each message via DOM observer */
+.pf-chat-main [data-message-id] {
+  position: relative;
+}
+.pf-chat-report-btn {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  z-index: 2;
+  border: 1px solid var(--card-border);
+  background: var(--bg-2);
+  color: var(--text-dim);
+  font-size: 11px;
+  line-height: 1;
+  padding: 3px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.pf-chat-main [data-message-id]:hover .pf-chat-report-btn,
+.pf-chat-report-btn:focus-visible {
+  opacity: 1;
+}
+.pf-chat-report-btn:hover {
+  color: var(--orange, #f97316);
+  border-color: var(--orange, #f97316);
+}
+@media (hover: none) {
+  /* Touch devices: always show, since hover doesn't exist */
+  .pf-chat-report-btn { opacity: 0.85; }
+}

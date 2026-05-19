@@ -375,10 +375,75 @@ function useOpenChannelByCid() {
   }, [client, setActiveChannel]);
 }
 
+function useInjectReportButtons() {
+  useEffect(() => {
+    const root = document.querySelector(".pf-chat-main");
+    if (!root) return;
+    const inject = (host: HTMLElement) => {
+      host.querySelectorAll<HTMLElement>("[data-message-id]").forEach((el) => {
+        if (el.querySelector(":scope > .pf-chat-report-btn")) return;
+        const id = el.getAttribute("data-message-id");
+        if (!id) return;
+        // Skip date/system separators that may carry a placeholder id.
+        if (el.classList.contains("str-chat__date-separator")) return;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "pf-chat-report-btn";
+        btn.setAttribute("data-report-id", id);
+        btn.setAttribute("aria-label", "举报这条消息");
+        btn.title = "举报这条消息";
+        btn.textContent = "举报";
+        el.appendChild(btn);
+      });
+    };
+    inject(root as HTMLElement);
+    const obs = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        m.addedNodes.forEach((n) => {
+          if (n instanceof HTMLElement) inject(n);
+        });
+      }
+    });
+    obs.observe(root, { childList: true, subtree: true });
+    return () => obs.disconnect();
+  }, []);
+}
+
+async function runReportFlow(
+  client: ReturnType<typeof useChatContext>["client"],
+  channel: ReturnType<typeof useChatContext>["channel"],
+  messageId: string,
+) {
+  if (!client || !channel) return;
+  const msg = channel.state.messages.find((m) => m.id === messageId);
+  if (msg?.user?.id && msg.user.id === client.userID) {
+    window.alert("不能举报自己发的消息");
+    return;
+  }
+  const raw = window.prompt(
+    "请简单描述举报理由(可留空,直接点确定即可提交)",
+    "",
+  );
+  if (raw === null) return;
+  const reason = raw.trim().slice(0, 200);
+  try {
+    await client.flagMessage(messageId, reason ? { reason } : undefined);
+    window.alert("已提交举报,管理员会尽快在后台审核。感谢你的反馈!");
+  } catch (err) {
+    const m = (err as Error)?.message || "未知错误";
+    if (/already.*flagged|duplicate/i.test(m)) {
+      window.alert("你已经举报过这条消息了。");
+    } else {
+      window.alert(`举报失败:${m}`);
+    }
+  }
+}
+
 function ChatBody({ supportUserId }: { supportUserId: string }) {
   const [dmOpen, setDmOpen] = useState(false);
   const { client, channel, setActiveChannel } = useChatContext();
   useOpenChannelByCid();
+  useInjectReportButtons();
   // Title sync mounted inside <Chat> so it has access to context.
 
   const pickUser = async (u: StreamUser) => {
@@ -398,6 +463,14 @@ function ChatBody({ supportUserId }: { supportUserId: string }) {
     if (!client || !client.userID || !channel) return;
     const target = e.target as HTMLElement | null;
     if (!target) return;
+    const reportBtn = target.closest<HTMLElement>(".pf-chat-report-btn");
+    if (reportBtn) {
+      e.stopPropagation();
+      e.preventDefault();
+      const id = reportBtn.getAttribute("data-report-id");
+      if (id) await runReportFlow(client, channel, id);
+      return;
+    }
     const avatar = target.closest(".str-chat__avatar");
     if (!avatar) return;
     const msgEl = avatar.closest<HTMLElement>("[data-message-id]");
