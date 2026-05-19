@@ -6,6 +6,7 @@ const tabs = [
   { href: "/admin/firms", label: "公司管理" },
   { href: "/admin/offers", label: "优惠审核" },
   { href: "/admin/scrape", label: "抓取监控" },
+  { href: "/admin/community", label: "社区审核" },
 ];
 
 export default function AdminNav() {

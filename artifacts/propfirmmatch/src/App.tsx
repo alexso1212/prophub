@@ -27,6 +27,7 @@ import GoPage from "./pages/GoPage";
 import AdminFirmsPage from "./pages/AdminFirmsPage";
 import AdminOffersPage from "./pages/admin/AdminOffersPage";
 import AdminScrapePage from "./pages/admin/AdminScrapePage";
+import AdminCommunityPage from "./pages/admin/AdminCommunityPage";
 import KnowledgePage from "./pages/KnowledgePage";
 import CommunityPage, { CommunityPageNoAuth } from "./pages/CommunityPage";
 import { FirmsOverridesProvider } from "./contexts/FirmsOverridesContext";
@@ -170,6 +171,15 @@ function Router({ clerkEnabled }: { clerkEnabled: boolean }) {
             </AdminRouteWithClerk>
           ) : (
             <AdminScrapePage />
+          )}
+        </Route>
+        <Route path="/admin/community">
+          {clerkEnabled ? (
+            <AdminRouteWithClerk>
+              <AdminCommunityPage />
+            </AdminRouteWithClerk>
+          ) : (
+            <AdminCommunityPage />
           )}
         </Route>
 
