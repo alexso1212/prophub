@@ -29,27 +29,6 @@ const PUBLIC_FILTERS: ChannelFilters = {
 
 const publicSort: ChannelSort = [{ created_at: 1 }];
 
-function TitleUnreadSync() {
-  // The CommunityChatProvider keeps the Stream client connected app-wide
-  // and broadcasts unread counts via the `prophub-chat-unread` window
-  // event (consumed by Layout for the nav dot). Here we also reflect the
-  // count in document.title while /community is mounted.
-  useEffect(() => {
-    const original = document.title.replace(/^\(\d+\)\s*/, "");
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent<number>).detail;
-      const n = typeof detail === "number" ? detail : 0;
-      document.title = n > 0 ? `(${n}) ${original}` : original;
-    };
-    window.addEventListener("prophub-chat-unread", handler);
-    return () => {
-      window.removeEventListener("prophub-chat-unread", handler);
-      document.title = original;
-    };
-  }, []);
-  return null;
-}
-
 function NewDmDialog({
   open,
   onClose,
@@ -252,13 +231,12 @@ function ChatBody({ supportUserId }: { supportUserId: string }) {
 
   return (
     <>
-      <TitleUnreadSync />
       <div className="pf-chat-layout">
         <ChannelsSidebar supportUserId={supportUserId} onOpenDm={() => setDmOpen(true)} />
         <main className="pf-chat-main" onClick={handleAvatarClick}>
           <Channel>
             <Window>
-              <CustomChannelHeader />
+              <CustomChannelHeader supportUserId={supportUserId} />
               <MessageList />
               <MessageComposer />
             </Window>
@@ -354,8 +332,8 @@ function AdminModerationControls() {
   );
 }
 
-function CustomChannelHeader() {
-  const { channel } = useChatContext();
+function CustomChannelHeader({ supportUserId }: { supportUserId: string }) {
+  const { channel, client } = useChatContext();
   if (!channel) {
     return (
       <div className="pf-chat-header pf-chat-header-empty">
@@ -366,15 +344,26 @@ function CustomChannelHeader() {
   const data = channel.data as
     | (Record<string, unknown> & { name?: string; official?: boolean })
     | undefined;
-  const name = data?.name || channel.id;
-  const isOfficial = Boolean(data?.official);
+  const memberMap = channel.state.members || {};
+  const memberIds = Object.keys(memberMap);
+  const isDmWithSupport =
+    channel.type === "messaging" && memberIds.includes(supportUserId);
+  // For DMs, show the OTHER user's name; otherwise fall back to channel name.
+  let displayName = data?.name || channel.id || "";
+  if (channel.type === "messaging" && client?.userID) {
+    const other = memberIds.find((id) => id !== client.userID);
+    if (other) {
+      const m = memberMap[other];
+      displayName = m?.user?.name || other;
+    }
+  }
+  const isOfficial = Boolean(data?.official) || isDmWithSupport;
   const memberCount =
-    (data?.member_count as number | undefined) ??
-    Object.keys(channel.state.members || {}).length;
+    (data?.member_count as number | undefined) ?? memberIds.length;
   return (
     <header className="pf-chat-header">
       <div className="pf-chat-header-title">
-        <strong>{name}</strong>
+        <strong>{displayName}</strong>
         {isOfficial && <span className="pf-chat-official">官方</span>}
       </div>
       <div className="pf-chat-header-meta">

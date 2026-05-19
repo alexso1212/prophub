@@ -246,17 +246,17 @@
   vertical-align: middle;
 }
 
-/* Clickable user avatar in messages */
-.pf-chat-avatar-clickable {
-  display: inline-flex;
+/* Avatars in the message list become click targets (DM initiation) via
+   event delegation in CommunityPage. Style cue lives directly on the
+   Stream avatar class. */
+.pf-chat-main .str-chat__message .str-chat__avatar {
   cursor: pointer;
   border-radius: 999px;
   transition: outline-color .15s;
   outline: 2px solid transparent;
   outline-offset: 1px;
 }
-.pf-chat-avatar-clickable:hover,
-.pf-chat-avatar-clickable:focus-visible {
+.pf-chat-main .str-chat__message .str-chat__avatar:hover {
   outline-color: var(--purple);
 }
 

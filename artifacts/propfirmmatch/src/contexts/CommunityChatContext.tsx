@@ -32,9 +32,17 @@ const Ctx = createContext<CommunityChatValue>({
   error: null,
 });
 
+let originalTitle: string | null = null;
 function dispatchUnread(count: number) {
   try {
     window.dispatchEvent(new CustomEvent<number>(UNREAD_EVENT, { detail: count }));
+    // Global tab-title badge: kept in the provider so it updates on any page.
+    if (typeof document !== "undefined") {
+      if (originalTitle === null) {
+        originalTitle = document.title.replace(/^\(\d+\)\s*/, "");
+      }
+      document.title = count > 0 ? `(${count}) ${originalTitle}` : originalTitle;
+    }
   } catch {
     /* noop */
   }
