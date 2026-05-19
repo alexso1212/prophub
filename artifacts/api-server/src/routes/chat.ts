@@ -9,7 +9,7 @@ const STREAM_API_KEY = process.env.STREAM_API_KEY;
 const STREAM_API_SECRET = process.env.STREAM_API_SECRET;
 
 let streamClient: StreamChat | null = null;
-let seedPromise: Promise<void> | null = null;
+let seedAttempted = false;
 
 function getStreamClient(): StreamChat | null {
   if (!STREAM_API_KEY || !STREAM_API_SECRET) return null;
@@ -28,43 +28,42 @@ const SEED_CHANNELS: Array<{ id: string; name: string }> = [
   { id: "announcements", name: "官方公告" },
 ];
 
-async function runSeed(client: StreamChat): Promise<void> {
-  // Upsert support user (admin role + 官方 badge)
-  await client.upsertUser({
-    id: SUPPORT_USER_ID,
-    name: "Prophub 官方客服",
-    role: "admin",
-    ...({ official: true } as Record<string, unknown>),
-  });
-
-  // Create 4 public channels (idempotent thanks to create-or-get semantics)
-  for (const ch of SEED_CHANNELS) {
-    const channel = client.channel("livestream", ch.id, {
-      name: ch.name,
-      created_by_id: SUPPORT_USER_ID,
-      official: true,
-    } as Record<string, unknown>);
-    try {
-      await channel.create();
-    } catch (err) {
-      // already exists -> fine, otherwise log
-      const msg = (err as Error)?.message ?? "";
-      if (!/already exists|duplicate/i.test(msg)) {
-        logger.warn({ err, channelId: ch.id }, "stream channel create warning");
+/**
+ * Fallback safety-net seeding. The canonical seed lives in
+ * `src/scripts/seed-chat.ts` and should be run once as a deploy step
+ * (e.g. `tsx src/scripts/seed-chat.ts`). This in-process call only runs
+ * once per server boot and only as a defensive fallback when the script
+ * has not been executed yet.
+ */
+async function fallbackSeed(client: StreamChat): Promise<void> {
+  if (seedAttempted) return;
+  seedAttempted = true;
+  try {
+    await client.upsertUser({
+      id: SUPPORT_USER_ID,
+      name: "Prophub 官方客服",
+      role: "admin",
+      ...({ official: true } as Record<string, unknown>),
+    });
+    for (const ch of SEED_CHANNELS) {
+      const channel = client.channel("livestream", ch.id, {
+        name: ch.name,
+        created_by_id: SUPPORT_USER_ID,
+        official: true,
+      } as Record<string, unknown>);
+      try {
+        await channel.create();
+      } catch (err) {
+        const msg = (err as Error)?.message ?? "";
+        if (!/already exists|duplicate/i.test(msg)) {
+          logger.warn({ err, channelId: ch.id }, "stream channel create warning");
+        }
       }
     }
+  } catch (err) {
+    logger.error({ err }, "stream fallback seed failed");
+    seedAttempted = false; // allow retry on next request
   }
-}
-
-function ensureSeed(client: StreamChat): Promise<void> {
-  if (!seedPromise) {
-    seedPromise = runSeed(client).catch((err) => {
-      seedPromise = null; // allow retry
-      logger.error({ err }, "stream seed failed");
-      throw err;
-    });
-  }
-  return seedPromise;
 }
 
 router.post("/chat/token", async (req: Request, res: Response) => {
@@ -83,7 +82,7 @@ router.post("/chat/token", async (req: Request, res: Response) => {
   }
 
   try {
-    await ensureSeed(client);
+    await fallbackSeed(client);
 
     // Upsert this user so Stream knows about them
     const displayName =

@@ -198,7 +198,12 @@ function NewDmDialog({
       try {
         const term = q.trim();
         const filter: Record<string, unknown> = term
-          ? { name: { $autocomplete: term } }
+          ? {
+              $or: [
+                { id: { $autocomplete: term } },
+                { name: { $autocomplete: term } },
+              ],
+            }
           : { id: supportUserId };
         const r = await client.queryUsers(
           filter as Parameters<typeof client.queryUsers>[0],
@@ -229,7 +234,7 @@ function NewDmDialog({
         <input
           autoFocus
           className="pf-chat-search"
-          placeholder="按昵称搜索用户…"
+          placeholder="按昵称或用户 ID 搜索…"
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
