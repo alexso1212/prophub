@@ -19,6 +19,14 @@ import {
 import "stream-chat-react/css/index.css";
 import "../styles/community.css";
 import { useCommunityChat } from "../contexts/CommunityChatContext";
+import {
+  disableChatPush,
+  enableChatPush,
+  getChatPushStatus,
+  getStoredPushPref,
+  isWebPushSupported,
+  setStoredPushPref,
+} from "../lib/chatPush";
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -158,6 +166,7 @@ function ChannelsSidebar({
 
   return (
     <aside className="pf-chat-sidebar">
+      <NotificationSettings />
       <div className="pf-chat-sidebar-section">
         <div className="pf-chat-sidebar-title">公开频道</div>
         <ChannelList filters={PUBLIC_FILTERS} sort={publicSort} showChannelSearch={false} />
@@ -190,9 +199,186 @@ function ChannelsSidebar({
   );
 }
 
+function NotificationSettings() {
+  const supported = isWebPushSupported();
+  const [status, setStatus] = useState<{
+    permission: NotificationPermission | "unsupported";
+    subscribed: boolean;
+    pref: "on" | "off" | null;
+  }>({ permission: "default", subscribed: false, pref: null });
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  const refresh = async () => {
+    const s = await getChatPushStatus();
+    setStatus({
+      permission: s.permission,
+      subscribed: s.subscribed,
+      pref: getStoredPushPref(),
+    });
+  };
+
+  useEffect(() => {
+    void refresh();
+  }, []);
+
+  const enabled = status.pref === "on" && status.subscribed && status.permission === "granted";
+  const shouldPrompt =
+    supported && status.pref === null && status.permission !== "denied";
+
+  const onEnable = async () => {
+    setBusy(true);
+    setMsg(null);
+    const r = await enableChatPush();
+    setBusy(false);
+    if (!r.ok) setMsg(r.reason);
+    else setMsg("已开启桌面通知");
+    await refresh();
+  };
+
+  const onDisable = async () => {
+    setBusy(true);
+    setMsg(null);
+    await disableChatPush();
+    setBusy(false);
+    setMsg("已关闭桌面通知");
+    await refresh();
+  };
+
+  const onDismissPrompt = () => {
+    setStoredPushPref("off");
+    void refresh();
+  };
+
+  if (!supported) return null;
+
+  return (
+    <div className="pf-chat-notify">
+      {shouldPrompt && (
+        <div className="pf-chat-notify-prompt">
+          <span>开启桌面通知,关掉网页也能收到新私聊和 @ 提醒。</span>
+          <div className="pf-chat-notify-prompt-actions">
+            <button
+              type="button"
+              className="pf-chat-mini-btn"
+              disabled={busy}
+              onClick={onEnable}
+            >
+              开启
+            </button>
+            <button
+              type="button"
+              className="pf-chat-mini-btn pf-chat-notify-ghost"
+              onClick={onDismissPrompt}
+            >
+              暂不
+            </button>
+          </div>
+        </div>
+      )}
+      <button
+        type="button"
+        className="pf-chat-mod-toggle"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        title="桌面通知设置"
+      >
+        {enabled ? "🔔 通知已开" : "🔕 通知未开"}
+      </button>
+      {open && (
+        <div className="pf-chat-mod-panel">
+          {status.permission === "denied" ? (
+            <span className="pf-chat-mod-msg">
+              浏览器已禁止本站通知,请在地址栏左侧的站点设置里允许通知后再试。
+            </span>
+          ) : enabled ? (
+            <button
+              type="button"
+              className="pf-chat-mini-btn"
+              disabled={busy}
+              onClick={onDisable}
+            >
+              关闭桌面通知
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="pf-chat-mini-btn"
+              disabled={busy}
+              onClick={onEnable}
+            >
+              开启桌面通知
+            </button>
+          )}
+          {msg && <span className="pf-chat-mod-msg">{msg}</span>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function useOpenChannelByCid() {
+  const { client, setActiveChannel } = useChatContext();
+  useEffect(() => {
+    if (!client) return;
+
+    const openByCid = async (cid: string) => {
+      if (!cid || !cid.includes(":")) return;
+      const [type, id] = cid.split(":");
+      if (!type || !id) return;
+      try {
+        const list = await client.queryChannels(
+          { cid: { $eq: cid } } as Parameters<typeof client.queryChannels>[0],
+          {},
+          { limit: 1, watch: true, state: true },
+        );
+        const ch = list[0] ?? client.channel(type, id);
+        if (!list.length) await ch.watch();
+        setActiveChannel(ch);
+      } catch {
+        /* ignore */
+      }
+    };
+
+    // 1) Cold-open via ?cid=… in the URL
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const cid = params.get("cid");
+      if (cid) {
+        void openByCid(cid);
+        params.delete("cid");
+        const qs = params.toString();
+        const next =
+          window.location.pathname + (qs ? `?${qs}` : "") + window.location.hash;
+        window.history.replaceState({}, "", next);
+      }
+    } catch {
+      /* ignore */
+    }
+
+    // 2) Already-open tab focused via service worker notificationclick
+    const onSwMessage = (e: MessageEvent) => {
+      const data = e.data as { type?: string; channelCid?: string | null };
+      if (data?.type === "prophub-chat-open" && data.channelCid) {
+        void openByCid(data.channelCid);
+      }
+    };
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.addEventListener("message", onSwMessage);
+    }
+    return () => {
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.removeEventListener("message", onSwMessage);
+      }
+    };
+  }, [client, setActiveChannel]);
+}
+
 function ChatBody({ supportUserId }: { supportUserId: string }) {
   const [dmOpen, setDmOpen] = useState(false);
   const { client, channel, setActiveChannel } = useChatContext();
+  useOpenChannelByCid();
   // Title sync mounted inside <Chat> so it has access to context.
 
   const pickUser = async (u: StreamUser) => {

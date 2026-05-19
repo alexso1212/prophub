@@ -6,7 +6,13 @@ import {
   type ReactNode,
 } from "react";
 import { useUser } from "@clerk/react";
-import { StreamChat } from "stream-chat";
+import { StreamChat, type Event as StreamEvent } from "stream-chat";
+import {
+  getStoredPushPref,
+  registerChatServiceWorker,
+  resyncChatPushSubscription,
+  showForegroundNotification,
+} from "../lib/chatPush";
 
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
@@ -141,6 +147,45 @@ export function CommunityChatProvider({ children }: { children: ReactNode }) {
         c.on("notification.mark_read", onEvent);
         c.on("message.new", onEvent);
         c.on("message.read", onEvent);
+
+        // Desktop notifications for incoming DMs / @mentions while the
+        // page is open in the background. Closed-tab pushes are delivered
+        // by the API webhook handler via the service worker.
+        if (getStoredPushPref() === "on") {
+          registerChatServiceWorker().catch(() => undefined);
+          // Re-sync existing browser subscription with the server in case
+          // the API restarted and lost its in-memory subscription store.
+          resyncChatPushSubscription().catch(() => undefined);
+        }
+        const myId = data.userId;
+        const onNewMessage = (e: StreamEvent) => {
+          if (typeof document !== "undefined" && !document.hidden) return;
+          const m = e.message;
+          if (!m) return;
+          const authorId = m.user?.id;
+          if (!authorId || authorId === myId) return;
+          const isDm = e.channel_type === "messaging";
+          const mentioned = Array.isArray(m.mentioned_users)
+            ? m.mentioned_users.some(
+                (u: { id?: string }) => u.id === myId,
+              )
+            : false;
+          if (!isDm && !mentioned) return;
+          const authorName = m.user?.name || authorId;
+          const cid =
+            e.cid ||
+            (e.channel_type && e.channel_id
+              ? `${e.channel_type}:${e.channel_id}`
+              : null);
+          showForegroundNotification({
+            title: isDm ? `${authorName} 给你发了私聊` : `${authorName} @了你`,
+            body: (m.text || "").slice(0, 140) || "查看新消息",
+            tag: cid || "prophub-chat",
+            channelCid: cid,
+          });
+        };
+        c.on("message.new", onNewMessage);
+        c.on("notification.message_new", onNewMessage);
       } catch (err) {
         if (!cancelled) setError((err as Error)?.message || "聊天连接失败");
       }

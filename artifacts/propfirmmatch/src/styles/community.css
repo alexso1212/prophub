@@ -302,3 +302,32 @@
     border-bottom: 1px solid var(--card-border);
   }
 }
+
+/* Web push notification settings panel */
+.pf-chat-notify {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--card-border);
+}
+.pf-chat-notify-prompt {
+  background: rgba(168, 85, 247, 0.10);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pf-chat-notify-prompt-actions {
+  display: flex;
+  gap: 6px;
+}
+.pf-chat-notify-ghost {
+  background: transparent !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}

@@ -36,7 +36,16 @@ app.use(
 app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
 
 app.use(cors({ credentials: true, origin: true }));
-app.use(express.json());
+app.use(
+  express.json({
+    // Capture the raw request body so webhook handlers (e.g. Stream Chat)
+    // can verify HMAC signatures against the exact signed bytes rather than
+    // a re-serialized JSON object.
+    verify: (req, _res, buf) => {
+      (req as unknown as { rawBody?: string }).rawBody = buf.toString("utf8");
+    },
+  }),
+);
 app.use(express.urlencoded({ extended: true }));
 
 if (process.env.CLERK_PUBLISHABLE_KEY) {
