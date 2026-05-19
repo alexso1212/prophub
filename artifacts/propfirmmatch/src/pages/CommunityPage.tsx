@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Redirect } from "wouter";
 import { Show, useUser } from "@clerk/react";
 import {
   StreamChat,
-  type Channel as StreamChannel,
   type ChannelFilters,
   type ChannelSort,
   type User as StreamUser,
@@ -30,6 +29,11 @@ const PUBLIC_FILTERS: ChannelFilters = {
 
 const publicSort: ChannelSort = [{ created_at: 1 }];
 
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5 MB
+const MAX_FILES_PER_MESSAGE = 4;
+const UNREAD_EVENT = "prophub-chat-unread";
+
 type TokenResponse = {
   apiKey: string;
   userId: string;
@@ -37,11 +41,19 @@ type TokenResponse = {
   supportUserId: string;
 };
 
+function dispatchUnread(count: number) {
+  try {
+    window.dispatchEvent(new CustomEvent<number>(UNREAD_EVENT, { detail: count }));
+  } catch {
+    /* noop */
+  }
+}
+
 function useStreamConnection() {
   const { user } = useUser();
   const [client, setClient] = useState<StreamChat | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [meta, setMeta] = useState<TokenResponse | null>(null);
+  const [supportUserId, setSupportUserId] = useState<string>("support");
 
   useEffect(() => {
     if (!user) return;
@@ -72,6 +84,30 @@ function useStreamConnection() {
         if (cancelled) return;
 
         const c = StreamChat.getInstance(data.apiKey);
+
+        // Configure attachment limits BEFORE composer instances are created.
+        c.setMessageComposerSetupFunction(({ composer }) => {
+          try {
+            composer.attachmentManager.acceptedFiles = ACCEPTED_IMAGE_TYPES;
+            composer.attachmentManager.maxNumberOfFilesPerMessage = MAX_FILES_PER_MESSAGE;
+            composer.attachmentManager.fileUploadFilter = (file) => {
+              const f = (file?.localMetadata as { file?: File } | undefined)?.file;
+              if (!f || !(f instanceof File)) return true;
+              if (f.size > MAX_UPLOAD_BYTES) {
+                window.alert("图片不能超过 5 MB");
+                return false;
+              }
+              if (f.type && !ACCEPTED_IMAGE_TYPES.includes(f.type)) {
+                window.alert("仅支持 JPG / PNG / WEBP 格式");
+                return false;
+              }
+              return true;
+            };
+          } catch {
+            /* setup is best-effort */
+          }
+        });
+
         await c.connectUser(
           { id: data.userId, name: displayName, image },
           data.token,
@@ -82,7 +118,7 @@ function useStreamConnection() {
         }
         connectedClient = c;
         setClient(c);
-        setMeta(data);
+        setSupportUserId(data.supportUserId || "support");
       } catch (err) {
         if (!cancelled) {
           setError((err as Error)?.message || "聊天连接失败");
@@ -92,6 +128,7 @@ function useStreamConnection() {
 
     return () => {
       cancelled = true;
+      dispatchUnread(0);
       if (connectedClient) {
         connectedClient.disconnectUser().catch(() => undefined);
       }
@@ -99,16 +136,17 @@ function useStreamConnection() {
     };
   }, [user]);
 
-  return { client, error, meta };
+  return { client, error, supportUserId };
 }
 
-function UnreadTitleBadge() {
+function UnreadBroadcaster() {
   const { client } = useChatContext();
   useEffect(() => {
     if (!client) return;
     const original = document.title.replace(/^\(\d+\)\s*/, "");
     const update = (count: number) => {
       document.title = count > 0 ? `(${count}) ${original}` : original;
+      dispatchUnread(count);
     };
     const computeTotal = () => {
       const channels = Object.values(client.activeChannels || {});
@@ -130,6 +168,7 @@ function UnreadTitleBadge() {
       client.off("notification.mark_read", handler);
       client.off("message.read", handler);
       document.title = original;
+      dispatchUnread(0);
     };
   }, [client]);
   return null;
@@ -277,7 +316,8 @@ function ChannelsSidebar({
             showChannelSearch={false}
             EmptyStateIndicator={() => (
               <div className="pf-chat-empty pf-chat-empty-pad">
-                还没有私聊，点击「新私聊」搜索用户开始对话。
+                还没有私聊,点击「新私聊」搜索用户开始对话,
+                或点击消息里别人的头像直接发起私聊。
               </div>
             )}
           />
@@ -292,7 +332,7 @@ function ChannelsSidebar({
 
 function ChatBody({ supportUserId }: { supportUserId: string }) {
   const [dmOpen, setDmOpen] = useState(false);
-  const { client, setActiveChannel } = useChatContext();
+  const { client, channel, setActiveChannel } = useChatContext();
 
   const pickUser = async (u: StreamUser) => {
     if (!client?.userID) return;
@@ -304,12 +344,36 @@ function ChatBody({ supportUserId }: { supportUserId: string }) {
     setDmOpen(false);
   };
 
+  // DOM event delegation: clicking any message avatar opens a DM with that user.
+  // Stream renders messages with `data-message-id` and avatars inside them; we
+  // look up the message in channel state to get the author's user id.
+  const handleAvatarClick = async (e: React.MouseEvent<HTMLElement>) => {
+    if (!client || !client.userID || !channel) return;
+    const target = e.target as HTMLElement | null;
+    if (!target) return;
+    const avatar = target.closest(".str-chat__avatar");
+    if (!avatar) return;
+    const msgEl = avatar.closest<HTMLElement>("[data-message-id]");
+    if (!msgEl) return;
+    const messageId = msgEl.getAttribute("data-message-id");
+    if (!messageId) return;
+    const msg = channel.state.messages.find((m) => m.id === messageId);
+    const otherId = msg?.user?.id;
+    if (!otherId || otherId === client.userID) return;
+    e.stopPropagation();
+    const dm = client.channel("messaging", {
+      members: [client.userID, otherId],
+    });
+    await dm.watch();
+    setActiveChannel(dm);
+  };
+
   return (
     <>
-      <UnreadTitleBadge />
+      <UnreadBroadcaster />
       <div className="pf-chat-layout">
         <ChannelsSidebar supportUserId={supportUserId} onOpenDm={() => setDmOpen(true)} />
-        <main className="pf-chat-main">
+        <main className="pf-chat-main" onClick={handleAvatarClick}>
           <Channel>
             <Window>
               <CustomChannelHeader />
@@ -327,6 +391,84 @@ function ChatBody({ supportUserId }: { supportUserId: string }) {
         supportUserId={supportUserId}
       />
     </>
+  );
+}
+
+function AdminModerationControls() {
+  const { client, channel } = useChatContext();
+  const [open, setOpen] = useState(false);
+  const [target, setTarget] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  const role = client?.user?.role;
+  const isAdmin = role === "admin" || role === "moderator";
+  if (!isAdmin || !channel) return null;
+
+  const submit = async (mode: "mute" | "ban") => {
+    const id = target.trim();
+    if (!id) return;
+    setBusy(true);
+    setMsg(null);
+    try {
+      if (mode === "mute") {
+        await client!.muteUser(id);
+        setMsg(`已临时禁言 @${id}`);
+      } else {
+        await client!.banUser(id, {
+          reason: "Prophub 社区违规",
+          timeout: 60 * 24, // 24h
+        });
+        setMsg(`已踢出 @${id}(24 小时)`);
+      }
+      setTarget("");
+    } catch (err) {
+      setMsg(`操作失败:${(err as Error)?.message || "未知错误"}`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="pf-chat-mod">
+      <button
+        type="button"
+        className="pf-chat-mod-toggle"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+      >
+        {open ? "收起客服工具" : "客服工具"}
+      </button>
+      {open && (
+        <div className="pf-chat-mod-panel">
+          <input
+            placeholder="要处理的用户 ID"
+            value={target}
+            onChange={(e) => setTarget(e.target.value)}
+            className="pf-chat-search"
+            style={{ margin: 0 }}
+          />
+          <button
+            type="button"
+            className="pf-chat-mini-btn"
+            disabled={busy || !target.trim()}
+            onClick={() => submit("mute")}
+          >
+            禁言
+          </button>
+          <button
+            type="button"
+            className="pf-chat-mini-btn"
+            style={{ background: "var(--orange)" }}
+            disabled={busy || !target.trim()}
+            onClick={() => submit("ban")}
+          >
+            踢出 24h
+          </button>
+          {msg && <span className="pf-chat-mod-msg">{msg}</span>}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -353,13 +495,16 @@ function CustomChannelHeader() {
         <strong>{name}</strong>
         {isOfficial && <span className="pf-chat-official">官方</span>}
       </div>
-      <div className="pf-chat-header-meta">{memberCount} 位成员</div>
+      <div className="pf-chat-header-meta">
+        <span>{memberCount} 位成员</span>
+        <AdminModerationControls />
+      </div>
     </header>
   );
 }
 
 function CommunityShell() {
-  const { client, error } = useStreamConnection();
+  const { client, error, supportUserId } = useStreamConnection();
 
   if (error) {
     return (
@@ -367,7 +512,7 @@ function CommunityShell() {
         <h2>聊天暂时不可用</h2>
         <p>{error}</p>
         <p className="pf-chat-status-hint">
-          请稍后再试。如果反复出现，请联系站务。
+          请稍后再试。如果反复出现,请联系站务。
         </p>
       </div>
     );
@@ -384,7 +529,7 @@ function CommunityShell() {
 
   return (
     <Chat client={client} theme="str-chat__theme-dark">
-      <ChatBody supportUserId="support" />
+      <ChatBody supportUserId={supportUserId} />
     </Chat>
   );
 }
@@ -406,7 +551,7 @@ export function CommunityPageNoAuth() {
   return (
     <div className="pf-chat-status">
       <h2>社区聊天需要登录</h2>
-      <p>账号系统暂未启用，社区聊天功能尚不可用。</p>
+      <p>账号系统暂未启用,社区聊天功能尚不可用。</p>
     </div>
   );
 }

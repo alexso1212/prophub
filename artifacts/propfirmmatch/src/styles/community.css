@@ -246,6 +246,40 @@
   vertical-align: middle;
 }
 
+/* Clickable user avatar in messages */
+.pf-chat-avatar-clickable {
+  display: inline-flex;
+  cursor: pointer;
+  border-radius: 999px;
+  transition: outline-color .15s;
+  outline: 2px solid transparent;
+  outline-offset: 1px;
+}
+.pf-chat-avatar-clickable:hover,
+.pf-chat-avatar-clickable:focus-visible {
+  outline-color: var(--purple);
+}
+
+/* Admin moderation controls in channel header */
+.pf-chat-mod { display: inline-flex; align-items: center; gap: 8px; margin-left: 12px; }
+.pf-chat-mod-toggle {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--surface-4);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.pf-chat-mod-panel {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+}
+.pf-chat-mod-panel input { width: 140px; }
+.pf-chat-mod-msg { font-size: 11px; color: var(--text-dim); margin-left: 6px; }
+
 /* High contrast overrides: solid borders, no translucency for legibility */
 :root[data-theme="hc"] .pf-chat-layout,
 :root[data-theme="hc"] .pf-chat-sidebar,

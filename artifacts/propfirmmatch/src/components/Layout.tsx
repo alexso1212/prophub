@@ -42,8 +42,18 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [supportOpen, setSupportOpen] = useState(false);
+  const [communityUnread, setCommunityUnread] = useState(0);
 
   useEffect(() => { setMobileOpen(false); setDrawerOpen(false); setSupportOpen(false); }, [path]);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<number>).detail;
+      if (typeof detail === "number") setCommunityUnread(detail);
+    };
+    window.addEventListener("prophub-chat-unread", handler);
+    return () => window.removeEventListener("prophub-chat-unread", handler);
+  }, []);
 
   const submitSearch = (e?: FormEvent) => {
     if (e) e.preventDefault();
@@ -214,6 +224,13 @@ export default function Layout({ children }: { children: ReactNode }) {
         {NAV.map(n => (
           <Link key={n.to} href={n.to} className={isActive(n.to) ? "active" : ""}>
             {n.label}
+            {n.to === "/community" && communityUnread > 0 && (
+              <span
+                className="pf-nav-unread-dot"
+                aria-label={`${communityUnread} 条未读`}
+                title={`${communityUnread} 条未读`}
+              />
+            )}
           </Link>
         ))}
       </nav>
