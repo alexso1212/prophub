@@ -374,8 +374,30 @@ function CustomChannelHeader({ supportUserId }: { supportUserId: string }) {
   );
 }
 
+function useDocumentTheme(): "str-chat__theme-dark" | "str-chat__theme-light" {
+  const read = () => {
+    if (typeof document === "undefined") return "str-chat__theme-dark" as const;
+    const t = document.documentElement.getAttribute("data-theme");
+    // Both dark and high-contrast use the dark Stream base; light maps to light.
+    return t === "light"
+      ? ("str-chat__theme-light" as const)
+      : ("str-chat__theme-dark" as const);
+  };
+  const [theme, setTheme] = useState(read);
+  useEffect(() => {
+    const obs = new MutationObserver(() => setTheme(read()));
+    obs.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+    return () => obs.disconnect();
+  }, []);
+  return theme;
+}
+
 function CommunityShell() {
   const { client, error, supportUserId } = useCommunityChat();
+  const streamTheme = useDocumentTheme();
 
   if (error) {
     return (
@@ -399,7 +421,7 @@ function CommunityShell() {
   }
 
   return (
-    <Chat client={client} theme="str-chat__theme-dark">
+    <Chat client={client} theme={streamTheme}>
       <ChatBody supportUserId={supportUserId} />
     </Chat>
   );
