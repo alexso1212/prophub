@@ -264,6 +264,32 @@ export function ExpandIcon(p: IconProps) {
   );
 }
 
+export function MessageCircleIcon(p: IconProps) {
+  return (
+    <Base {...p}>
+      <Path d="M21 12c0 4.418-4.03 8-9 8a9.9 9.9 0 0 1-4-.83L3 20l1.13-3.39A7.6 7.6 0 0 1 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+    </Base>
+  );
+}
+
+export function PaperclipIcon(p: IconProps) {
+  return (
+    <Base {...p}>
+      <Path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+    </Base>
+  );
+}
+
+export function SendIcon(p: IconProps) {
+  const c = p.color ?? "currentColor";
+  return (
+    <Base {...p}>
+      <Path d="M22 2L11 13" />
+      <Path d="M22 2l-7 20-4-9-9-4 20-7z" fill={c} />
+    </Base>
+  );
+}
+
 export function InboxIcon(p: IconProps) {
   return (
     <Base {...p}>

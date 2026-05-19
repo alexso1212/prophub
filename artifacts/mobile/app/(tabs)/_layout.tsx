@@ -4,7 +4,7 @@ import { Tabs } from "expo-router";
 import React from "react";
 import { Platform, StyleSheet, View } from "react-native";
 
-import { BriefcaseIcon, GiftIcon } from "@/components/icons";
+import { BriefcaseIcon, GiftIcon, MessageCircleIcon } from "@/components/icons";
 import { useColors } from "@/hooks/useColors";
 import { useThemeMode } from "@/hooks/useTheme";
 
@@ -57,6 +57,14 @@ export default function TabLayout() {
           title: "Offers",
           headerTitle: "Best Offers",
           tabBarIcon: ({ color }) => <GiftIcon size={22} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="community"
+        options={{
+          title: "社区",
+          headerTitle: "社区",
+          tabBarIcon: ({ color }) => <MessageCircleIcon size={22} color={color} />,
         }}
       />
       <Tabs.Screen
