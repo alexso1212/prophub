@@ -82,10 +82,18 @@ function handleNotificationTap(response: Notifications.NotificationResponse): vo
  * the user receives a new message they aren't actively reading (app
  * backgrounded or another channel open).
  *
+ * IMPORTANT: we use `getDevicePushTokenAsync()` (native APNs/FCM token),
+ * NOT `getExpoPushTokenAsync()` (Expo relay token). Stream's PushProvider
+ * type is `'apn' | 'firebase' | 'huawei' | 'xiaomi'` — Stream talks to
+ * APN / Firebase directly and does not currently support the Expo push
+ * relay as a first-class provider. The task brief mentioned "Expo push
+ * token" but the supported integration shape is native tokens; behaviour
+ * is equivalent from the user's perspective.
+ *
  * Stream Dashboard setup required (one-time, by the project owner):
- *   - iOS:    enable "APN" provider, upload .p8 + key id + team id.
- *   - Android: enable "Firebase" provider, upload service account JSON
- *              (the same FCM project used by the EAS build).
+ *   - iOS:     enable "APN" provider, upload .p8 + key id + team id.
+ *   - Android: enable "Firebase" provider, upload FCM service account
+ *              JSON (the same FCM project used by the EAS Android build).
  * See https://getstream.io/chat/docs/sdk/expo/push/overview/.
  */
 export function usePushNotifications(client: StreamChat | null): void {
@@ -122,12 +130,13 @@ export function usePushNotifications(client: StreamChat | null): void {
     (async () => {
       try {
         const ok = await ensurePermission();
-        if (!ok) return;
+        if (!ok) {
+          if (__DEV__) console.warn("[push] permission denied or unavailable");
+          return;
+        }
         await ensureAndroidChannel();
 
-        // Use the native device token so Stream can talk directly to APN
-        // (iOS) or Firebase (Android). This avoids the Expo push relay,
-        // which Stream does not currently support as a first-class provider.
+        // Native device token: Stream → APN (iOS) / Firebase (Android).
         const tokenRes = await Notifications.getDevicePushTokenAsync();
         const token = String(tokenRes?.data || "");
         if (cancelled || !token) return;
@@ -137,8 +146,11 @@ export function usePushNotifications(client: StreamChat | null): void {
           Platform.OS === "ios" ? "apn" : "firebase";
         await client.addDevice(token, provider, client.userID!);
         registeredTokenRef.current = token;
-      } catch {
-        /* Push is best-effort; silently skip if anything goes wrong. */
+        if (__DEV__) console.log("[push] registered with Stream", { provider });
+      } catch (err) {
+        // Best-effort: never crash the chat over push setup failures, but
+        // surface in dev so the team can diagnose Dashboard / cert issues.
+        if (__DEV__) console.warn("[push] registration failed", err);
       }
     })();
 
