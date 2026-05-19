@@ -26,6 +26,7 @@ function buildNav(cat: Category) {
     { to: `${p}/brokers`,               label: "合作经纪" },
     { to: `${p}/news`,                  label: "行业新闻" },
     { to: `/knowledge`,                 label: "知识图谱" },
+    { to: `/community`,                 label: "社区" },
   ];
 }
 

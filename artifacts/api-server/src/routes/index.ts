@@ -5,6 +5,7 @@ import firmsOverridesRouter from "./firmsOverrides";
 import firmReviewsRouter from "./firmReviews";
 import liveRouter from "./live";
 import adminRouter from "./admin";
+import chatRouter from "./chat";
 
 const router: IRouter = Router();
 
@@ -14,5 +15,6 @@ router.use(firmsOverridesRouter);
 router.use(firmReviewsRouter);
 router.use(liveRouter);
 router.use(adminRouter);
+router.use(chatRouter);
 
 export default router;
