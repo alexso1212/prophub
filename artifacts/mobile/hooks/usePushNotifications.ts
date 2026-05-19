@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
-import Constants from "expo-constants";
 import { router } from "expo-router";
 import type { StreamChat } from "stream-chat";
 
@@ -21,13 +20,6 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
   }) as Notifications.NotificationBehavior,
 });
-
-function getProjectId(): string | undefined {
-  const fromExtra = (Constants.expoConfig?.extra as { eas?: { projectId?: string } } | undefined)
-    ?.eas?.projectId;
-  const fromEasConfig = (Constants.easConfig as { projectId?: string } | undefined)?.projectId;
-  return fromExtra || fromEasConfig;
-}
 
 async function ensurePermission(): Promise<boolean> {
   if (!Device.isDevice) return false; // simulators/web cannot receive push
@@ -95,11 +87,7 @@ function handleNotificationTap(response: Notifications.NotificationResponse): vo
  *   - Android: enable "Firebase" provider, upload service account JSON
  *              (the same FCM project used by the EAS build).
  * See https://getstream.io/chat/docs/sdk/expo/push/overview/.
- *
- * Note: `getProjectId` is read for completeness but native device tokens
- * do not need an Expo project id (only Expo push tokens do).
  */
-void getProjectId;
 export function usePushNotifications(client: StreamChat | null): void {
   const registeredTokenRef = useRef<string | null>(null);
   const tapSubRef = useRef<Notifications.EventSubscription | null>(null);

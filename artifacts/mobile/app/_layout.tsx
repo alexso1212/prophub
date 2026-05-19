@@ -21,6 +21,7 @@ import { setAuthTokenGetter, setBaseUrl } from "@workspace/api-client-react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { useColors } from "@/hooks/useColors";
 import { ThemeProvider } from "@/hooks/useTheme";
+import { CommunityChatProvider } from "@/hooks/useCommunityChat";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -114,7 +115,12 @@ export default function RootLayout() {
       proxyUrl={proxyUrl}
     >
       <ClerkLoaded>
-        <ClerkAuthBridge>{inner}</ClerkAuthBridge>
+        <ClerkAuthBridge>
+          {/* Mounted at root so the chat client + push registration come
+              online as soon as the user is signed in, regardless of which
+              tab they open first. */}
+          <CommunityChatProvider>{inner}</CommunityChatProvider>
+        </ClerkAuthBridge>
       </ClerkLoaded>
     </ClerkProvider>
   );

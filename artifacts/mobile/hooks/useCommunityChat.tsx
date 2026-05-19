@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAuth, useUser } from "@clerk/expo";
 import {
   StreamChat,
@@ -29,12 +29,23 @@ type TokenResponse = {
   channels: ChannelDescriptor[];
 };
 
+const DEFAULT_STATE: CommunityChatState = {
+  client: null,
+  supportUserId: "support",
+  channels: [],
+  loading: false,
+  error: null,
+};
+
+const CommunityChatContext = createContext<CommunityChatState>(DEFAULT_STATE);
+
 /**
- * Connects the signed-in Clerk user to Stream Chat using the same
- * /api/chat/token endpoint as the web app. Returns a singleton-style
- * client; disconnects on sign-out / unmount.
+ * Internal hook (not exported). Owns the Stream client lifecycle. Mounted
+ * exactly once at the app root via CommunityChatProvider so the chat
+ * connection — and push-token registration — stays live across tabs and
+ * is initialised at app launch (not when /community is first opened).
  */
-export function useCommunityChat(): CommunityChatState {
+function useStreamConnection(): CommunityChatState {
   const { isSignedIn, getToken } = useAuth();
   const { user } = useUser();
   const [client, setClient] = useState<StreamChat | null>(null);
@@ -116,11 +127,29 @@ export function useCommunityChat(): CommunityChatState {
     };
   }, [isSignedIn, user, getToken]);
 
-  // Side-effect: once the chat user is connected, register this device's
-  // Expo push token with Stream so background push notifications work.
-  usePushNotifications(client);
-
   return { client, supportUserId, channels, loading, error };
+}
+
+/**
+ * Root-level provider. Mount at app start (in _layout.tsx) so the chat
+ * connection and push-notification bootstrap run as soon as the user is
+ * signed in — not when they first open the Community tab.
+ */
+export function CommunityChatProvider({ children }: { children: React.ReactNode }) {
+  const state = useStreamConnection();
+  // Push permission, device registration, tap-to-deeplink: all wired at
+  // root so notifications work regardless of which tab is currently active.
+  usePushNotifications(state.client);
+  return (
+    <CommunityChatContext.Provider value={state}>
+      {children}
+    </CommunityChatContext.Provider>
+  );
+}
+
+/** Consume the app-level chat state (use inside the Community screen). */
+export function useCommunityChat(): CommunityChatState {
+  return useContext(CommunityChatContext);
 }
 
 export type { StreamChannel, StreamUser };
