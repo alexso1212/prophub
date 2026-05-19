@@ -31,6 +31,7 @@ import KnowledgePage from "./pages/KnowledgePage";
 import CommunityPage, { CommunityPageNoAuth } from "./pages/CommunityPage";
 import { FirmsOverridesProvider } from "./contexts/FirmsOverridesContext";
 import { CategoryProvider, type Category } from "./contexts/CategoryContext";
+import { CommunityChatProvider } from "./contexts/CommunityChatContext";
 
 const rawClerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
 const clerkPubKey = rawClerkKey
@@ -280,9 +281,11 @@ function ClerkProviderWithRoutes() {
       routerReplace={(to) => setLocation(stripBase(to), { replace: true })}
     >
       <FirmsOverridesProvider>
-        <Layout>
-          <Router clerkEnabled={true} />
-        </Layout>
+        <CommunityChatProvider>
+          <Layout>
+            <Router clerkEnabled={true} />
+          </Layout>
+        </CommunityChatProvider>
       </FirmsOverridesProvider>
     </ClerkProvider>
   );

@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Redirect } from "wouter";
-import { Show, useUser } from "@clerk/react";
+import { Show } from "@clerk/react";
 import {
-  StreamChat,
   type ChannelFilters,
   type ChannelSort,
   type User as StreamUser,
@@ -19,6 +18,7 @@ import {
 } from "stream-chat-react";
 import "stream-chat-react/css/index.css";
 import "../styles/community.css";
+import { useCommunityChat } from "../contexts/CommunityChatContext";
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -29,159 +29,24 @@ const PUBLIC_FILTERS: ChannelFilters = {
 
 const publicSort: ChannelSort = [{ created_at: 1 }];
 
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5 MB
-const MAX_FILES_PER_MESSAGE = 4;
-const UNREAD_EVENT = "prophub-chat-unread";
-
-type TokenResponse = {
-  apiKey: string;
-  userId: string;
-  token: string;
-  supportUserId: string;
-};
-
-function dispatchUnread(count: number) {
-  try {
-    window.dispatchEvent(new CustomEvent<number>(UNREAD_EVENT, { detail: count }));
-  } catch {
-    /* noop */
-  }
-}
-
-function useStreamConnection() {
-  const { user } = useUser();
-  const [client, setClient] = useState<StreamChat | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [supportUserId, setSupportUserId] = useState<string>("support");
-
+function TitleUnreadSync() {
+  // The CommunityChatProvider keeps the Stream client connected app-wide
+  // and broadcasts unread counts via the `prophub-chat-unread` window
+  // event (consumed by Layout for the nav dot). Here we also reflect the
+  // count in document.title while /community is mounted.
   useEffect(() => {
-    if (!user) return;
-    let cancelled = false;
-    let connectedClient: StreamChat | null = null;
-
-    (async () => {
-      try {
-        const displayName =
-          user.fullName ||
-          user.username ||
-          user.primaryEmailAddress?.emailAddress ||
-          `用户`;
-        const image = user.imageUrl;
-
-        const res = await fetch("/api/chat/token", {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: displayName, image }),
-        });
-
-        if (!res.ok) {
-          const body = (await res.json().catch(() => ({}))) as { message?: string };
-          throw new Error(body.message || `获取聊天 token 失败 (${res.status})`);
-        }
-        const data = (await res.json()) as TokenResponse;
-        if (cancelled) return;
-
-        const c = StreamChat.getInstance(data.apiKey);
-
-        // Configure attachment limits BEFORE composer instances are created.
-        c.setMessageComposerSetupFunction(({ composer }) => {
-          try {
-            composer.attachmentManager.acceptedFiles = ACCEPTED_IMAGE_TYPES;
-            composer.attachmentManager.maxNumberOfFilesPerMessage = MAX_FILES_PER_MESSAGE;
-            composer.attachmentManager.fileUploadFilter = (file) => {
-              const f = (file?.localMetadata as { file?: File } | undefined)?.file;
-              if (!f || !(f instanceof File)) return true;
-              if (f.size > MAX_UPLOAD_BYTES) {
-                window.alert("图片不能超过 5 MB");
-                return false;
-              }
-              if (f.type && !ACCEPTED_IMAGE_TYPES.includes(f.type)) {
-                window.alert("仅支持 JPG / PNG / WEBP 格式");
-                return false;
-              }
-              return true;
-            };
-          } catch {
-            /* setup is best-effort */
-          }
-        });
-
-        await c.connectUser(
-          { id: data.userId, name: displayName, image },
-          data.token,
-        );
-        if (cancelled) {
-          await c.disconnectUser();
-          return;
-        }
-        connectedClient = c;
-        setClient(c);
-        setSupportUserId(data.supportUserId || "support");
-      } catch (err) {
-        if (!cancelled) {
-          setError((err as Error)?.message || "聊天连接失败");
-        }
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-      dispatchUnread(0);
-      if (connectedClient) {
-        connectedClient.disconnectUser().catch(() => undefined);
-      }
-      setClient(null);
-    };
-  }, [user]);
-
-  return { client, error, supportUserId };
-}
-
-function UnreadBroadcaster() {
-  // Note: unread badge is scoped to while the /community page is mounted
-  // because we connect/disconnect the Stream client there. Persistent
-  // background unread (outside /community) is intentionally out of scope and
-  // belongs to the Web Push follow-up task.
-  const { client } = useChatContext();
-  useEffect(() => {
-    if (!client) return;
     const original = document.title.replace(/^\(\d+\)\s*/, "");
-    const update = (count: number) => {
-      document.title = count > 0 ? `(${count}) ${original}` : original;
-      dispatchUnread(count);
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<number>).detail;
+      const n = typeof detail === "number" ? detail : 0;
+      document.title = n > 0 ? `(${n}) ${original}` : original;
     };
-
-    // Prefer Stream's authoritative global unread counter (covers channels
-    // that aren't currently watched), falling back to active-channel sum.
-    const computeTotal = (eventCount?: number) => {
-      if (typeof eventCount === "number") return update(eventCount);
-      const fromUser = (client.user as { total_unread_count?: number } | undefined)
-        ?.total_unread_count;
-      if (typeof fromUser === "number") return update(fromUser);
-      const channels = Object.values(client.activeChannels || {});
-      let total = 0;
-      for (const ch of channels) total += ch.countUnread();
-      update(total);
-    };
-
-    computeTotal();
-    const onEvent = (e: { total_unread_count?: number }) =>
-      computeTotal(typeof e?.total_unread_count === "number" ? e.total_unread_count : undefined);
-    client.on("notification.message_new", onEvent);
-    client.on("notification.mark_read", onEvent);
-    client.on("message.new", onEvent);
-    client.on("message.read", onEvent);
+    window.addEventListener("prophub-chat-unread", handler);
     return () => {
-      client.off("notification.message_new", onEvent);
-      client.off("notification.mark_read", onEvent);
-      client.off("message.new", onEvent);
-      client.off("message.read", onEvent);
+      window.removeEventListener("prophub-chat-unread", handler);
       document.title = original;
-      dispatchUnread(0);
     };
-  }, [client]);
+  }, []);
   return null;
 }
 
@@ -349,6 +214,7 @@ function ChannelsSidebar({
 function ChatBody({ supportUserId }: { supportUserId: string }) {
   const [dmOpen, setDmOpen] = useState(false);
   const { client, channel, setActiveChannel } = useChatContext();
+  // Title sync mounted inside <Chat> so it has access to context.
 
   const pickUser = async (u: StreamUser) => {
     if (!client?.userID) return;
@@ -386,7 +252,7 @@ function ChatBody({ supportUserId }: { supportUserId: string }) {
 
   return (
     <>
-      <UnreadBroadcaster />
+      <TitleUnreadSync />
       <div className="pf-chat-layout">
         <ChannelsSidebar supportUserId={supportUserId} onOpenDm={() => setDmOpen(true)} />
         <main className="pf-chat-main" onClick={handleAvatarClick}>
@@ -520,7 +386,7 @@ function CustomChannelHeader() {
 }
 
 function CommunityShell() {
-  const { client, error, supportUserId } = useStreamConnection();
+  const { client, error, supportUserId } = useCommunityChat();
 
   if (error) {
     return (
