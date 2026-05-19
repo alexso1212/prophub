@@ -4,6 +4,11 @@ import { StreamChat } from "stream-chat";
 const STREAM_API_KEY = process.env.STREAM_API_KEY;
 const STREAM_API_SECRET = process.env.STREAM_API_SECRET;
 
+// We intentionally use Stream's `livestream` channel type for the four
+// public rooms: it's the type Stream recommends for "open public chat"
+// (any authenticated user can read + send without being added as a
+// member). `messaging` requires explicit membership which doesn't fit
+// the open-room model.
 const SUPPORT_USER_ID = "support";
 const CHANNELS = [
   { id: "futures", name: "期货交流" },

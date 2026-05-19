@@ -140,6 +140,10 @@ function useStreamConnection() {
 }
 
 function UnreadBroadcaster() {
+  // Note: unread badge is scoped to while the /community page is mounted
+  // because we connect/disconnect the Stream client there. Persistent
+  // background unread (outside /community) is intentionally out of scope and
+  // belongs to the Web Push follow-up task.
   const { client } = useChatContext();
   useEffect(() => {
     if (!client) return;
@@ -148,25 +152,32 @@ function UnreadBroadcaster() {
       document.title = count > 0 ? `(${count}) ${original}` : original;
       dispatchUnread(count);
     };
-    const computeTotal = () => {
+
+    // Prefer Stream's authoritative global unread counter (covers channels
+    // that aren't currently watched), falling back to active-channel sum.
+    const computeTotal = (eventCount?: number) => {
+      if (typeof eventCount === "number") return update(eventCount);
+      const fromUser = (client.user as { total_unread_count?: number } | undefined)
+        ?.total_unread_count;
+      if (typeof fromUser === "number") return update(fromUser);
       const channels = Object.values(client.activeChannels || {});
       let total = 0;
-      for (const ch of channels) {
-        total += ch.countUnread();
-      }
+      for (const ch of channels) total += ch.countUnread();
       update(total);
     };
+
     computeTotal();
-    const handler = () => computeTotal();
-    client.on("notification.message_new", handler);
-    client.on("message.new", handler);
-    client.on("notification.mark_read", handler);
-    client.on("message.read", handler);
+    const onEvent = (e: { total_unread_count?: number }) =>
+      computeTotal(typeof e?.total_unread_count === "number" ? e.total_unread_count : undefined);
+    client.on("notification.message_new", onEvent);
+    client.on("notification.mark_read", onEvent);
+    client.on("message.new", onEvent);
+    client.on("message.read", onEvent);
     return () => {
-      client.off("notification.message_new", handler);
-      client.off("message.new", handler);
-      client.off("notification.mark_read", handler);
-      client.off("message.read", handler);
+      client.off("notification.message_new", onEvent);
+      client.off("notification.mark_read", onEvent);
+      client.off("message.new", onEvent);
+      client.off("message.read", onEvent);
       document.title = original;
       dispatchUnread(0);
     };

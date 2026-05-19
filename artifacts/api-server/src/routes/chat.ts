@@ -21,6 +21,9 @@ function getStreamClient(): StreamChat | null {
 
 const SUPPORT_USER_ID = "support";
 
+// Public rooms use Stream's `livestream` channel type — the recommended
+// type for open chat rooms where any authenticated user can read + post
+// without being explicitly added as a member.
 const SEED_CHANNELS: Array<{ id: string; name: string }> = [
   { id: "futures", name: "期货交流" },
   { id: "forex", name: "外汇交流" },
