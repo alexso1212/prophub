@@ -5,6 +5,7 @@ import {
   type Channel as StreamChannel,
   type User as StreamUser,
 } from "stream-chat";
+import { usePushNotifications } from "./usePushNotifications";
 
 export type ChannelDescriptor = { id: string; name: string };
 
@@ -114,6 +115,10 @@ export function useCommunityChat(): CommunityChatState {
       }
     };
   }, [isSignedIn, user, getToken]);
+
+  // Side-effect: once the chat user is connected, register this device's
+  // Expo push token with Stream so background push notifications work.
+  usePushNotifications(client);
 
   return { client, supportUserId, channels, loading, error };
 }

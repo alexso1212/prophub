@@ -1,6 +1,7 @@
 import { useAuth } from "@clerk/expo";
 import * as ImagePicker from "expo-image-picker";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocalSearchParams } from "expo-router";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -73,6 +74,29 @@ function CommunityScreenInner() {
   const { isSignedIn } = useAuth();
   const { client, supportUserId, channels, loading, error } = useCommunityChat();
   const [active, setActive] = useState<StreamChannel | null>(null);
+
+  // Deep-link from a push notification tap (see usePushNotifications):
+  // when the URL carries channelType + channelId, auto-open that channel.
+  const params = useLocalSearchParams<{ channelType?: string; channelId?: string }>();
+  const lastDeepLinkRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!client) return;
+    const type = params.channelType;
+    const id = params.channelId;
+    if (!type || !id) return;
+    const key = `${type}:${id}`;
+    if (lastDeepLinkRef.current === key) return;
+    lastDeepLinkRef.current = key;
+    (async () => {
+      try {
+        const ch = client.channel(type, id);
+        await ch.watch();
+        setActive(ch);
+      } catch {
+        /* channel may not exist; ignore */
+      }
+    })();
+  }, [client, params.channelType, params.channelId]);
 
   // Not signed in → friendly prompt.
   if (!isSignedIn) {
