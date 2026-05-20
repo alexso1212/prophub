@@ -206,6 +206,9 @@ importers:
       stream-chat:
         specifier: ^9.44.2
         version: 9.44.2
+      svix:
+        specifier: ^1.93.0
+        version: 1.93.0
       web-push:
         specifier: ^3.6.7
         version: 3.6.7
@@ -6437,6 +6440,9 @@ packages:
   supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
+
+  svix@1.93.0:
+    resolution: {integrity: sha512-AeCcSs+CrHNejZytBuvD4hw2B14rB7+Sq7ggwYgF22TgXh0uJJ3T4uVJSbSYKFSbO1AA4o470XoGgOYqu2fbSA==}
 
   swr@2.3.4:
     resolution: {integrity: sha512-bYd2lrhc+VarcpkgWclcUi92wYCpOgMws9Sd1hG1ntAu0NEy+14CbotuFjshBU2kt9rYj9TSmDcybpxpeTU1fg==}
@@ -14310,6 +14316,10 @@ snapshots:
       supports-color: 7.2.0
 
   supports-preserve-symlinks-flag@1.0.0: {}
+
+  svix@1.93.0:
+    dependencies:
+      standardwebhooks: 1.0.0
 
   swr@2.3.4(react@19.1.0):
     dependencies:
