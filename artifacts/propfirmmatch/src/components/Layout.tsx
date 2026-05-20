@@ -1,5 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { ReactNode, useEffect, useState, FormEvent } from "react";
+import { Show, UserButton } from "@clerk/react";
 import type { Category } from "../contexts/CategoryContext";
 import {
   SparkleIcon, SearchIcon, BookIcon, GiftIcon, TvIcon, HeartIcon,
@@ -167,8 +168,22 @@ export default function Layout({ children }: { children: ReactNode }) {
         <div className="header-right">
           <Link className="btn-pill hide-on-mobile" href="/careers"><span className="dot" />招聘中</Link>
           <Link className="btn-pill hide-on-mobile" href="/tutorials"><BookIcon size={14} /> 教程</Link>
-          <Link href="/sign-in" className="btn-pill hide-on-mobile">登录</Link>
-          <Link href="/sign-up" className="btn-pill primary">注册</Link>
+          <Show when="signed-out">
+            <Link href="/sign-in" className="btn-pill hide-on-mobile">登录</Link>
+            <Link href="/sign-up" className="btn-pill primary">注册</Link>
+          </Show>
+          <Show when="signed-in">
+            <Link href="/me" className="btn-pill hide-on-mobile">我的资料</Link>
+            <UserButton>
+              <UserButton.MenuItems>
+                <UserButton.Link
+                  label="账户设置"
+                  labelIcon={<span style={{ fontSize: 14 }}>⚙</span>}
+                  href="/settings"
+                />
+              </UserButton.MenuItems>
+            </UserButton>
+          </Show>
           <ThemeToggle />
           <button
             type="button"
@@ -204,7 +219,13 @@ export default function Layout({ children }: { children: ReactNode }) {
                 onClick={() => setDrawerOpen(false)}
               >×</button>
             </div>
-            <Link className="drawer-link" href="/sign-in">登录账户</Link>
+            <Show when="signed-out">
+              <Link className="drawer-link" href="/sign-in">登录账户</Link>
+            </Show>
+            <Show when="signed-in">
+              <Link className="drawer-link" href="/me">我的资料</Link>
+              <Link className="drawer-link" href="/settings">账户设置</Link>
+            </Show>
             <Link className="drawer-link" href="/careers"><span className="dot" />招聘中</Link>
             <Link className="drawer-link" href="/tutorials"><BookIcon size={14} /> 教程</Link>
             <Link className="drawer-link" href={`/${activeCategory}/giveaways`}><GiftIcon size={14} /> 免费抽奖</Link>

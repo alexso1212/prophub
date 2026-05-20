@@ -9,6 +9,9 @@ import chatRouter from "./chat";
 import chatPushRouter from "./chatPush";
 import clerkWebhookRouter from "./clerkWebhook";
 import meRouter from "./me";
+import usersRouter from "./users";
+import blocksRouter from "./blocks";
+import adminUsersRouter from "./adminUsers";
 
 const router: IRouter = Router();
 
@@ -22,5 +25,8 @@ router.use(chatRouter);
 router.use(chatPushRouter);
 router.use(clerkWebhookRouter);
 router.use(meRouter);
+router.use(usersRouter);
+router.use(blocksRouter);
+router.use(adminUsersRouter);
 
 export default router;

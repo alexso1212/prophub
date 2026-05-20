@@ -5,3 +5,5 @@ export * from "./offers";
 export * from "./offerChanges";
 export * from "./scrapeJobs";
 export * from "./users";
+export * from "./userBlocks";
+export * from "./auditLog";

@@ -37,6 +37,8 @@ export const usersTable = pgTable(
       .defaultNow()
       .notNull(),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
+    bannedAt: timestamp("banned_at", { withTimezone: true }),
+    banReason: text("ban_reason"),
   },
   (table) => ({
     usersUsernameUnique: uniqueIndex("users_username_unique").on(table.username),

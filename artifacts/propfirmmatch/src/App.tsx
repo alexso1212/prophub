@@ -28,6 +28,11 @@ import AdminFirmsPage from "./pages/AdminFirmsPage";
 import AdminOffersPage from "./pages/admin/AdminOffersPage";
 import AdminScrapePage from "./pages/admin/AdminScrapePage";
 import AdminCommunityPage from "./pages/admin/AdminCommunityPage";
+import ProfilePage from "./pages/ProfilePage";
+import PublicProfilePage from "./pages/PublicProfilePage";
+import SettingsPage from "./pages/SettingsPage";
+import AdminUsersPage from "./pages/admin/AdminUsersPage";
+import AdminAuditPage from "./pages/admin/AdminAuditPage";
 import KnowledgePage from "./pages/KnowledgePage";
 import CommunityPage, { CommunityPageNoAuth } from "./pages/CommunityPage";
 import { FirmsOverridesProvider } from "./contexts/FirmsOverridesContext";
@@ -146,6 +151,15 @@ function Router({ clerkEnabled }: { clerkEnabled: boolean }) {
         <Route path="/community">
           {clerkEnabled ? <CommunityPage /> : <CommunityPageNoAuth />}
         </Route>
+
+        {/* 个人主页 / 设置 / 公开主页 */}
+        <Route path="/me">
+          {clerkEnabled ? <ProfilePage /> : <Redirect to="/" />}
+        </Route>
+        <Route path="/settings">
+          {clerkEnabled ? <SettingsPage /> : <Redirect to="/" />}
+        </Route>
+        <Route path="/u/:username" component={PublicProfilePage} />
         <Route path="/admin/firms">
           {clerkEnabled ? (
             <AdminRouteWithClerk>
@@ -180,6 +194,24 @@ function Router({ clerkEnabled }: { clerkEnabled: boolean }) {
             </AdminRouteWithClerk>
           ) : (
             <AdminCommunityPage />
+          )}
+        </Route>
+        <Route path="/admin/users">
+          {clerkEnabled ? (
+            <AdminRouteWithClerk>
+              <AdminUsersPage />
+            </AdminRouteWithClerk>
+          ) : (
+            <AdminUsersPage />
+          )}
+        </Route>
+        <Route path="/admin/audit">
+          {clerkEnabled ? (
+            <AdminRouteWithClerk>
+              <AdminAuditPage />
+            </AdminRouteWithClerk>
+          ) : (
+            <AdminAuditPage />
           )}
         </Route>
 
