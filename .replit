@@ -49,6 +49,6 @@ channel = "stable-25_05"
 [userenv]
 
 [userenv.shared]
-ADMIN_EMAILS = ""
+ADMIN_EMAILS = "deltapexacademy@gmail.com,czy906352133@gmail.com"
 
 [userenv.development]
