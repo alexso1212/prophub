@@ -1,6 +1,10 @@
 import type { Request, Response, NextFunction } from "express";
 import { getAuth } from "@clerk/express";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
+import { db } from "@workspace/db";
+import { usersTable } from "@workspace/db/schema";
+import { logger } from "./logger";
 
 const ClaimsSchema = z
   .object({
@@ -32,7 +36,11 @@ const getAdminEmails = (): string[] => {
     .filter(Boolean);
 };
 
-export const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
+export const requireAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   if (!process.env.CLERK_PUBLISHABLE_KEY) {
     // Dev bypass requires explicit opt-in env flag to prevent accidental
     // exposure on preview/staging URLs. Set ADMIN_DEV_BYPASS=1 locally only.
@@ -48,11 +56,26 @@ export const requireAdmin = (req: Request, res: Response, next: NextFunction) =>
   if (!userId) {
     return res.status(401).json({ error: "Unauthorized" });
   }
+  // Fast path: ADMIN_EMAILS bootstrap list (no DB hit needed).
   const adminEmails = getAdminEmails();
-  if (adminEmails.length === 0 || !email || !adminEmails.includes(email)) {
-    return res.status(403).json({ error: "Forbidden: not an admin" });
+  if (email && adminEmails.includes(email)) {
+    return next();
   }
-  next();
+  // Fall back to the persisted role so admins promoted through the admin UI
+  // — not just the env bootstrap list — are actually granted access.
+  try {
+    const [row] = await db
+      .select({ role: usersTable.role })
+      .from(usersTable)
+      .where(eq(usersTable.id, userId))
+      .limit(1);
+    if (row?.role === "admin") {
+      return next();
+    }
+  } catch (err) {
+    logger.error({ err }, "[requireAdmin] DB role lookup failed");
+  }
+  return res.status(403).json({ error: "Forbidden: not an admin" });
 };
 
 export const getActor = (req: Request): string => {

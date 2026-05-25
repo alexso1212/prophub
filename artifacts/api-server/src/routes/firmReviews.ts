@@ -1,46 +1,28 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { firmReviewsTable } from "@workspace/db/schema";
-import { getAuth, clerkClient } from "@clerk/express";
 import { and, desc, eq } from "drizzle-orm";
+import { requireLocalUser, type RequestWithLocalUser } from "../lib/users";
 
 const router: IRouter = Router();
 
-const requireUser = async (req: any, res: any, next: any): Promise<void> => {
-  if (!process.env.CLERK_PUBLISHABLE_KEY) {
-    res.status(503).json({ error: "Auth not configured" });
-    return;
-  }
-  const auth = getAuth(req);
-  const userId = (auth?.userId || (auth?.sessionClaims as any)?.userId) as string | undefined;
-  if (!userId) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-  try {
-    const user = await clerkClient.users.getUser(userId);
-    const name =
-      [user.firstName, user.lastName].filter(Boolean).join(" ").trim() ||
-      user.username ||
-      user.primaryEmailAddress?.emailAddress?.split("@")[0] ||
-      "用户";
-    req.authUser = {
-      id: userId,
-      name,
-      avatar: user.imageUrl ?? null,
-    };
-    next();
-  } catch (err) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-};
-
+// Public list — explicit columns only. We never expose the author's Clerk
+// user id here; identity comes from the denormalized userName/userAvatar.
 router.get("/firms/:slug/reviews", async (req, res) => {
-  const { slug } = req.params;
+  const slug = String(req.params.slug);
   try {
     const rows = await db
-      .select()
+      .select({
+        id: firmReviewsTable.id,
+        slug: firmReviewsTable.slug,
+        userName: firmReviewsTable.userName,
+        userAvatar: firmReviewsTable.userAvatar,
+        rating: firmReviewsTable.rating,
+        title: firmReviewsTable.title,
+        body: firmReviewsTable.body,
+        createdAt: firmReviewsTable.createdAt,
+        updatedAt: firmReviewsTable.updatedAt,
+      })
       .from(firmReviewsTable)
       .where(eq(firmReviewsTable.slug, slug))
       .orderBy(desc(firmReviewsTable.createdAt));
@@ -50,13 +32,14 @@ router.get("/firms/:slug/reviews", async (req, res) => {
   }
 });
 
-router.get("/firms/:slug/reviews/mine", requireUser, async (req: any, res) => {
-  const { slug } = req.params;
+router.get("/firms/:slug/reviews/mine", requireLocalUser, async (req, res) => {
+  const slug = String(req.params.slug);
+  const { localUser } = req as RequestWithLocalUser;
   try {
     const [row] = await db
       .select()
       .from(firmReviewsTable)
-      .where(and(eq(firmReviewsTable.slug, slug), eq(firmReviewsTable.userId, req.authUser.id)));
+      .where(and(eq(firmReviewsTable.slug, slug), eq(firmReviewsTable.userId, localUser.id)));
     res.json(row ?? null);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch own review" });
@@ -73,8 +56,9 @@ const validate = (body: any): { rating: number; title: string; text: string } | 
   return { rating, title, text };
 };
 
-router.post("/firms/:slug/reviews", requireUser, async (req: any, res) => {
-  const { slug } = req.params;
+router.post("/firms/:slug/reviews", requireLocalUser, async (req, res) => {
+  const slug = String(req.params.slug);
+  const { localUser } = req as RequestWithLocalUser;
   const v = validate(req.body);
   if (typeof v === "string") { res.status(400).json({ error: v }); return; }
 
@@ -83,9 +67,9 @@ router.post("/firms/:slug/reviews", requireUser, async (req: any, res) => {
       .insert(firmReviewsTable)
       .values({
         slug,
-        userId: req.authUser.id,
-        userName: req.authUser.name,
-        userAvatar: req.authUser.avatar,
+        userId: localUser.id,
+        userName: localUser.displayName,
+        userAvatar: localUser.avatarUrl,
         rating: v.rating,
         title: v.title,
         body: v.text,
@@ -96,8 +80,8 @@ router.post("/firms/:slug/reviews", requireUser, async (req: any, res) => {
           rating: v.rating,
           title: v.title,
           body: v.text,
-          userName: req.authUser.name,
-          userAvatar: req.authUser.avatar,
+          userName: localUser.displayName,
+          userAvatar: localUser.avatarUrl,
           updatedAt: new Date(),
         },
       })
@@ -108,8 +92,9 @@ router.post("/firms/:slug/reviews", requireUser, async (req: any, res) => {
   }
 });
 
-router.patch("/firms/:slug/reviews/:id", requireUser, async (req: any, res) => {
-  const { slug } = req.params;
+router.patch("/firms/:slug/reviews/:id", requireLocalUser, async (req, res) => {
+  const slug = String(req.params.slug);
+  const { localUser } = req as RequestWithLocalUser;
   const id = Number(req.params.id);
   if (!Number.isInteger(id)) { res.status(400).json({ error: "invalid id" }); return; }
   const v = validate(req.body);
@@ -121,7 +106,7 @@ router.patch("/firms/:slug/reviews/:id", requireUser, async (req: any, res) => {
       .from(firmReviewsTable)
       .where(and(eq(firmReviewsTable.id, id), eq(firmReviewsTable.slug, slug)));
     if (!existing) { res.status(404).json({ error: "not found" }); return; }
-    if (existing.userId !== req.authUser.id) { res.status(403).json({ error: "forbidden" }); return; }
+    if (existing.userId !== localUser.id) { res.status(403).json({ error: "forbidden" }); return; }
     const [updated] = await db
       .update(firmReviewsTable)
       .set({ rating: v.rating, title: v.title, body: v.text, updatedAt: new Date() })
@@ -133,8 +118,9 @@ router.patch("/firms/:slug/reviews/:id", requireUser, async (req: any, res) => {
   }
 });
 
-router.delete("/firms/:slug/reviews/:id", requireUser, async (req: any, res) => {
-  const { slug } = req.params;
+router.delete("/firms/:slug/reviews/:id", requireLocalUser, async (req, res) => {
+  const slug = String(req.params.slug);
+  const { localUser } = req as RequestWithLocalUser;
   const id = Number(req.params.id);
   if (!Number.isInteger(id)) { res.status(400).json({ error: "invalid id" }); return; }
   try {
@@ -143,7 +129,7 @@ router.delete("/firms/:slug/reviews/:id", requireUser, async (req: any, res) => 
       .from(firmReviewsTable)
       .where(and(eq(firmReviewsTable.id, id), eq(firmReviewsTable.slug, slug)));
     if (!existing) { res.status(404).json({ error: "not found" }); return; }
-    if (existing.userId !== req.authUser.id) { res.status(403).json({ error: "forbidden" }); return; }
+    if (existing.userId !== localUser.id) { res.status(403).json({ error: "forbidden" }); return; }
     await db
       .delete(firmReviewsTable)
       .where(and(eq(firmReviewsTable.id, id), eq(firmReviewsTable.slug, slug)));

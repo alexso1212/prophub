@@ -6,6 +6,18 @@ import { getBrandZh } from "../data/brandZh";
 const COUNTDOWN_SECONDS = 3;
 const CLICKS_KEY = "pfm.outbound.clicks";
 
+// Only ever navigate to http(s) destinations — guards against a malicious
+// affiliate override (e.g. javascript:) reaching window.location.assign.
+function isHttpUrl(url: string | undefined | null): url is string {
+  if (!url) return false;
+  try {
+    const p = new URL(url).protocol;
+    return p === "http:" || p === "https:";
+  } catch {
+    return false;
+  }
+}
+
 type ClickLog = { slug: string; at: number; promoCode: string; affiliateUrl: string };
 
 function logClick(entry: ClickLog) {
@@ -51,7 +63,8 @@ export default function GoPage() {
   const category = found?.category ?? "futures";
   const brandZh = firm ? getBrandZh(firm.slug) : "";
   const detailHref = firm ? `/${category}/prop-firms/${firm.slug}` : `/${category}/all-prop-firms`;
-  const outboundUrl = firm?.affiliateUrl ?? firm?.promoUrl;
+  const candidateUrl = firm?.affiliateUrl ?? firm?.promoUrl;
+  const outboundUrl = isHttpUrl(candidateUrl) ? candidateUrl : undefined;
   const hasLink = !!outboundUrl;
   const promoCode = firm?.promoCode ?? "";
 

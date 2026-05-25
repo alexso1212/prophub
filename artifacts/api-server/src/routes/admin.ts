@@ -9,6 +9,7 @@ import {
 import { eq, desc, and, sql, inArray } from "drizzle-orm";
 import { requireAdmin, getActor } from "../lib/requireAdmin";
 import { extractOfferFromText, textFromHtml } from "../lib/aiExtract";
+import { isHttpUrl, isPublicHttpUrl, fetchFollowingRedirects } from "../lib/safeFetch";
 import { z } from "zod";
 
 type Firm = typeof firmsTable.$inferSelect;
@@ -19,15 +20,15 @@ type OfferUpdate = Partial<typeof offersTable.$inferInsert>;
 const FirmPatchSchema = z
   .object({
     name: z.string(),
-    officialUrl: z.string().nullable(),
-    affiliateBaseUrl: z.string().nullable(),
+    officialUrl: z.string().url().nullable(),
+    affiliateBaseUrl: z.string().url().nullable(),
     affiliateId: z.string().nullable(),
     logo: z.string().nullable(),
     country: z.string().nullable(),
     countryCode: z.string().nullable(),
     category: z.string().nullable(),
     status: z.string(),
-    scrapeUrl: z.string().nullable(),
+    scrapeUrl: z.string().url().nullable(),
     scrapeEnabled: z.number().int(),
   })
   .partial();
@@ -37,7 +38,10 @@ const OfferPatchSchema = z
     discountPercent: z.number().nullable(),
     code: z.string().nullable(),
     label: z.string().nullable(),
-    affiliateUrl: z.string().nullable(),
+    affiliateUrl: z
+      .string()
+      .refine((v) => isHttpUrl(v), { message: "affiliateUrl must be an http(s) URL" })
+      .nullable(),
     notes: z.string().nullable(),
     validUntil: z.string().nullable(),
   })
@@ -518,6 +522,12 @@ export async function runDailyScrapeSweep(triggeredBy = "cron"): Promise<{ trigg
 // need JS rendering. Playwright is intentionally NOT a hard dependency so
 // the api-server bundle stays small; install separately when needed.
 async function fetchHtml(url: string): Promise<{ html: string; via: "playwright" | "fetch" }> {
+  // SSRF guard: refuse to fetch private/loopback/link-local targets even
+  // though scrapeUrl is admin-set (defense in depth against a compromised
+  // admin or a bad patch reaching cloud metadata / internal services).
+  if (!isPublicHttpUrl(url)) {
+    throw new Error("Refusing to scrape a non-public URL");
+  }
   if (process.env.SCRAPE_USE_PLAYWRIGHT === "1") {
     try {
       // Dynamic import with a runtime-only specifier so TS doesn't require
@@ -543,7 +553,7 @@ async function fetchHtml(url: string): Promise<{ html: string; via: "playwright"
       console.warn("Playwright path failed; falling back to fetch:", e);
     }
   }
-  const resp = await fetch(url, {
+  const resp = await fetchFollowingRedirects(url, {
     headers: {
       "User-Agent":
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
@@ -551,7 +561,6 @@ async function fetchHtml(url: string): Promise<{ html: string; via: "playwright"
         "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
       "Accept-Language": "en-US,en;q=0.9",
     },
-    redirect: "follow",
   });
   if (!resp.ok) throw new Error(`Fetch failed: ${resp.status}`);
   return { html: await resp.text(), via: "fetch" };
@@ -695,8 +704,7 @@ export async function runLinkHealth(
     };
   }
   try {
-    const resp = await fetch(url, {
-      redirect: "follow",
+    const resp = await fetchFollowingRedirects(url, {
       headers: { "User-Agent": "ProphubLinkChecker/1.0" },
     });
     const finalUrl = resp.url;
@@ -735,29 +743,6 @@ export async function runLinkHealth(
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     return { ok: false, error: msg, reason: "fetch_error", durationMs: Date.now() - start };
-  }
-}
-
-function isPublicHttpUrl(raw: string): boolean {
-  try {
-    const u = new URL(raw);
-    if (u.protocol !== "http:" && u.protocol !== "https:") return false;
-    const host = u.hostname.toLowerCase();
-    if (
-      host === "localhost" ||
-      host.endsWith(".local") ||
-      host.endsWith(".internal") ||
-      /^(0|10|127|169\.254|172\.(1[6-9]|2\d|3[0-1])|192\.168)\./.test(host) ||
-      host === "::1" ||
-      host.startsWith("[fc") ||
-      host.startsWith("[fd") ||
-      host.startsWith("[fe80")
-    ) {
-      return false;
-    }
-    return true;
-  } catch {
-    return false;
   }
 }
 
