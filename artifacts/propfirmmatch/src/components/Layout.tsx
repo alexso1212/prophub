@@ -103,6 +103,17 @@ export default function Layout({ children }: { children: ReactNode }) {
     return path === to;
   };
 
+  // 极简首页：进入"沉浸模式"，去掉全站 chrome（横幅/导航/页脚/客服），
+  // 整屏只留鱼骨图；导航全部交给鱼骨图自身的 CTA。其余页面保留完整布局。
+  const bareHome =
+    path === "/" ||
+    path === "/futures" ||
+    path === "/forex" ||
+    path === "/crypto";
+  if (bareHome) {
+    return <div className="bare-home">{children}</div>;
+  }
+
   return (
     <>
       <div className="top-bar">
