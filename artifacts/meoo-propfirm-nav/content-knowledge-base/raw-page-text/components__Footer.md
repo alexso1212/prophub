@@ -1,0 +1,40 @@
+# src/components/Footer.tsx
+
+- 关于本站
+- 中文 Prop Firm 规则导航站，提供平台对比、规则解析和入门指南。帮助交易员做出明智选择。
+- 快速导航
+- 首页
+- 平台库
+- 规则对比
+- 新手指南
+- 资源
+- 软件教程
+- 支付指南
+- 出金教程
+- 风险披露
+- 社群
+- 风险提示
+- Prop Firm 挑战账户不是投资建议，不保证收益或出金。挑战失败会损失报名费。交易期货涉及重大风险，可能导致本金全部损失。请确保您充分理解相关风险。
+- 返佣披露
+- 本站可能通过部分平台的推荐链接或折扣码获得佣金。这不会影响您的费用，但会支持我们持续更新内容。我们承诺所有评价基于独立调研，不受佣金影响。
+- 关于我们
+- 免责声明
+- >关于本站</h3> <p className=
+- > 中文 Prop Firm 规则导航站，提供平台对比、规则解析和入门指南。帮助交易员做出明智选择。 </p> </div> <div> <h3 className=
+- >快速导航</h3> <ul className=
+- >首页</Link></li> <li><Link to=
+- >平台库</Link></li> <li><Link to=
+- >规则对比</Link></li> <li><Link to=
+- >新手指南</Link></li> </ul> </div> <div> <h3 className=
+- >资源</h3> <ul className=
+- >软件教程</Link></li> <li><Link to=
+- >支付指南</Link></li> <li><Link to=
+- >出金教程</Link></li> <li><Link to=
+- >风险披露</Link></li> </ul> </div> <div> <h3 className=
+- >社群</h3> <div className=
+- ></i> 风险提示 </h4> <p className=
+- > Prop Firm 挑战账户不是投资建议，不保证收益或出金。挑战失败会损失报名费。交易期货涉及重大风险，可能导致本金全部损失。请确保您充分理解相关风险。 </p> </div> <div className=
+- ></i> 返佣披露 </h4> <p className=
+- > 本站可能通过部分平台的推荐链接或折扣码获得佣金。这不会影响您的费用，但会支持我们持续更新内容。我们承诺所有评价基于独立调研，不受佣金影响。 </p> </div> <div className=
+- > <p>&copy; {currentYear} Prop Firm 中文导航. 保留所有权利.</p> <div className=
+- >关于我们</Link> <Link to=

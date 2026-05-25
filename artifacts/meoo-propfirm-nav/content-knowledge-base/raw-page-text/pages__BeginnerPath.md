@@ -1,0 +1,30 @@
+# src/pages/BeginnerPath.tsx
+
+- 新手学习路径
+- 按照以下步骤，系统掌握 Prop Firm 交易知识
+- 完成以上步骤后，你就可以开始实战了
+- 记住：Prop Firm 不是快速致富的捷径，需要认真对待
+- 了解基础概念
+- 什么是 Prop Firm？和 CFD 有什么区别？
+- 开始学习
+- 5分钟
+- 理解核心规则
+- 回撤、一致性、日内平仓等关键规则
+- 查看规则
+- 10分钟
+- 选择合适平台
+- 根据你的经验和预算，找到最适合的平台
+- 去选平台
+- 配置交易软件
+- Tradovate 或 Rithmic 的连接教程
+- 软件教程
+- 15分钟
+- 了解出金流程
+- Wise、Rise 等出金方式提前了解
+- 出金指南
+- >新手学习路径</h2> <p className=
+- >按照以下步骤，系统掌握 Prop Firm 交易知识</p> </div> <div className=
+- >步骤 {step.id}</span> <h3 className=
+- /> 完成以上步骤后，你就可以开始实战了 </div> <p className=
+- /guides/what-is-futures-prop-firm
+- w-8 h-8 text-violet-300

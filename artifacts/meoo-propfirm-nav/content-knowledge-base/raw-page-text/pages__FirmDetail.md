@@ -1,0 +1,74 @@
+# src/pages/FirmDetail.tsx
+
+- 平台未找到
+- 返回平台列表
+- 访问官网
+- 返佣披露
+- 风险提示
+- Prop Firm 挑战账户不是投资建议，不保证收益或出金。挑战失败会损失报名费。 本站可能通过链接或折扣码获得佣金。
+- 支持软件
+- 支付方式
+- KYC 要求
+- 账户类型
+- 账户
+- 规模
+- 费用
+- 利润目标
+- 最大回撤
+- 分成
+- 适合人群
+- 适合
+- • 有期货交易经验的交易员
+- • 能够遵守严格风险管理规则
+- • 寻求资金杠杆的交易者
+- 不适合
+- • 无交易经验的新手
+- • 无法承受报名费损失
+- • 期望快速致富的心态
+- 官方来源
+- >平台未找到</h1> <Link to=
+- > 返回平台列表 </Link> </div> </div> ); } const getRiskColor = (level: string) => { switch (level) { case
+- 支持中国用户
+- 限制中国用户
+- 状态未知
+- /> 返回平台列表 </Link> <div className=
+- }> 风险: {firm.riskLevel ===
+- 低
+- 中
+- 高
+- > <span>评分: {firm.rating}/5.0</span> <span>最后核验: {firm.lastVerifiedAt}</span> </div> </div> <div className=
+- > 访问官网 <ExternalLink className=
+- > 返佣披露 <AlertTriangle className=
+- > 优惠码: {firm.couponCode} </span> )} </div> </div> </div> <div className=
+- >风险提示</h3> <p className=
+- > Prop Firm 挑战账户不是投资建议，不保证收益或出金。挑战失败会损失报名费。 本站可能通过链接或折扣码获得佣金。 </p> </div> </div> </div> <div className=
+- /> 支持软件 </h3> <div className=
+- /> 支付方式 </h3> <div className=
+- /> KYC 要求 </h3> <p className=
+- >账户类型</h2> <div className=
+- >账户</th> <th className=
+- >规模</th> <th className=
+- >费用</th> <th className=
+- >利润目标</th> <th className=
+- >最大回撤</th> <th className=
+- >分成</th> </tr> </thead> <tbody> {firm.accountTypes.map((account, idx) => ( <tr key={account.id} className={
+- >适合人群</h2> <div className=
+- /> 适合 </h3> <ul className=
+- > <li>• 有期货交易经验的交易员</li> <li>• 能够遵守严格风险管理规则</li> <li>• 寻求资金杠杆的交易者</li> </ul> </div> <div> <h3 className=
+- /> 不适合 </h3> <ul className=
+- > <li>• 无交易经验的新手</li> <li>• 无法承受报名费损失</li> <li>• 期望快速致富的心态</li> </ul> </div> </div> </div> <div className=
+- >官方来源</h2> <ul className=
+- ; import type { Firm } from
+- ; interface FirmDetailProps { firms: Firm[]; } const FirmDetail: React.FC<FirmDetailProps> = ({ firms }) => { const { slug } = useParams<{ slug: string }>(); const firm = firms.find(f => f.slug === slug); if (!firm) { return ( <div className=
+- > <img src={firm.logoUrl} alt={firm.name} className=
+- >{firm.name}</h1> <span className={
+- }> {getCnStatusText(firm.cnUserStatus)} </span> <span className={
+- : firm.riskLevel ===
+- >{firm.summary}</p> <div className=
+- > <a href={firm.officialUrl} target=
+- /> </a> {firm.affiliateUrl && ( <Link to=
+- /> </Link> )} {firm.couponCode && ( <span className=
+- > {firm.supportedPlatforms.map(platform => ( <span key={platform} className=
+- > {firm.paymentMethods.map(method => ( <span key={method} className=
+- >{firm.kycRequirements}</p> </div> </div> <div className=
+- > {firm.sourceUrls.map((url, index) => ( <li key={index}> <a href={url} target=

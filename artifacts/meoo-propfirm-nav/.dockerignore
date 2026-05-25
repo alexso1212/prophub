@@ -1,0 +1,13 @@
+node_modules
+dist
+.git
+.claude
+.idea
+.vscode
+*.log
+.DS_Store
+DEPLOY.md
+README.md
+.assets_mapping
+.gitkeep
+.omc
