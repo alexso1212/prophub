@@ -15,7 +15,8 @@ const BILIBILI_ROOM_ID = "1874453448";
 function buildNav(cat: Category) {
   const p = `/${cat}`;
   return [
-    { to: `${p}/all-prop-firms`,        label: "首页" },
+    { to: p,                            label: "首页" },
+    { to: `${p}/all-prop-firms`,        label: "全部公司" },
     { to: `${p}/exclusive-offers`,      label: "限时优惠" },
     { to: `${p}/prop-firm-challenges`,  label: "挑战赛" },
     { to: `${p}/best-sellers`,          label: "热销榜" },
@@ -69,7 +70,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     : "futures";
 
   const NAV = buildNav(activeCategory);
-  const homePath = `/${activeCategory}/all-prop-firms`;
+  const homePath = `/${activeCategory}`;
   const liveInfo = useBilibiliLiveStatus(BILIBILI_ROOM_ID);
   const isLive = liveInfo.status === "live";
   const isRerun = liveInfo.status === "rerun";
@@ -160,9 +161,9 @@ export default function Layout({ children }: { children: ReactNode }) {
         </form>
 
         <div className="tabs-pill">
-          <Link href="/forex/all-prop-firms" className={`tab ${activeCategory === "forex" ? "active" : ""}`}>外汇</Link>
-          <Link href="/futures/all-prop-firms" className={`tab ${activeCategory === "futures" ? "active" : ""}`}>期货</Link>
-          <Link href="/crypto/all-prop-firms" className={`tab ${activeCategory === "crypto" ? "active" : ""}`}>加密<span className="badge-new">新</span></Link>
+          <Link href="/forex" className={`tab ${activeCategory === "forex" ? "active" : ""}`}>外汇</Link>
+          <Link href="/futures" className={`tab ${activeCategory === "futures" ? "active" : ""}`}>期货</Link>
+          <Link href="/crypto" className={`tab ${activeCategory === "crypto" ? "active" : ""}`}>加密<span className="badge-new">新</span></Link>
         </div>
 
         <div className="header-right">
@@ -199,9 +200,9 @@ export default function Layout({ children }: { children: ReactNode }) {
 
       {/* mobile underline tab strip duplicated for ≤768 */}
       <div className="cat-tabs-mobile" aria-hidden={false}>
-        <Link href="/forex/all-prop-firms" className={activeCategory === "forex" ? "active" : ""}>外汇</Link>
-        <Link href="/futures/all-prop-firms" className={activeCategory === "futures" ? "active" : ""}>期货</Link>
-        <Link href="/crypto/all-prop-firms" className={activeCategory === "crypto" ? "active" : ""}>
+        <Link href="/forex" className={activeCategory === "forex" ? "active" : ""}>外汇</Link>
+        <Link href="/futures" className={activeCategory === "futures" ? "active" : ""}>期货</Link>
+        <Link href="/crypto" className={activeCategory === "crypto" ? "active" : ""}>
           加密<span className="badge-new" style={{ marginLeft: 4 }}>新</span>
         </Link>
       </div>
@@ -232,9 +233,9 @@ export default function Layout({ children }: { children: ReactNode }) {
             <Link className="drawer-link" href={`/${activeCategory}/live`}><TvIcon size={14} /> 直播间</Link>
             <Link className="drawer-link" href={`/${activeCategory}/favorite-firms`}><HeartIcon size={14} /> 我的收藏</Link>
             <div className="drawer-section">板块</div>
-            <Link className="drawer-link" href="/forex/all-prop-firms">外汇</Link>
-            <Link className="drawer-link" href="/futures/all-prop-firms">期货</Link>
-            <Link className="drawer-link" href="/crypto/all-prop-firms">加密 <span className="badge-new" style={{ marginLeft: 4 }}>新</span></Link>
+            <Link className="drawer-link" href="/forex">外汇</Link>
+            <Link className="drawer-link" href="/futures">期货</Link>
+            <Link className="drawer-link" href="/crypto">加密 <span className="badge-new" style={{ marginLeft: 4 }}>新</span></Link>
             <div className="drawer-section">主题</div>
             <div style={{ padding: "8px 16px" }}><ThemeToggle /></div>
           </aside>

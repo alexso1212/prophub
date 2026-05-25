@@ -1,4 +1,4 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useMemo, useRef, useState } from "react";
 import { Firm, getDiscountedPrices, formatUsd } from "../data/firms";
 import { findFirmZh } from "../data/firms.zh";
@@ -7,7 +7,7 @@ import { countryZh } from "../data/i18nZh";
 import NewsFeed from "../components/NewsFeed";
 import FirmLogo from "../components/FirmLogo";
 import { SparkleIcon, SettingsIcon, HeartIcon, TrophyIcon, StarRow, StarIcon, ClipboardIcon, CheckIcon } from "../components/icons";
-import Onboarding from "../components/Onboarding";
+import NewbieRoadmap from "../components/NewbieRoadmap";
 import FirmsFilterSidebar from "../components/FirmsFilterSidebar";
 import { useFirmsOverrides } from "../contexts/FirmsOverridesContext";
 import { useCategory, useCategoryFirms, useCategoryMeta } from "../contexts/CategoryContext";
@@ -180,6 +180,9 @@ export default function HomePage() {
   const firms = useCategoryFirms();
   const prefix = `/${category}`;
   const { filters, setFilters, reset, activeCount } = useFirmFilters();
+  const [loc] = useLocation();
+  // 极简首页（landing）只放鱼骨路线图；密集对比表只在 /all-prop-firms 出现。
+  const listMode = loc.endsWith("/all-prop-firms");
 
   const promoPercentFor = (slug: string) => {
     const ov = overrides[slug];
@@ -214,10 +217,22 @@ export default function HomePage() {
     el.scrollBy({ left: dir * Math.round(el.clientWidth * 0.9), behavior: "smooth" });
   };
 
+  if (!listMode) {
+    return (
+      <main className="container">
+        <NewbieRoadmap prefix={prefix} />
+        <div className="rm-home-cta">
+          <span>已经懂了、想直接挑公司？</span>
+          <Link href={`${prefix}/all-prop-firms`} className="rm-detail-cta">
+            查看全部{meta.label}公司 →
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="container">
-      <Onboarding />
-
       <section className="pfm-hero">
         <h1 className="pfm-hero-title">2026 年最值得对比的{meta.label}自营公司</h1>
         <p className="pfm-hero-sub">基于真实数据与交易员评价，帮你对比规则、点差、出金与折扣，一站挑出最适合自己的{meta.label}自营公司。</p>

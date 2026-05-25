@@ -1,0 +1,312 @@
+/* 新手路线图（鱼骨图）—— 首页主入口 */
+
+.rm {
+  margin: 18px 0 8px;
+  padding: 22px 22px 24px;
+  border: 1px solid rgba(168, 132, 247, 0.28);
+  border-radius: 18px;
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(168, 132, 247, 0.14), transparent 55%),
+    rgba(255, 255, 255, 0.03);
+}
+
+.rm-head {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.rm-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  background: linear-gradient(90deg, #c4b5fd, #a855f7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.rm-sub {
+  margin: 6px 0 0;
+  color: var(--text-dim, #94a3b8);
+  font-size: 14px;
+}
+
+/* 你在哪一步 */
+.rm-status {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.rm-status-btn {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text, #e2e8f0);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.rm-status-btn:hover { border-color: rgba(168, 132, 247, 0.6); }
+.rm-status-btn.is-active {
+  background: linear-gradient(90deg, #a855f7, #8b5cf6);
+  border-color: transparent;
+  color: #fff;
+}
+
+.rm-guidance {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 14px auto 0;
+  max-width: 720px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: rgba(168, 132, 247, 0.12);
+  border: 1px solid rgba(168, 132, 247, 0.3);
+}
+.rm-guidance-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  background: #a855f7;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.rm-guidance-text { color: var(--text, #e2e8f0); font-size: 14px; }
+.rm-guidance-cta {
+  color: #c4b5fd;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.rm-guidance-cta:hover { text-decoration: underline; }
+
+/* 鱼骨主轴 */
+.rm-track { position: relative; padding: 8px 6px 0; }
+.rm-spine {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, rgba(168, 132, 247, 0.25), #a855f7 85%);
+  border-radius: 2px;
+}
+.rm-spine::after {
+  content: "";
+  position: absolute;
+  right: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left: 12px solid #a855f7;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+}
+
+.rm-stages {
+  position: relative;
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-height: 250px;
+}
+.rm-stage { position: relative; flex: 1 1 0; min-width: 0; }
+/* 主轴上的连接点 */
+.rm-stage::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #1a1f2e;
+  border: 2px solid #a855f7;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+.rm-stage.is-hi::after,
+.rm-stage.is-selected::after { background: #a855f7; box-shadow: 0 0 0 4px rgba(168, 132, 247, 0.25); }
+
+.rm-stem {
+  position: absolute;
+  left: 50%;
+  width: 2px;
+  height: 26px;
+  background: rgba(168, 132, 247, 0.45);
+  transform: translateX(-50%);
+}
+.rm-stage.up .rm-stem { bottom: 50%; }
+.rm-stage.down .rm-stem { top: 50%; }
+
+.rm-node {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(110px, 90%, 160px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #161b29;
+  color: var(--text, #e2e8f0);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+.rm-stage.up .rm-node { bottom: calc(50% + 26px); }
+.rm-stage.down .rm-node { top: calc(50% + 26px); }
+.rm-node:hover { border-color: rgba(168, 132, 247, 0.7); transform: translateX(-50%) translateY(-2px); }
+.rm-stage.is-selected .rm-node {
+  border-color: #a855f7;
+  box-shadow: 0 0 0 1px #a855f7, 0 8px 24px rgba(168, 132, 247, 0.25);
+  background: #1c2030;
+}
+.rm-stage.is-hi .rm-node { border-color: rgba(168, 132, 247, 0.8); }
+
+.rm-node-num {
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+}
+.rm-node-title { font-size: 14px; font-weight: 700; line-height: 1.2; }
+.rm-node-sub { font-size: 11px; color: var(--text-dim, #94a3b8); line-height: 1.3; }
+.rm-stage.is-pending .rm-node-sub { color: var(--orange, #c084fc); }
+
+/* 详情卡 */
+.rm-detail {
+  margin-top: 14px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+}
+.rm-detail-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.rm-detail-num {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  flex: none;
+}
+.rm-detail-title { font-size: 18px; font-weight: 800; color: var(--text, #f1f5f9); }
+.rm-detail-sub { font-size: 13px; color: var(--text-dim, #94a3b8); }
+
+.rm-bones { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.rm-bone-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid rgba(168, 132, 247, 0.6);
+}
+.rm-bone-text { font-size: 14px; color: var(--text, #e2e8f0); font-weight: 500; }
+.rm-bone-tip { font-size: 12px; color: var(--text-dim, #94a3b8); }
+
+.rm-pending-note {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--orange, #c084fc);
+  background: rgba(192, 132, 252, 0.1);
+  border: 1px dashed rgba(192, 132, 252, 0.4);
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.rm-detail-cta {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #a855f7, #8b5cf6);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+}
+.rm-detail-cta:hover { filter: brightness(1.08); }
+
+/* 极简首页底部："想直接看公司" 入口 */
+.rm-home-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 22px 0 44px;
+  padding: 18px;
+  color: var(--text-dim, #94a3b8);
+  font-size: 14px;
+}
+
+/* 路线图 → 对比表 分隔 */
+.rm-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 26px 0 6px;
+  color: var(--text-dim, #94a3b8);
+  font-size: 13px;
+}
+.rm-divider::before,
+.rm-divider::after { content: ""; flex: 1; height: 1px; background: rgba(255, 255, 255, 0.12); }
+
+/* 移动端：鱼骨改竖排时间线 */
+@media (max-width: 860px) {
+  .rm { padding: 18px 14px 20px; }
+  .rm-title { font-size: 21px; }
+  .rm-spine { display: none; }
+  .rm-track { padding: 4px 0 0; }
+  .rm-stages {
+    flex-direction: column;
+    min-height: 0;
+    gap: 10px;
+    margin-left: 6px;
+    padding-left: 20px;
+    border-left: 2px dashed rgba(168, 132, 247, 0.4);
+  }
+  .rm-stage { flex: none; }
+  .rm-stage::after { left: -20px; top: 22px; transform: translate(-50%, 0); }
+  .rm-stem { display: none; }
+  .rm-stage.up .rm-node,
+  .rm-stage.down .rm-node {
+    position: static;
+    transform: none;
+    width: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+  }
+  .rm-node:hover { transform: none; }
+  .rm-node-sub { margin-left: auto; }
+}
