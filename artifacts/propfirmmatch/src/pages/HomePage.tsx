@@ -7,7 +7,7 @@ import { countryZh } from "../data/i18nZh";
 import NewsFeed from "../components/NewsFeed";
 import FirmLogo from "../components/FirmLogo";
 import { SparkleIcon, SettingsIcon, HeartIcon, TrophyIcon, StarRow, StarIcon, ClipboardIcon, CheckIcon } from "../components/icons";
-import KnowledgeMap from "../components/KnowledgeMap";
+import HomeExplore from "../components/HomeExplore";
 import FirmsFilterSidebar from "../components/FirmsFilterSidebar";
 import { useFirmsOverrides } from "../contexts/FirmsOverridesContext";
 import { useCategory, useCategoryFirms, useCategoryMeta } from "../contexts/CategoryContext";
@@ -220,7 +220,7 @@ export default function HomePage() {
   if (!listMode) {
     return (
       <main className="container">
-        <KnowledgeMap prefix={prefix} />
+        <HomeExplore prefix={prefix} />
       </main>
     );
   }

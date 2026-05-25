@@ -1,156 +1,96 @@
-// 新手路线图（鱼骨图）数据。
-//
-// 主轴 = 从"完全没接触"到"出金到账"的 7 个阶段（鱼骨主刺）；
-// 每个阶段下挂若干"小刺"（要点），可带 tip 与一个深链 CTA。
-// "你在哪一步"用 statusBuckets 把用户自我定位映射到具体阶段，
-// 给出"现在该干嘛"的一句话指引 + 主按钮。
+// 鱼骨图节点数据（原则 A：每个节点先说「你能得到什么 / 该做什么」，不堆信息）。
+// 主刺 = 从 0 到出金的 6 个阶段；每刺点开后是 gain（你能得到什么）+ 若干 bones：
+//   - point：行动点（label + action），直接告诉小白做什么
+//   - guide：攻略叶子（slug 对应 guideMaps，点开是「比喻 + 迷你导图」）
 
-export interface RoadmapLink {
+export interface RoadmapCta {
   label: string;
   href: string;
-  // true → 该链接是分类相对路径，组件会自动拼上 /futures|/forex|/crypto 前缀
-  cat?: boolean;
+  cat?: boolean;   // 分类相对路径，组件自动拼 /futures|/forex|/crypto
+  ghost?: boolean;
 }
 
-export interface RoadmapBone {
-  text: string;
-  tip?: string;
-}
+export type RoadmapBone =
+  | { kind: "point"; label: string; action: string }
+  | { kind: "guide"; slug: string };
 
 export interface RoadmapStage {
   id: string;
-  title: string;
-  subtitle: string;
+  title: string;   // 主刺节点（收益导向短句）
+  gain: string;    // 点开后第一行：你能得到什么
   bones: RoadmapBone[];
-  cta?: RoadmapLink;
-  // 标记尚未填充完整真实内容的阶段（如国内出金细节，待补）
-  pending?: boolean;
-}
-
-export interface StatusBucket {
-  id: string;
-  label: string;
-  // 命中的阶段 id（用于高亮）
-  stages: string[];
-  // 默认聚焦展开的阶段 id
-  focus: string;
-  guidance: string;
-  cta: RoadmapLink;
+  ctas?: RoadmapCta[];
 }
 
 export const roadmapStages: RoadmapStage[] = [
   {
     id: "understand",
-    title: "了解自营交易",
-    subtitle: "这是什么、适不适合我",
+    title: "看懂这门生意",
+    gain: "3 分钟搞懂自营交易是什么、判断自己适不适合，不交冤枉钱。",
     bones: [
-      { text: "用公司的资金交易，你只出策略和技术", tip: "真实账户由公司出资，你不用充本金" },
-      { text: "利润 80%–90% 归你，公司抽 10%–20%", tip: "按你签约的等级分成" },
-      { text: "考不过只损失报名费，亏的不是你的本金" },
+      { kind: "guide", slug: "what-is-futures-prop-firm" },
+      { kind: "point", label: "我会亏多少？", action: "最多亏报名费——不用充交易本金，亏的不是你的钱" },
+      { kind: "point", label: "本站怎么赚钱", action: "部分链接为返佣链接，使用可能给本站带来佣金（评价保持独立）" },
     ],
-    cta: { label: "60 秒测我适不适合", href: "/knowledge/decision" },
+    ctas: [{ label: "60 秒测我适不适合", href: "/knowledge/decision" }],
   },
   {
     id: "choose",
-    title: "选一家公司",
-    subtitle: "对比规则·点差·出金·折扣",
+    title: "挑对一家公司",
+    gain: "帮你挑一家：便宜、靠谱、出金快、对新手友好的公司。",
     bones: [
-      { text: "看报名费：$50–$1000，按账户大小", tip: "账户越大、报名费越高" },
-      { text: "看考核规则：盈利目标 / 最大回撤 / 持仓时长" },
-      { text: "看分成比例：通常 80%–90% 归你" },
-      { text: "看出金记录：站内有近 30 天到账截图", tip: "真实到账截图越多越靠谱" },
+      { kind: "guide", slug: "low-cost-path" },
+      { kind: "point", label: "怎么挑", action: "看报名费、看考核规则、看分成、看真实出金记录" },
+      { kind: "point", label: "已经在别家了？", action: "用「查我的平台」查它好不好、怎么过关，还能领我们的福利" },
     ],
-    cta: { label: "对比全部公司", href: "/all-prop-firms", cat: true },
+    ctas: [
+      { label: "对比全部公司", href: "/all-prop-firms", cat: true },
+      { label: "60 秒测一测", href: "/knowledge/decision", ghost: true },
+    ],
   },
   {
     id: "register",
-    title: "注册报名",
-    subtitle: "在官网付费报名考核",
+    title: "开通账户还省钱",
+    gain: "手把手开通账户，结账时用我们的优惠码省一笔。",
     bones: [
-      { text: "先选账户大小：25K / 50K / 100K …" },
-      { text: "用银行卡或 USDT 支付报名费" },
-      { text: "结账时贴上优惠码，省 10%–90%", tip: "本站为多家公司提供专属优惠码" },
+      { kind: "point", label: "先选账户大小", action: "新手从小账户起步：25K / 50K，别一上来冲大号" },
+      { kind: "point", label: "怎么付款", action: "信用卡 / USDT / Wise，部分平台支持支付宝、微信" },
+      { kind: "point", label: "用优惠码", action: "结账时粘贴我们的专属码，省 10%–90%（返佣披露）" },
     ],
-    cta: { label: "看本月专属优惠", href: "/exclusive-offers", cat: true },
+    ctas: [{ label: "看本月专属优惠", href: "/exclusive-offers", cat: true }],
   },
   {
-    id: "platform",
-    title: "装平台 · 学软件",
-    subtitle: "下单、止损、看盈亏",
+    id: "software",
+    title: "5 步学会用软件",
+    gain: "学会下单、止损、看盈亏，不再对着交易软件发懵。",
     bones: [
-      { text: "认识平台：NinjaTrader / Tradovate / MT4·MT5 / Rithmic", tip: "不同公司支持不同平台，报名前先确认" },
-      { text: "学会下单、设止损止盈" },
-      { text: "学会看实时盈亏和回撤数字" },
+      { kind: "guide", slug: "tradovate-guide" },
+      { kind: "guide", slug: "rithmic-guide" },
+      { kind: "point", label: "下单基本功", action: "练熟市价/限价/止损单，会看实时盈亏和回撤数字" },
     ],
-    cta: { label: "看新手教程", href: "/tutorials" },
+    ctas: [{ label: "更多软件教程", href: "/tutorials" }],
   },
   {
     id: "exam",
-    title: "通过考核",
-    subtitle: "达标规则别踩线",
+    title: "避开出局红线",
+    gain: "看懂 3 条会让你直接出局的红线，把「靠运气」变成「稳定达标」。",
     bones: [
-      { text: "达到盈利目标金额" },
-      { text: "别踩最大回撤线", tip: "分清「当日结算回撤(EOD)」和「实时回撤」" },
-      { text: "满足最低交易天数 / 一致性规则" },
+      { kind: "guide", slug: "drawdown-rules" },
+      { kind: "guide", slug: "consistency-rule" },
+      { kind: "guide", slug: "intraday-liquidation" },
     ],
-    cta: { label: "看规则手册", href: "/prop-firm-rules", cat: true },
-  },
-  {
-    id: "live",
-    title: "拿真实账户实盘",
-    subtitle: "通过后正式操盘",
-    bones: [
-      { text: "签电子合同，拿到出资真实账户" },
-      { text: "按公司规则稳定交易" },
-      { text: "积累可分成的利润，准备出金" },
-    ],
+    ctas: [{ label: "看各家规则对比", href: "/prop-firm-rules", cat: true }],
   },
   {
     id: "payout",
-    title: "出金分成",
-    subtitle: "国内用户重点 · 待完善",
-    pending: true,
+    title: "把钱安全拿回国内",
+    gain: "认证、收款、税表一步步教，搞定 KYC 和首次出金。",
     bones: [
-      { text: "出金方式：USDT / 银行卡 / 第三方（待补真实细节）" },
-      { text: "首次出金条件 / 出金周期（待补）" },
-      { text: "到账时间 / 手续费 / 汇率（待补）" },
-      { text: "身份认证 KYC（待补）" },
+      { kind: "guide", slug: "kyc-guide" },
+      { kind: "guide", slug: "wise-payout" },
+      { kind: "guide", slug: "w8-form-guide" },
+      { kind: "point", label: "出金门槛", action: "注意最低出金额、单次上限、出金周期（各家不同）" },
     ],
-    cta: { label: "看真实出金记录", href: "/payouts", cat: true },
-  },
-];
-
-export const statusBuckets: StatusBucket[] = [
-  {
-    id: "new",
-    label: "还没接触过",
-    stages: ["understand", "choose"],
-    focus: "understand",
-    guidance: "先花 1 分钟搞懂「自营交易是什么」，再挑一家靠谱公司。",
-    cta: { label: "测我适不适合", href: "/knowledge/decision" },
-  },
-  {
-    id: "ready",
-    label: "想报名买考核",
-    stages: ["register"],
-    focus: "register",
-    guidance: "选好账户大小，结账时记得用优惠码省一笔。",
-    cta: { label: "看本月优惠", href: "/exclusive-offers", cat: true },
-  },
-  {
-    id: "exam",
-    label: "正在考核中",
-    stages: ["platform", "exam"],
-    focus: "exam",
-    guidance: "盯紧盈利目标和回撤线，先把规则手册看明白。",
-    cta: { label: "看规则手册", href: "/prop-firm-rules", cat: true },
-  },
-  {
-    id: "payout",
-    label: "已通过 · 想出金",
-    stages: ["live", "payout"],
-    focus: "payout",
-    guidance: "看看别人近 30 天的真实到账，了解出金方式与周期。",
-    cta: { label: "看出金记录", href: "/payouts", cat: true },
+    ctas: [{ label: "看真实出金记录", href: "/payouts", cat: true }],
   },
 ];

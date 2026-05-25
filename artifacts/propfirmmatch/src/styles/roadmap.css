@@ -1,3 +1,42 @@
+/* 极简首页"沉浸模式"：整屏只放思维导图 / 查平台，垂直居中 */
+.bare-home {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px 36px;
+  background:
+    radial-gradient(90% 70% at 50% -10%, rgba(124, 58, 237, 0.18), transparent 60%),
+    var(--bg, #0b0a14);
+}
+.bare-home > .container { max-width: 1120px; width: 100%; margin: 0 auto; }
+@media (max-width: 860px) { .bare-home { align-items: stretch; } }
+
+/* 首页顶部入口切换：新手路线图 / 查我的平台 */
+.home-switch {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.home-switch button {
+  padding: 9px 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(168, 132, 247, 0.3);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text, #e2e8f0);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.home-switch button.is-active {
+  background: linear-gradient(90deg, #a855f7, #7c3aed);
+  border-color: transparent;
+  color: #fff;
+}
+
 /* 新手路线图（鱼骨图）—— 首页主入口 */
 
 .rm {
@@ -310,3 +349,80 @@
   .rm-node:hover { transform: none; }
   .rm-node-sub { margin-left: auto; }
 }
+
+/* ===== 收益导向详情 + 攻略叶子 + 攻略迷你导图浮层 ===== */
+.rm-detail-gain { font-size: 13px; color: var(--text-dim, #94a3b8); margin-top: 2px; line-height: 1.5; }
+
+.rm-guide-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(168, 132, 247, 0.35);
+  background: rgba(168, 132, 247, 0.07);
+  color: var(--text, #e2e8f0);
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.rm-guide-card:hover { border-color: #a855f7; transform: translateY(-2px); }
+.rm-guide-title { font-size: 14px; font-weight: 700; }
+.rm-guide-sum { font-size: 12px; color: var(--text-dim, #94a3b8); margin: 3px 0 6px; line-height: 1.5; }
+.rm-guide-open { font-size: 12px; color: #c4b5fd; font-weight: 700; }
+
+.rm-ctas { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.rm-detail-cta.ghost { background: transparent; border: 1px solid rgba(168, 132, 247, 0.5); color: #c4b5fd; }
+
+.rm-gmap-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(8, 6, 18, 0.86);
+  backdrop-filter: blur(10px);
+  animation: rmZoom 0.32s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+@keyframes rmZoom { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+.rm-gmap-card {
+  position: relative;
+  width: min(640px, 100%);
+  max-height: 90%;
+  overflow-y: auto;
+  padding: 24px 26px 20px;
+  border-radius: 18px;
+  border: 1px solid rgba(168, 132, 247, 0.45);
+  background: linear-gradient(180deg, rgba(26, 21, 46, 0.97), rgba(14, 11, 26, 0.97));
+  box-shadow: 0 0 70px rgba(124, 58, 237, 0.4);
+}
+.rm-gmap-close {
+  position: absolute; top: 14px; right: 14px;
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1px solid rgba(168, 132, 247, 0.4);
+  background: rgba(22, 18, 40, 0.9); color: #ece9ff; font-size: 16px; cursor: pointer;
+}
+.rm-gmap-kicker { font-size: 11px; letter-spacing: 2px; color: #c4b5fd; }
+.rm-gmap-title { font-size: 20px; font-weight: 800; color: #fff; margin: 4px 0 10px; }
+.rm-gmap-analogy {
+  font-size: 16px; line-height: 1.6; color: #f0edff; font-weight: 600;
+  padding: 12px 14px; border-radius: 12px; margin: 0 0 14px;
+  background: rgba(168, 132, 247, 0.14); border-left: 3px solid #a855f7;
+}
+.rm-gmap-nodes { display: grid; gap: 8px; }
+.rm-gmap-node { display: flex; gap: 10px; align-items: flex-start; }
+.rm-gmap-node-dot { width: 9px; height: 9px; border-radius: 50%; background: #a855f7; margin-top: 6px; flex: none; box-shadow: 0 0 8px rgba(168,132,247,0.8); }
+.rm-gmap-node-label { font-size: 14px; font-weight: 700; color: #ece9ff; }
+.rm-gmap-node-action { font-size: 13px; color: #b7b2d6; line-height: 1.5; }
+.rm-gmap-redline {
+  margin-top: 12px; font-size: 13px; color: #fda4af;
+  background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.3);
+  padding: 8px 12px; border-radius: 8px;
+}
+.rm-gmap-tip { margin-top: 8px; font-size: 13px; color: #cbb6ff; }
+.rm-gmap-more { margin-top: 14px; background: none; border: 0; color: #c4b5fd; font-weight: 700; font-size: 13px; cursor: pointer; }
+.rm-gmap-full { margin-top: 10px; color: #cfcbe8; font-size: 13px; line-height: 1.7; }
+.rm-gmap-full .md-h2, .rm-gmap-full .md-h3 { color: #fff; }
+.rm-gmap-full .md-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.rm-gmap-full .md-table th, .rm-gmap-full .md-table td { border: 1px solid rgba(168,132,247,0.2); padding: 5px 8px; }
+.rm-gmap-disclaimer { margin-top: 14px; font-size: 11px; color: #6f6a92; line-height: 1.6; }

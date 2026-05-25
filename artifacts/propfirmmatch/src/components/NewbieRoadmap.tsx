@@ -1,61 +1,30 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import {
-  roadmapStages,
-  statusBuckets,
-  type RoadmapLink,
-} from "../data/roadmapData";
+import GuideMapOverlay from "./GuideMapOverlay";
+import { roadmapStages, type RoadmapCta } from "../data/roadmapData";
+import { guides } from "../data/guides";
 import "../styles/roadmap.css";
 
 /**
- * 新手路线图（鱼骨图）。把"从完全不懂 → 出金到账"拆成 7 个阶段的主轴，
- * 让小白先自我定位（你在哪一步），再点任意阶段看"现在该干嘛"和深链。
- * 取代原先被埋在首页中部的小思维导图，作为首屏主入口。
+ * 鱼骨图（思维导图的一种）。主刺 = 6 个阶段，节点文案是收益/行动导向（原则 A）。
+ * 点主刺看「你能得到什么」+ 行动点/攻略叶子；点攻略叶子弹出「比喻 + 迷你导图」
+ * （原则 B），想看细节再展开完整图文。全程不跳转（CTA 才跳页）。
  */
 export default function NewbieRoadmap({ prefix }: { prefix: string }) {
   const [selected, setSelected] = useState<string>(roadmapStages[0].id);
-  const [bucket, setBucket] = useState<string | null>(null);
+  const [openSlug, setOpenSlug] = useState<string | null>(null);
 
-  const href = (l: RoadmapLink) => (l.cat ? `${prefix}${l.href}` : l.href);
-
-  const activeBucket = statusBuckets.find((b) => b.id === bucket) ?? null;
-  const highlighted = new Set(activeBucket?.stages ?? []);
+  const href = (c: RoadmapCta) => (c.cat ? `${prefix}${c.href}` : c.href);
   const stage = roadmapStages.find((s) => s.id === selected) ?? roadmapStages[0];
   const stageIndex = roadmapStages.findIndex((s) => s.id === stage.id);
+
+  const openGuide = (slug: string) => setOpenSlug(slug);
 
   return (
     <section className="rm" aria-label="新手路线图">
       <div className="rm-head">
         <h2 className="rm-title">新手路线图 · 从 0 到出金</h2>
-        <p className="rm-sub">第一次来？先选一个你现在的状态，跟着走就行 👇</p>
-
-        <div className="rm-status" role="tablist" aria-label="你现在在哪一步">
-          {statusBuckets.map((b) => (
-            <button
-              key={b.id}
-              type="button"
-              role="tab"
-              aria-selected={bucket === b.id}
-              className={`rm-status-btn ${bucket === b.id ? "is-active" : ""}`}
-              onClick={() => {
-                setBucket(b.id);
-                setSelected(b.focus);
-              }}
-            >
-              {b.label}
-            </button>
-          ))}
-        </div>
-
-        {activeBucket && (
-          <div className="rm-guidance" role="status">
-            <span className="rm-guidance-label">现在该干嘛</span>
-            <span className="rm-guidance-text">{activeBucket.guidance}</span>
-            <Link href={href(activeBucket.cta)} className="rm-guidance-cta">
-              {activeBucket.cta.label} →
-            </Link>
-          </div>
-        )}
+        <p className="rm-sub">不知道从哪开始？点亮路上的每一步，看你这一步能得到什么 👇</p>
       </div>
 
       <div className="rm-track">
@@ -66,13 +35,7 @@ export default function NewbieRoadmap({ prefix }: { prefix: string }) {
             return (
               <li
                 key={s.id}
-                className={[
-                  "rm-stage",
-                  i % 2 === 0 ? "up" : "down",
-                  isSel ? "is-selected" : "",
-                  highlighted.has(s.id) ? "is-hi" : "",
-                  s.pending ? "is-pending" : "",
-                ]
+                className={["rm-stage", i % 2 === 0 ? "up" : "down", isSel ? "is-selected" : ""]
                   .filter(Boolean)
                   .join(" ")}
               >
@@ -86,7 +49,6 @@ export default function NewbieRoadmap({ prefix }: { prefix: string }) {
                 >
                   <span className="rm-node-num">{i + 1}</span>
                   <span className="rm-node-title">{s.title}</span>
-                  <span className="rm-node-sub">{s.subtitle}</span>
                 </button>
               </li>
             );
@@ -99,31 +61,44 @@ export default function NewbieRoadmap({ prefix }: { prefix: string }) {
           <span className="rm-detail-num">{stageIndex + 1}</span>
           <div>
             <div className="rm-detail-title">{stage.title}</div>
-            <div className="rm-detail-sub">{stage.subtitle}</div>
+            <div className="rm-detail-gain">{stage.gain}</div>
           </div>
         </div>
 
-        <ul className="rm-bones">
-          {stage.bones.map((b, j) => (
-            <li key={j} className="rm-bone-item">
-              <span className="rm-bone-text">{b.text}</span>
-              {b.tip && <span className="rm-bone-tip">{b.tip}</span>}
-            </li>
-          ))}
-        </ul>
+        <div className="rm-bones">
+          {stage.bones.map((b, j) => {
+            if (b.kind === "guide") {
+              const g = guides.find((x) => x.slug === b.slug);
+              if (!g) return null;
+              return (
+                <button key={j} type="button" className="rm-guide-card" onClick={() => openGuide(b.slug)}>
+                  <div className="rm-guide-title">{g.title}</div>
+                  <div className="rm-guide-sum">{g.summary}</div>
+                  <div className="rm-guide-open">用大白话 + 导图讲给你听 →</div>
+                </button>
+              );
+            }
+            return (
+              <div key={j} className="rm-bone-item">
+                <span className="rm-bone-text">{b.label}</span>
+                <span className="rm-bone-tip">{b.action}</span>
+              </div>
+            );
+          })}
+        </div>
 
-        {stage.pending && (
-          <div className="rm-pending-note">
-            这一步内容完善中（国内出金细节即将补充）。
+        {stage.ctas && stage.ctas.length > 0 && (
+          <div className="rm-ctas">
+            {stage.ctas.map((c) => (
+              <Link key={c.href} href={href(c)} className={`rm-detail-cta ${c.ghost ? "ghost" : ""}`}>
+                {c.label} →
+              </Link>
+            ))}
           </div>
         )}
-
-        {stage.cta && (
-          <Link href={href(stage.cta)} className="rm-detail-cta">
-            {stage.cta.label} →
-          </Link>
-        )}
       </div>
+
+      {openSlug && <GuideMapOverlay slug={openSlug} onClose={() => setOpenSlug(null)} />}
     </section>
   );
 }
