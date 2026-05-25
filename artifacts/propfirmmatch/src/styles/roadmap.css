@@ -1,20 +1,3 @@
-/* 极简首页"沉浸模式"：整屏只放鱼骨图，垂直居中 */
-.bare-home {
-  min-height: 100dvh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 28px 16px 40px;
-  background:
-    radial-gradient(90% 70% at 50% -10%, rgba(168, 132, 247, 0.16), transparent 60%),
-    var(--bg, #0b0a14);
-}
-.bare-home > .container { max-width: 1120px; width: 100%; margin: 0 auto; }
-.bare-home .rm { margin: 0; }
-@media (max-width: 860px) {
-  .bare-home { align-items: flex-start; }
-}
-
 /* 新手路线图（鱼骨图）—— 首页主入口 */
 
 .rm {

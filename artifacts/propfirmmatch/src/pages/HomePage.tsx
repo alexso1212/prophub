@@ -7,7 +7,7 @@ import { countryZh } from "../data/i18nZh";
 import NewsFeed from "../components/NewsFeed";
 import FirmLogo from "../components/FirmLogo";
 import { SparkleIcon, SettingsIcon, HeartIcon, TrophyIcon, StarRow, StarIcon, ClipboardIcon, CheckIcon } from "../components/icons";
-import NewbieRoadmap from "../components/NewbieRoadmap";
+import KnowledgeMap from "../components/KnowledgeMap";
 import FirmsFilterSidebar from "../components/FirmsFilterSidebar";
 import { useFirmsOverrides } from "../contexts/FirmsOverridesContext";
 import { useCategory, useCategoryFirms, useCategoryMeta } from "../contexts/CategoryContext";
@@ -220,13 +220,7 @@ export default function HomePage() {
   if (!listMode) {
     return (
       <main className="container">
-        <NewbieRoadmap prefix={prefix} />
-        <div className="rm-home-cta">
-          <span>已经懂了、想直接挑公司？</span>
-          <Link href={`${prefix}/all-prop-firms`} className="rm-detail-cta">
-            查看全部{meta.label}公司 →
-          </Link>
-        </div>
+        <KnowledgeMap prefix={prefix} />
       </main>
     );
   }
