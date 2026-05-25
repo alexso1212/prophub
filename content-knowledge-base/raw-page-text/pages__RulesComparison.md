@@ -1,0 +1,40 @@
+# src/pages/RulesComparison.tsx
+
+- 规则对比
+- 横向对比各平台账户规则
+- 平台
+- 账户
+- 规模
+- 费用
+- 利润目标
+- 最大回撤
+- 日损
+- 回撤类型
+- 最小交易日
+- 一致性
+- 分成
+- 最低出金
+- 数据最后更新: 2026-05-12
+- * 规则可能随时变化，请以官方最新公告为准
+- >规则对比</h1> <p className=
+- >横向对比各平台账户规则</p> </div> <div className=
+- >平台</th> <th className=
+- >账户</th> <th className=
+- >规模</th> <th className=
+- >费用</th> <th className=
+- >利润目标</th> <th className=
+- >最大回撤</th> <th className=
+- >日损</th> <th className=
+- >回撤类型</th> <th className=
+- >最小交易日</th> <th className=
+- >一致性</th> <th className=
+- >分成</th> <th className=
+- >最低出金</th> </tr> </thead> <tbody> {comparisonData.map((row, idx) => ( <tr key={
+- 是
+- 否
+- > <p>数据最后更新: 2026-05-12</p> <p className=
+- ; interface ComparisonRow { firmName: string; account: AccountType; } export default function RulesComparison() { const [selectedFirms, setSelectedFirms] = useState<string[]>([]); const comparisonData: ComparisonRow[] = useMemo(() => { const firms = selectedFirms.length > 0 ? firmsData.filter(f => selectedFirms.includes(f.id)) : firmsData.slice(0, 5); return firms.flatMap(firm => firm.accountTypes.map(account => ({ firmName: firm.name, account })) ); }, [selectedFirms]); const toggleFirm = (firmId: string) => { setSelectedFirms(prev => prev.includes(firmId) ? prev.filter(id => id !== firmId) : [...prev, firmId] ); }; return ( <div className=
+- > {firmsData.map(firm => ( <button key={firm.id} onClick={() => toggleFirm(firm.id)} className={
+- } > {firm.name} </button> ))} </div> <div className=
+- eod
+- tdd

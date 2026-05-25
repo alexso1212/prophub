@@ -1,0 +1,76 @@
+# src/pages/learn/RithmicGuide.tsx
+
+- Rithmic 是期货行业的
+- 低延迟数据和执行基础设施
+- ，被多家 Prop Firm 采用。它本身不是界面软件，而是底层数据服务。
+- 基础
+- Rithmic 是什么
+- Rithmic 提供什么
+- 低延迟市场数据
+- — 行业级标准，毫秒级
+- 订单路由和执行
+- — 直连 CME 等交易所
+- 多平台支持
+- — 可对接 NinjaTrader / Quantower / ATAS / 自定义 API
+- 生态
+- 支持的软件
+- 此外还支持自定义 API 应用接入
+- 实操
+- 连接配置
+- 排障
+- 故障排查
+- 桌面应用
+- 强大的图表
+- 自动化策略
+- 多资产交易
+- 现代化 UI
+- 多 broker
+- 订单流分析
+- Footprint 图表
+- 量化交易
+- Rithmic 连接指南
+- 专业级期货数据 / 执行服务的配置教程
+- 软件教程
+- > {/* 区块 1: Hero */} <p className=
+- > Rithmic 是期货行业的<span className=
+- >低延迟数据和执行基础设施</span>，被多家 Prop Firm 采用。它本身不是界面软件，而是底层数据服务。 </p> {/* 区块 2: Rithmic 是什么 */} <section> <div className=
+- >基础</span> <h2 className=
+- >Rithmic 是什么</h2> </div> <div className=
+- >Rithmic 提供什么</h3> <div className=
+- >低延迟市场数据</span> — 行业级标准，毫秒级 </p> </div> <div className=
+- >订单路由和执行</span> — 直连 CME 等交易所 </p> </div> <div className=
+- >多平台支持</span> — 可对接 NinjaTrader / Quantower / ATAS / 自定义 API </p> </div> </div> </div> </section> {/* 区块 3: 支持的软件 */} <section> <div className=
+- >生态</span> <h2 className=
+- >支持的软件</h2> </div> <div className=
+- >此外还支持自定义 API 应用接入</p> </section> {/* 区块 4: 连接配置 */} <section> <div className=
+- >实操</span> <h2 className=
+- >连接配置</h2> </div> <CompareCards layout=
+- 桌面端配置
+- 步骤 1
+- 打开 Connections > Configure
+- 步骤 2
+- 添加 Rithmic 连接
+- 步骤 3
+- 输入账户信息
+- 步骤 4
+- 测试连接 → 开始交易
+- 现代化平台
+- 打开 Connections
+- 选择 Rithmic
+- 输入登录信息
+- >排障</span> <h2 className=
+- >故障排查</h2> </div> <CompareCards layout=
+- 连接失败
+- 检查
+- 账户状态是否激活
+- 数据订阅是否有效
+- 防火墙是否拦截
+- 数据延迟
+- 尝试
+- 切换数据服务器
+- 网络质量
+- 联系
+- Prop Firm 技术支持
+- NinjaTrader
+- Quantower
+- ATAS
