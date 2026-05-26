@@ -170,7 +170,11 @@ export async function syncUserFromClerk(
   if (row.displayName !== snap.displayName) next.displayName = snap.displayName;
   if ((row.email ?? null) !== snap.email) next.email = snap.email;
   if ((row.avatarUrl ?? null) !== snap.avatarUrl) next.avatarUrl = snap.avatarUrl;
-  if (row.role !== role) next.role = role;
+  // ADMIN_EMAILS may only *promote*. Never let the per-request env-derived
+  // role clobber a higher role assigned through the admin UI (e.g. `mod`),
+  // otherwise those roles silently reset on the user's next request.
+  const mergedRole = mergeRole(row.role, role);
+  if (row.role !== mergedRole) next.role = mergedRole;
   // Un-soft-delete if the user came back.
   if (row.deletedAt) next.deletedAt = null;
 
@@ -192,6 +196,17 @@ function computeRole(email: string | null): "user" | "admin" {
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean);
   return admins.includes(email.toLowerCase()) ? "admin" : "user";
+}
+
+const ROLE_RANK: Record<string, number> = { user: 0, mod: 1, admin: 2 };
+
+/**
+ * Return whichever of the existing DB role and the env-derived role is
+ * higher-privileged. Keeps ADMIN_EMAILS as a one-way bootstrap and prevents
+ * it from demoting admin-UI-assigned `mod`/`admin` rows.
+ */
+function mergeRole(current: string, envRole: "user" | "admin"): string {
+  return (ROLE_RANK[envRole] ?? 0) > (ROLE_RANK[current] ?? 0) ? envRole : current;
 }
 
 /**

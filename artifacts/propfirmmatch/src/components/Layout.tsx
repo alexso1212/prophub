@@ -1,9 +1,10 @@
 import { Link, useLocation } from "wouter";
-import { ReactNode, useEffect, useState, FormEvent } from "react";
+import { ReactNode, useEffect, useRef, useState, FormEvent } from "react";
+import { createPortal } from "react-dom";
 import { Show, UserButton } from "@clerk/react";
 import type { Category } from "../contexts/CategoryContext";
 import {
-  SparkleIcon, SearchIcon, BookIcon, GiftIcon, TvIcon, HeartIcon,
+  SparkleIcon, SearchIcon, BookIcon, GiftIcon, TvIcon,
   ChartIcon, BitcoinIcon,
 } from "./icons";
 import SupportWidget from "./SupportWidget";
@@ -12,23 +13,32 @@ import { useBilibiliLiveStatus } from "../hooks/useBilibiliLiveStatus";
 
 const BILIBILI_ROOM_ID = "1874453448";
 
-function buildNav(cat: Category) {
+interface NavItem { to: string; label: string; }
+
+// 极简导航：只在顶部留 5 个核心入口，其余收进右侧抽屉，
+// 让顶部跟鱼骨图首页的干净感一致。
+function buildNav(cat: Category): { primary: NavItem[]; more: NavItem[] } {
   const p = `/${cat}`;
-  return [
-    { to: `${p}/all-prop-firms`,        label: "首页" },
-    { to: `${p}/exclusive-offers`,      label: "限时优惠" },
-    { to: `${p}/prop-firm-challenges`,  label: "挑战赛" },
-    { to: `${p}/best-sellers`,          label: "热销榜" },
-    { to: `${p}/prop-firm-reviews`,     label: "用户评价" },
-    { to: `${p}/favorite-firms`,        label: "我的收藏" },
-    { to: `${p}/prop-firm-rules`,       label: "规则手册" },
-    { to: `${p}/payouts`,               label: "出金记录" },
-    { to: `${p}/payouts-leaderboard`,   label: "出金排行" },
-    { to: `${p}/brokers`,               label: "合作经纪" },
-    { to: `${p}/news`,                  label: "行业新闻" },
-    { to: `/knowledge`,                 label: "知识图谱" },
-    { to: `/community`,                 label: "社区" },
-  ];
+  return {
+    primary: [
+      { to: p,                          label: "首页" },
+      { to: `${p}/all-prop-firms`,      label: "全部公司" },
+      { to: `${p}/exclusive-offers`,    label: "限时优惠" },
+      { to: `${p}/prop-firm-reviews`,   label: "用户评价" },
+      { to: `/community`,               label: "社区" },
+    ],
+    more: [
+      { to: `${p}/prop-firm-challenges`, label: "挑战赛" },
+      { to: `${p}/best-sellers`,         label: "热销榜" },
+      { to: `${p}/prop-firm-rules`,      label: "规则手册" },
+      { to: `${p}/payouts`,              label: "出金记录" },
+      { to: `${p}/payouts-leaderboard`,  label: "出金排行" },
+      { to: `${p}/brokers`,              label: "合作经纪" },
+      { to: `${p}/news`,                 label: "行业新闻" },
+      { to: `/knowledge`,                label: "知识图谱" },
+      { to: `${p}/favorite-firms`,       label: "我的收藏" },
+    ],
+  };
 }
 
 const LIVE_TEXT: Record<Category, string> = {
@@ -44,8 +54,22 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [supportOpen, setSupportOpen] = useState(false);
   const [communityUnread, setCommunityUnread] = useState(0);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [morePos, setMorePos] = useState<{ top: number; right: number } | null>(null);
+  const moreBtnRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => { setMobileOpen(false); setDrawerOpen(false); setSupportOpen(false); }, [path]);
+  useEffect(() => { setMobileOpen(false); setDrawerOpen(false); setSupportOpen(false); setMoreOpen(false); }, [path]);
+
+  const toggleMore = () => {
+    setMoreOpen(o => {
+      const next = !o;
+      if (next && moreBtnRef.current) {
+        const r = moreBtnRef.current.getBoundingClientRect();
+        setMorePos({ top: r.bottom + 6, right: Math.max(8, window.innerWidth - r.right) });
+      }
+      return next;
+    });
+  };
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -68,8 +92,8 @@ export default function Layout({ children }: { children: ReactNode }) {
     : path.startsWith("/crypto") ? "crypto"
     : "futures";
 
-  const NAV = buildNav(activeCategory);
-  const homePath = `/${activeCategory}/all-prop-firms`;
+  const { primary: NAV, more: MORE } = buildNav(activeCategory);
+  const homePath = `/${activeCategory}`;
   const liveInfo = useBilibiliLiveStatus(BILIBILI_ROOM_ID);
   const isLive = liveInfo.status === "live";
   const isRerun = liveInfo.status === "rerun";
@@ -79,6 +103,17 @@ export default function Layout({ children }: { children: ReactNode }) {
     return path === to;
   };
 
+  // 极简首页：进入"沉浸模式"，去掉全站 chrome（横幅/导航/页脚/客服），
+  // 整屏只留鱼骨图；导航全部交给鱼骨图自身的 CTA。其余页面保留完整布局。
+  const bareHome =
+    path === "/" ||
+    path === "/futures" ||
+    path === "/forex" ||
+    path === "/crypto";
+  if (bareHome) {
+    return <div className="bare-home">{children}</div>;
+  }
+
   return (
     <>
       <div className="top-bar">
@@ -87,46 +122,33 @@ export default function Layout({ children }: { children: ReactNode }) {
         <Link className="check-now" href={`/${activeCategory}/giveaways`}>立即查看</Link>
       </div>
 
-      <div
-        className="live-bar"
-        style={!isLive ? { background: "#1f2937", color: "#cbd5e1" } : undefined}
-      >
-        <span
-          className="live-pill"
-          style={
-            isLive
-              ? undefined
-              : {
-                  background: isRerun ? "#475569" : "#334155",
-                  color: "#e2e8f0",
-                }
-          }
+      {(isLive || isRerun) && (
+        <div
+          className="live-bar"
+          style={isRerun ? { background: "#1f2937", color: "#cbd5e1" } : undefined}
         >
-          {isLive ? (
-            <>
-              <span className="live-dot" />LIVE
-            </>
-          ) : isRerun ? (
-            "轮播"
-          ) : liveInfo.status === "loading" ? (
-            "···"
-          ) : (
-            "未开播"
-          )}
-        </span>
-        <span className="live-msg">
-          {isLive
-            ? `${LIVE_TEXT[activeCategory]} · 主持人正在解读盘面`
-            : isRerun
-              ? `${LIVE_TEXT[activeCategory]} · 当前为往期回放轮播`
-              : liveInfo.status === "loading"
-                ? "正在获取直播状态…"
-                : `主播暂未开播 · ${LIVE_TEXT[activeCategory].replace("正在交易", "")}频道`}
-        </span>
-        <Link className="live-cta" href={`/${activeCategory}/live`}>
-          {isLive ? "立即观看" : isRerun ? "进入回放" : "关注开播"}
-        </Link>
-      </div>
+          <span
+            className="live-pill"
+            style={isRerun ? { background: "#475569", color: "#e2e8f0" } : undefined}
+          >
+            {isLive ? (
+              <>
+                <span className="live-dot" />LIVE
+              </>
+            ) : (
+              "轮播"
+            )}
+          </span>
+          <span className="live-msg">
+            {isLive
+              ? `${LIVE_TEXT[activeCategory]} · 主持人正在解读盘面`
+              : `${LIVE_TEXT[activeCategory]} · 当前为往期回放轮播`}
+          </span>
+          <Link className="live-cta" href={`/${activeCategory}/live`}>
+            {isLive ? "立即观看" : "进入回放"}
+          </Link>
+        </div>
+      )}
 
       <header className="header">
         <Link href={homePath} className="logo" aria-label="Prophub · PF 群英 首页">
@@ -160,9 +182,9 @@ export default function Layout({ children }: { children: ReactNode }) {
         </form>
 
         <div className="tabs-pill">
-          <Link href="/forex/all-prop-firms" className={`tab ${activeCategory === "forex" ? "active" : ""}`}>外汇</Link>
-          <Link href="/futures/all-prop-firms" className={`tab ${activeCategory === "futures" ? "active" : ""}`}>期货</Link>
-          <Link href="/crypto/all-prop-firms" className={`tab ${activeCategory === "crypto" ? "active" : ""}`}>加密<span className="badge-new">新</span></Link>
+          <Link href="/forex" className={`tab ${activeCategory === "forex" ? "active" : ""}`}>外汇</Link>
+          <Link href="/futures" className={`tab ${activeCategory === "futures" ? "active" : ""}`}>期货</Link>
+          <Link href="/crypto" className={`tab ${activeCategory === "crypto" ? "active" : ""}`}>加密<span className="badge-new">新</span></Link>
         </div>
 
         <div className="header-right">
@@ -199,9 +221,9 @@ export default function Layout({ children }: { children: ReactNode }) {
 
       {/* mobile underline tab strip duplicated for ≤768 */}
       <div className="cat-tabs-mobile" aria-hidden={false}>
-        <Link href="/forex/all-prop-firms" className={activeCategory === "forex" ? "active" : ""}>外汇</Link>
-        <Link href="/futures/all-prop-firms" className={activeCategory === "futures" ? "active" : ""}>期货</Link>
-        <Link href="/crypto/all-prop-firms" className={activeCategory === "crypto" ? "active" : ""}>
+        <Link href="/forex" className={activeCategory === "forex" ? "active" : ""}>外汇</Link>
+        <Link href="/futures" className={activeCategory === "futures" ? "active" : ""}>期货</Link>
+        <Link href="/crypto" className={activeCategory === "crypto" ? "active" : ""}>
           加密<span className="badge-new" style={{ marginLeft: 4 }}>新</span>
         </Link>
       </div>
@@ -230,11 +252,14 @@ export default function Layout({ children }: { children: ReactNode }) {
             <Link className="drawer-link" href="/tutorials"><BookIcon size={14} /> 教程</Link>
             <Link className="drawer-link" href={`/${activeCategory}/giveaways`}><GiftIcon size={14} /> 免费抽奖</Link>
             <Link className="drawer-link" href={`/${activeCategory}/live`}><TvIcon size={14} /> 直播间</Link>
-            <Link className="drawer-link" href={`/${activeCategory}/favorite-firms`}><HeartIcon size={14} /> 我的收藏</Link>
+            <div className="drawer-section">更多功能</div>
+            {MORE.map(n => (
+              <Link key={n.to} className="drawer-link" href={n.to}>{n.label}</Link>
+            ))}
             <div className="drawer-section">板块</div>
-            <Link className="drawer-link" href="/forex/all-prop-firms">外汇</Link>
-            <Link className="drawer-link" href="/futures/all-prop-firms">期货</Link>
-            <Link className="drawer-link" href="/crypto/all-prop-firms">加密 <span className="badge-new" style={{ marginLeft: 4 }}>新</span></Link>
+            <Link className="drawer-link" href="/forex">外汇</Link>
+            <Link className="drawer-link" href="/futures">期货</Link>
+            <Link className="drawer-link" href="/crypto">加密 <span className="badge-new" style={{ marginLeft: 4 }}>新</span></Link>
             <div className="drawer-section">主题</div>
             <div style={{ padding: "8px 16px" }}><ThemeToggle /></div>
           </aside>
@@ -254,7 +279,58 @@ export default function Layout({ children }: { children: ReactNode }) {
             )}
           </Link>
         ))}
+        <button
+          ref={moreBtnRef}
+          type="button"
+          className="subnav-more"
+          aria-label="更多入口"
+          aria-expanded={moreOpen}
+          onClick={toggleMore}
+          style={{ background: "none", border: 0, color: "inherit", font: "inherit", cursor: "pointer", whiteSpace: "nowrap" }}
+        >
+          更多 ▾
+        </button>
       </nav>
+
+      {moreOpen && morePos && createPortal(
+        <>
+          <div
+            onClick={() => setMoreOpen(false)}
+            style={{ position: "fixed", inset: 0, zIndex: 60 }}
+            aria-hidden="true"
+          />
+          <div
+            role="menu"
+            style={{
+              position: "fixed",
+              top: morePos.top,
+              right: morePos.right,
+              zIndex: 61,
+              background: "#161b29",
+              border: "1px solid rgba(255,255,255,0.14)",
+              borderRadius: 10,
+              padding: 6,
+              minWidth: 168,
+              boxShadow: "0 10px 28px rgba(0,0,0,0.45)",
+              display: "grid",
+              gap: 2,
+            }}
+          >
+            {MORE.map(n => (
+              <Link
+                key={n.to}
+                href={n.to}
+                role="menuitem"
+                onClick={() => setMoreOpen(false)}
+                style={{ padding: "8px 12px", borderRadius: 6, color: "var(--text, #e2e8f0)", fontSize: 14, whiteSpace: "nowrap", textDecoration: "none" }}
+              >
+                {n.label}
+              </Link>
+            ))}
+          </div>
+        </>,
+        document.body,
+      )}
 
       {activeCategory !== "futures" && (
         <div className="demo-banner" role="status">

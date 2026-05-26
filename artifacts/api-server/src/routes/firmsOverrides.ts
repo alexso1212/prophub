@@ -3,6 +3,7 @@ import { db } from "@workspace/db";
 import { firmOverridesTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import { requireAdmin } from "../lib/requireAdmin";
+import { isHttpUrl } from "../lib/safeFetch";
 
 // NOTE: `firm_overrides` is the legacy public-facing override layer used by
 // the static `firms.ts` catalog for marketing tweaks. The new `firms` /
@@ -40,7 +41,15 @@ router.patch("/admin/firms/:slug", requireAdmin, async (req, res) => {
   const updateData: Partial<typeof firmOverridesTable.$inferInsert> = {
     updatedAt: new Date(),
   };
-  if (affiliateUrl !== undefined) updateData.affiliateUrl = affiliateUrl || null;
+  if (affiliateUrl !== undefined) {
+    // Block non-http(s) schemes (e.g. javascript:) — this value is later fed
+    // straight into window.location.assign on the public /go/:slug page.
+    if (affiliateUrl && !isHttpUrl(String(affiliateUrl))) {
+      res.status(400).json({ error: "affiliateUrl must be an http(s) URL" });
+      return;
+    }
+    updateData.affiliateUrl = affiliateUrl || null;
+  }
   if (promoCode !== undefined) updateData.promoCode = promoCode;
   if (promoPercent !== undefined) updateData.promoPercent = Number(promoPercent);
   if (promoLabel !== undefined) updateData.promoLabel = promoLabel || null;

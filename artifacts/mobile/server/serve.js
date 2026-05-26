@@ -35,6 +35,23 @@ const MIME_TYPES = {
   ".map": "application/json",
 };
 
+function htmlEscape(value) {
+  return String(value).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
+  );
+}
+
+// Host headers are attacker-controllable. Accept only plausible hostnames
+// (letters, digits, dot, dash, optional :port) so a crafted Host /
+// X-Forwarded-Host can't inject markup or poison generated deep links.
+function sanitizeHost(raw) {
+  const first = Array.isArray(raw) ? raw[0] : String(raw || "");
+  const candidate = first.split(",")[0].trim();
+  return /^[a-zA-Z0-9.\-:]+$/.test(candidate) ? candidate : "";
+}
+
 function getAppName() {
   try {
     const appJsonPath = path.resolve(__dirname, "..", "app.json");
@@ -66,16 +83,22 @@ function serveManifest(platform, res) {
 }
 
 function serveLandingPage(req, res, landingPageTemplate, appName) {
-  const forwardedProto = req.headers["x-forwarded-proto"];
-  const protocol = forwardedProto || "https";
-  const host = req.headers["x-forwarded-host"] || req.headers["host"];
+  const forwardedProto = String(req.headers["x-forwarded-proto"] || "")
+    .split(",")[0]
+    .trim();
+  const protocol = forwardedProto === "http" ? "http" : "https";
+  const host = sanitizeHost(
+    req.headers["x-forwarded-host"] || req.headers["host"],
+  );
   const baseUrl = `${protocol}://${host}`;
   const expsUrl = `${host}`;
 
+  // Values flow into HTML — escape them so a hostile Host header can't break
+  // out of attribute/text context and inject script.
   const html = landingPageTemplate
-    .replace(/BASE_URL_PLACEHOLDER/g, baseUrl)
-    .replace(/EXPS_URL_PLACEHOLDER/g, expsUrl)
-    .replace(/APP_NAME_PLACEHOLDER/g, appName);
+    .replace(/BASE_URL_PLACEHOLDER/g, htmlEscape(baseUrl))
+    .replace(/EXPS_URL_PLACEHOLDER/g, htmlEscape(expsUrl))
+    .replace(/APP_NAME_PLACEHOLDER/g, htmlEscape(appName));
 
   res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
   res.end(html);
