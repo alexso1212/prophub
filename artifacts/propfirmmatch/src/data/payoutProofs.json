@@ -1,0 +1,825 @@
+{
+  "funding-pips": {
+    "url": "https://propfirmmatch.com/payouts/funding-pips",
+    "count": 6,
+    "records": [
+      {
+        "date": "May 16, 2026",
+        "amount": 420,
+        "accountSize": 50000,
+        "returnPct": 0.84,
+        "waitingTime": "about 13 hours"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 2541,
+        "accountSize": 100000,
+        "returnPct": 2.54,
+        "waitingTime": "about 15 hours"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 7035,
+        "accountSize": 200000,
+        "returnPct": 3.52,
+        "waitingTime": "about 16 hours"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 831,
+        "accountSize": 50000,
+        "returnPct": 1.66,
+        "waitingTime": "about 17 hours"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 418,
+        "accountSize": 50000,
+        "returnPct": 0.84,
+        "waitingTime": "about 17 hours"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 817,
+        "accountSize": 50000,
+        "returnPct": 1.63,
+        "waitingTime": "about 13 hours"
+      }
+    ],
+    "methods": [
+      "银行电汇",
+      "Visa Direct",
+      "Mastercard",
+      "加密货币 (USDT/USDC)",
+      "Riseworks"
+    ],
+    "methodsSourceUrl": "https://fundingpips.com/",
+    "screenshotPath": "/payout-proofs/funding-pips.png"
+  },
+  "fundednext": {
+    "url": "https://propfirmmatch.com/payouts/fundednext",
+    "count": 6,
+    "records": [
+      {
+        "date": "May 16, 2026",
+        "amount": 47,
+        "accountSize": 5000,
+        "returnPct": 0.94,
+        "waitingTime": "2 minutes"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 54,
+        "accountSize": 6000,
+        "returnPct": 0.9,
+        "waitingTime": "less than a minute"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 46,
+        "accountSize": 6000,
+        "returnPct": 0.77,
+        "waitingTime": "less than a minute"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 41,
+        "accountSize": 6000,
+        "returnPct": 0.68,
+        "waitingTime": "2 minutes"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 90,
+        "accountSize": 6000,
+        "returnPct": 1.5,
+        "waitingTime": "2 minutes"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 7,
+        "accountSize": 6000,
+        "returnPct": 0.12,
+        "waitingTime": "2 minutes"
+      }
+    ],
+    "methods": [
+      "USDT (ERC20/TRC20)",
+      "USDC (ERC20)",
+      "Confirmo",
+      "RiseWorks"
+    ],
+    "methodsSourceUrl": "https://help.fundednext.com/en/articles/8020089-what-are-the-available-payment-methods",
+    "screenshotPath": "/payout-proofs/fundednext.png"
+  },
+  "fundednext-futures": {
+    "url": "https://propfirmmatch.com/futures/payouts/fundednext-futures",
+    "count": 6,
+    "records": [
+      {
+        "date": "May 16, 2026",
+        "amount": 49200,
+        "accountSize": 25000,
+        "returnPct": 196.8,
+        "waitingTime": "12 minutes"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 202,
+        "accountSize": 25000,
+        "returnPct": 0.81,
+        "waitingTime": "27 minutes"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 2000,
+        "accountSize": 100000,
+        "returnPct": 2,
+        "waitingTime": "9 minutes"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 240,
+        "accountSize": 50000,
+        "returnPct": 0.48,
+        "waitingTime": "10 minutes"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 404,
+        "accountSize": 50000,
+        "returnPct": 0.81,
+        "waitingTime": "7 minutes"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 960,
+        "accountSize": 50000,
+        "returnPct": 1.92,
+        "waitingTime": "7 minutes"
+      }
+    ],
+    "methods": [
+      "BTC",
+      "ETH",
+      "LTC",
+      "DOGE",
+      "SOL",
+      "USDT (TRC20/ERC20)",
+      "USDC (ERC20)"
+    ],
+    "methodsSourceUrl": "https://help.fundednext.com/en/articles/8020089-what-are-the-available-payment-methods",
+    "screenshotPath": "/payout-proofs/fundednext-futures.png"
+  },
+  "goat-funded-trader": {
+    "url": "https://propfirmmatch.com/payouts/goat-funded-trader",
+    "count": 6,
+    "records": [
+      {
+        "date": "May 14, 2026",
+        "amount": 2060,
+        "accountSize": 100000,
+        "returnPct": 2.06,
+        "waitingTime": "N/A"
+      },
+      {
+        "date": "May 14, 2026",
+        "amount": 124,
+        "accountSize": 25000,
+        "returnPct": 0.49,
+        "waitingTime": "N/A"
+      },
+      {
+        "date": "May 14, 2026",
+        "amount": 245,
+        "accountSize": 5000,
+        "returnPct": 4.9,
+        "waitingTime": "3 days"
+      },
+      {
+        "date": "May 14, 2026",
+        "amount": 249,
+        "accountSize": 5000,
+        "returnPct": 4.97,
+        "waitingTime": "3 days"
+      },
+      {
+        "date": "May 13, 2026",
+        "amount": 828,
+        "accountSize": 25000,
+        "returnPct": 3.31,
+        "waitingTime": "N/A"
+      },
+      {
+        "date": "May 13, 2026",
+        "amount": 85,
+        "accountSize": 1000,
+        "returnPct": 8.46,
+        "waitingTime": "N/A"
+      }
+    ],
+    "methods": [
+      "Rise (Riseworks)",
+      "BTC",
+      "ETH",
+      "USDT",
+      "Skrill"
+    ],
+    "methodsSourceUrl": "https://www.goatfundedtrader.com/rewards",
+    "screenshotPath": "/payout-proofs/goat-funded-trader.png"
+  },
+  "funded-futures-family": {
+    "url": "https://propfirmmatch.com/futures/payouts/funded-futures-family",
+    "count": 6,
+    "records": [
+      {
+        "date": "May 15, 2026",
+        "amount": 1284,
+        "accountSize": 50000,
+        "returnPct": 2.57,
+        "waitingTime": "7 days"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 2000,
+        "accountSize": 50000,
+        "returnPct": 4,
+        "waitingTime": "14 days"
+      },
+      {
+        "date": "May 14, 2026",
+        "amount": 2000,
+        "accountSize": 50000,
+        "returnPct": 4,
+        "waitingTime": "24 days"
+      },
+      {
+        "date": "May 14, 2026",
+        "amount": 2500,
+        "accountSize": 100000,
+        "returnPct": 2.5,
+        "waitingTime": "10 days"
+      },
+      {
+        "date": "May 13, 2026",
+        "amount": 2000,
+        "accountSize": 50000,
+        "returnPct": 4,
+        "waitingTime": "5 days"
+      },
+      {
+        "date": "May 13, 2026",
+        "amount": 1110,
+        "accountSize": 25000,
+        "returnPct": 4.44,
+        "waitingTime": "5 days"
+      }
+    ],
+    "methods": [
+      "Rise (Riseworks)"
+    ],
+    "methodsSourceUrl": "https://intercom.help/funded-futures-family/en/articles/10115141-payout-policies-and-requirements",
+    "screenshotPath": "/payout-proofs/funded-futures-family.png"
+  },
+  "top-one-futures": {
+    "url": "https://propfirmmatch.com/futures/payouts/top-one-futures",
+    "count": 6,
+    "records": [
+      {
+        "date": "May 16, 2026",
+        "amount": 369,
+        "accountSize": 2500,
+        "returnPct": 14.75,
+        "waitingTime": "about 13 hours"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 831,
+        "accountSize": 13000,
+        "returnPct": 6.39,
+        "waitingTime": "about 13 hours"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 800,
+        "accountSize": 10000,
+        "returnPct": 8,
+        "waitingTime": "about 16 hours"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 1601,
+        "accountSize": 10000,
+        "returnPct": 16.01,
+        "waitingTime": "about 20 hours"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 1300,
+        "accountSize": 100000,
+        "returnPct": 1.3,
+        "waitingTime": "1 day"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 450,
+        "accountSize": 50000,
+        "returnPct": 0.9,
+        "waitingTime": "about 3 hours"
+      }
+    ],
+    "methods": [
+      "Rise (Riseworks)"
+    ],
+    "methodsSourceUrl": "https://help.toponefutures.com/en/collections/12160307-payouts",
+    "screenshotPath": "/payout-proofs/top-one-futures.png"
+  },
+  "e8-markets": {
+    "url": "https://propfirmmatch.com/payouts/e8-markets",
+    "count": 6,
+    "records": [
+      {
+        "date": "May 15, 2026",
+        "amount": 1024,
+        "accountSize": 50000,
+        "returnPct": 2.05,
+        "waitingTime": "3 days"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 6003,
+        "accountSize": 200000,
+        "returnPct": 3,
+        "waitingTime": "about 9 hours"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 12000,
+        "accountSize": 500000,
+        "returnPct": 2.4,
+        "waitingTime": "about 12 hours"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 15000,
+        "accountSize": 400000,
+        "returnPct": 3.75,
+        "waitingTime": "about 22 hours"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 1326,
+        "accountSize": 50000,
+        "returnPct": 2.65,
+        "waitingTime": "about 11 hours"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 1440,
+        "accountSize": 50000,
+        "returnPct": 2.88,
+        "waitingTime": "about 17 hours"
+      }
+    ],
+    "methods": [
+      "Plane (银行转账)",
+      "Rise (Riseworks)"
+    ],
+    "methodsSourceUrl": "https://help.e8markets.com/en/articles/9448411-what-are-the-payout-methods",
+    "screenshotPath": "/payout-proofs/e8-markets.png"
+  },
+  "brightfunded": {
+    "url": "https://propfirmmatch.com/payouts/brightfunded",
+    "count": 6,
+    "records": [
+      {
+        "date": "May 16, 2026",
+        "amount": 16074,
+        "accountSize": 200000,
+        "returnPct": 8.04,
+        "waitingTime": "1 day"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 16019,
+        "accountSize": 200000,
+        "returnPct": 8.01,
+        "waitingTime": "1 day"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 1627,
+        "accountSize": 50000,
+        "returnPct": 3.25,
+        "waitingTime": "about 11 hours"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 1791,
+        "accountSize": 100000,
+        "returnPct": 1.79,
+        "waitingTime": "1 day"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 929,
+        "accountSize": 100000,
+        "returnPct": 0.93,
+        "waitingTime": "1 day"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 2002,
+        "accountSize": 100000,
+        "returnPct": 2,
+        "waitingTime": "about 22 hours"
+      }
+    ],
+    "methods": [
+      "USDC (ERC-20)",
+      "EUR 银行转账"
+    ],
+    "methodsSourceUrl": "https://brightfunded.com/",
+    "screenshotPath": "/payout-proofs/brightfunded.png"
+  },
+  "e8-futures": {
+    "url": "https://propfirmmatch.com/futures/payouts/e8-futures",
+    "count": 6,
+    "records": [
+      {
+        "date": "May 14, 2026",
+        "amount": 981,
+        "accountSize": 50000,
+        "returnPct": 1.96,
+        "waitingTime": "1 day"
+      },
+      {
+        "date": "May 14, 2026",
+        "amount": 981,
+        "accountSize": 50000,
+        "returnPct": 1.96,
+        "waitingTime": "1 day"
+      },
+      {
+        "date": "May 14, 2026",
+        "amount": 981,
+        "accountSize": 50000,
+        "returnPct": 1.96,
+        "waitingTime": "1 day"
+      },
+      {
+        "date": "May 14, 2026",
+        "amount": 981,
+        "accountSize": 50000,
+        "returnPct": 1.96,
+        "waitingTime": "1 day"
+      },
+      {
+        "date": "May 14, 2026",
+        "amount": 981,
+        "accountSize": 50000,
+        "returnPct": 1.96,
+        "waitingTime": "1 day"
+      },
+      {
+        "date": "May 14, 2026",
+        "amount": 1000,
+        "accountSize": 50000,
+        "returnPct": 2,
+        "waitingTime": "about 9 hours"
+      }
+    ],
+    "methods": [
+      "Plane (银行转账)",
+      "Rise (Riseworks)"
+    ],
+    "methodsSourceUrl": "https://help.e8markets.com/en/articles/9448411-what-are-the-payout-methods",
+    "screenshotPath": "/payout-proofs/e8-futures.png"
+  },
+  "crypto-fund-trader": {
+    "url": "https://propfirmmatch.com/payouts/crypto-fund-trader",
+    "count": 6,
+    "records": [
+      {
+        "date": "May 16, 2026",
+        "amount": 2403,
+        "accountSize": 100000,
+        "returnPct": 2.4,
+        "waitingTime": "15 minutes"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 504,
+        "accountSize": 10000,
+        "returnPct": 5.04,
+        "waitingTime": "about 11 hours"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 3358,
+        "accountSize": 100000,
+        "returnPct": 3.36,
+        "waitingTime": "about 2 hours"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 1454,
+        "accountSize": 100000,
+        "returnPct": 1.45,
+        "waitingTime": "about 3 hours"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 205,
+        "accountSize": 5000,
+        "returnPct": 4.11,
+        "waitingTime": "about 2 hours"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 1488,
+        "accountSize": 100000,
+        "returnPct": 1.49,
+        "waitingTime": "about 14 hours"
+      }
+    ],
+    "methods": [
+      "USDT",
+      "USDC",
+      "BTC",
+      "Wise",
+      "银行转账"
+    ],
+    "methodsSourceUrl": "https://propfirmmatch.com/prop-firms/crypto-fund-trader",
+    "screenshotPath": "/payout-proofs/crypto-fund-trader.png"
+  },
+  "blueberry-funded": {
+    "url": "https://propfirmmatch.com/payouts/blueberry-funded",
+    "count": 6,
+    "records": [
+      {
+        "date": "May 13, 2026",
+        "amount": 115,
+        "accountSize": 5000,
+        "returnPct": 2.3,
+        "waitingTime": "about 8 hours"
+      },
+      {
+        "date": "May 13, 2026",
+        "amount": 82,
+        "accountSize": 5000,
+        "returnPct": 1.65,
+        "waitingTime": "about 9 hours"
+      },
+      {
+        "date": "May 13, 2026",
+        "amount": 95,
+        "accountSize": 5000,
+        "returnPct": 1.9,
+        "waitingTime": "about 9 hours"
+      },
+      {
+        "date": "May 13, 2026",
+        "amount": 1610,
+        "accountSize": 25000,
+        "returnPct": 6.44,
+        "waitingTime": "about 10 hours"
+      },
+      {
+        "date": "May 13, 2026",
+        "amount": 798,
+        "accountSize": 25000,
+        "returnPct": 3.19,
+        "waitingTime": "about 10 hours"
+      },
+      {
+        "date": "May 13, 2026",
+        "amount": 80,
+        "accountSize": 5000,
+        "returnPct": 1.6,
+        "waitingTime": "about 12 hours"
+      }
+    ],
+    "methods": [
+      "加密货币 USDC/USDT (TRC-20)",
+      "Rise (Riseworks)",
+      "Blueberry Markets"
+    ],
+    "methodsSourceUrl": "https://help.blueberryfunded.com/en/articles/12136624-payout-structure",
+    "screenshotPath": "/payout-proofs/blueberry-funded.png"
+  },
+  "finotive-funding": {
+    "url": "https://propfirmmatch.com/payouts/finotive-funding",
+    "count": 6,
+    "records": [
+      {
+        "date": "May 16, 2026",
+        "amount": 104,
+        "accountSize": 10000,
+        "returnPct": 1.04,
+        "waitingTime": "less than a minute"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 113,
+        "accountSize": 10000,
+        "returnPct": 1.13,
+        "waitingTime": "less than a minute"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 126,
+        "accountSize": 10000,
+        "returnPct": 1.26,
+        "waitingTime": "less than a minute"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 362,
+        "accountSize": 25000,
+        "returnPct": 1.45,
+        "waitingTime": "less than a minute"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 104,
+        "accountSize": 10500,
+        "returnPct": 0.99,
+        "waitingTime": "less than a minute"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 232,
+        "accountSize": 10000,
+        "returnPct": 2.32,
+        "waitingTime": "less than a minute"
+      }
+    ],
+    "methods": [
+      "Finotive Pay (加密/银行转账)"
+    ],
+    "methodsSourceUrl": "https://finotivefunding.com/payouts",
+    "screenshotPath": "/payout-proofs/finotive-funding.png"
+  },
+  "hantec-trader": {
+    "url": "https://propfirmmatch.com/payouts/hantec-trader",
+    "count": 6,
+    "records": [
+      {
+        "date": "May 16, 2026",
+        "amount": 781,
+        "accountSize": 25000,
+        "returnPct": 3.12,
+        "waitingTime": "1 day"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 2766,
+        "accountSize": 100000,
+        "returnPct": 2.77,
+        "waitingTime": "1 day"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 537,
+        "accountSize": 5000,
+        "returnPct": 10.75,
+        "waitingTime": "2 days"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 2542,
+        "accountSize": 100000,
+        "returnPct": 2.54,
+        "waitingTime": "1 day"
+      },
+      {
+        "date": "May 16, 2026",
+        "amount": 455,
+        "accountSize": 50000,
+        "returnPct": 0.91,
+        "waitingTime": "1 day"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 1,
+        "accountSize": 25000,
+        "returnPct": 0,
+        "waitingTime": "3 minutes"
+      }
+    ],
+    "methods": [
+      "银行电汇",
+      "PayPal",
+      "加密货币"
+    ],
+    "methodsSourceUrl": "https://www.hantec.com/eu/en/trading/trading-condition/deposit-withdrawal.html",
+    "screenshotPath": "/payout-proofs/hantec-trader.png"
+  },
+  "top-one-trader": {
+    "url": "https://propfirmmatch.com/payouts/top-one-trader",
+    "count": 6,
+    "records": [
+      {
+        "date": "May 16, 2026",
+        "amount": 252,
+        "accountSize": 5000,
+        "returnPct": 5.04,
+        "waitingTime": "about 3 hours"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 880,
+        "accountSize": 25000,
+        "returnPct": 3.52,
+        "waitingTime": "42 minutes"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 96,
+        "accountSize": 5000,
+        "returnPct": 1.92,
+        "waitingTime": "1 day"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 1669,
+        "accountSize": 50000,
+        "returnPct": 3.34,
+        "waitingTime": "8 minutes"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 249,
+        "accountSize": 5000,
+        "returnPct": 4.98,
+        "waitingTime": "about 1 hour"
+      },
+      {
+        "date": "May 14, 2026",
+        "amount": 81,
+        "accountSize": 5000,
+        "returnPct": 1.62,
+        "waitingTime": "7 minutes"
+      }
+    ],
+    "methods": [
+      "Rise (Riseworks)"
+    ],
+    "methodsSourceUrl": "https://help.toponetrader.com/en/articles/8466922-what-are-the-payout-methods",
+    "screenshotPath": "/payout-proofs/top-one-trader.png"
+  },
+  "fundedelite": {
+    "url": "https://propfirmmatch.com/payouts/fundedelite",
+    "count": 6,
+    "records": [
+      {
+        "date": "May 16, 2026",
+        "amount": 2797,
+        "accountSize": 200000,
+        "returnPct": 1.4,
+        "waitingTime": "about 14 hours"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 67,
+        "accountSize": 5000,
+        "returnPct": 1.33,
+        "waitingTime": "about 10 hours"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 30,
+        "accountSize": 10000,
+        "returnPct": 0.3,
+        "waitingTime": "19 minutes"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 63,
+        "accountSize": 5000,
+        "returnPct": 1.26,
+        "waitingTime": "24 minutes"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 179,
+        "accountSize": 10000,
+        "returnPct": 1.79,
+        "waitingTime": "23 minutes"
+      },
+      {
+        "date": "May 15, 2026",
+        "amount": 189,
+        "accountSize": 25000,
+        "returnPct": 0.76,
+        "waitingTime": "31 minutes"
+      }
+    ],
+    "methods": [
+      "Rise (Riseworks)"
+    ],
+    "methodsSourceUrl": "https://app.fundedelite.com/dashboard/payouts",
+    "screenshotPath": "/payout-proofs/fundedelite.png"
+  }
+}

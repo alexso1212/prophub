@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "ILVx4ktiGDgqopVS9zBJ6"
+uri = "file://artifacts/mobile/assets/images/icon.png"
+type = "image"
+title = "prop firm match icon"

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Prophub · PF 群英 — 自营交易公司大全</title>
+    <meta name="description" content="Prophub · PF 群英 — 一站对比期货、外汇、加密自营交易公司挑战赛、规则、出金与折扣。" />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="Prophub · PF 群英" />
+    <meta property="og:description" content="Prophub · PF 群英 — 一站对比期货、外汇、加密自营交易公司。" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Prophub · PF 群英" />
+    <meta name="twitter:description" content="Prophub · PF 群英 — 一站对比期货、外汇、加密自营交易公司。" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('prophub-theme');
+          var resolved = t === 'light' ? 'light'
+            : t === 'dark' ? 'dark'
+            : t === 'system'
+              ? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
+              : 'dark';
+          document.documentElement.setAttribute('data-theme', resolved);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
