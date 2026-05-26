@@ -1,17 +1,16 @@
 import { useMemo, useState } from "react";
 import { Link } from "wouter";
 import GuideMapOverlay from "./GuideMapOverlay";
-import {
-  pfPlatforms,
-  DRAWDOWN_LABEL,
-  type PfPlatform,
-} from "../data/pfPlatforms";
+import { useCategoryFirms } from "../contexts/CategoryContext";
+import type { Firm } from "../data/firms";
+import { pfPlatforms, DRAWDOWN_LABEL, type PfPlatform } from "../data/pfPlatforms";
 import "../styles/myPlatform.css";
 
 /**
- * 「查我的平台」——拦截已经在别家做的人：查这家好不好、怎么过关，
- * 再露出我们的优惠码 + 福利（实盘直播 / 参赛资格）。
- * 体检与过关攻略都由平台规则字段自动组装。不承诺收益/包过。
+ * 「查我的平台」——只列 Prophub 自己收录的平台（用我们的优惠码 + /go 跳转）。
+ * 详细规则（回撤类型/一致性/分成等）按 slug 匹配内容知识库补充：匹配到的给完整
+ * 体检 + 自动过关攻略；没匹配到的给「3 条通用红线」攻略，规则以官网为准。
+ * 不承诺收益/包过。
  */
 
 const CN_LABEL: Record<string, string> = {
@@ -20,8 +19,13 @@ const CN_LABEL: Record<string, string> = {
   unknown: "中国用户状态未知",
 };
 
-function assess(p: PfPlatform) {
-  const tts = p.accountTypes;
+// slug 归一化：去非字母数字 + 去结尾 futures，用于和内容库平台对齐。
+const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "").replace(/futures$/, "");
+const ruleFor = (slug: string): PfPlatform | undefined =>
+  pfPlatforms.find((p) => norm(p.slug) === norm(slug));
+
+function assess(rule: PfPlatform) {
+  const tts = rule.accountTypes;
   const hasTdd = tts.some((a) => a.drawdownType === "tdd" || a.drawdownType === "trailing");
   const hasConsistency = tts.some((a) => a.consistencyRule);
   const maxMinDays = Math.max(0, ...tts.map((a) => a.minTradingDays || 0));
@@ -33,38 +37,38 @@ function assess(p: PfPlatform) {
   if (hasTdd) dScore++;
   if (hasConsistency) dScore++;
   if (maxMinDays >= 7) dScore++;
-  if (p.riskLevel === "high") dScore++;
+  if (rule.riskLevel === "high") dScore++;
   const difficulty = dScore >= 2 ? "高" : dScore === 1 ? "中" : "低";
 
   let nf = 0;
-  if (p.cnUserStatus === "supported") nf++;
-  if (p.riskLevel === "low") nf++;
+  if (rule.cnUserStatus === "supported") nf++;
+  if (rule.riskLevel === "low") nf++;
   if (minFee <= 150) nf++;
   if (!hasConsistency) nf++;
   const newbie = nf >= 3 ? "高" : nf >= 2 ? "中" : "低";
 
   let payout = maxSplit >= 90 && minPayout <= 500 ? "好" : maxSplit >= 80 ? "中上" : "中";
-  if (/快速出金|稳定的出金|出金记录|出金著称/.test(p.summary)) payout = "好";
+  if (/快速出金|稳定的出金|出金记录|出金著称/.test(rule.summary)) payout = "好";
 
   const pros: string[] = [];
   const cons: string[] = [];
   if (!hasConsistency) pros.push("规则灵活：无一致性规则");
   if (tts.some((a) => a.drawdownType === "static")) pros.push("回撤宽松：有静态回撤档");
   if (maxSplit >= 90) pros.push(`高分成：最高 ${maxSplit}%`);
-  if (p.paymentMethods.some((m) => /支付宝|微信/.test(m))) pros.push("付款方便：支持支付宝 / 微信");
-  if (p.cnUserStatus === "supported") pros.push("支持中国用户");
+  if (rule.paymentMethods.some((m) => /支付宝|微信/.test(m))) pros.push("付款方便：支持支付宝 / 微信");
+  if (rule.cnUserStatus === "supported") pros.push("支持中国用户");
   if (hasTdd) cons.push("回撤较严：含实时 / 追踪回撤");
   if (hasConsistency) cons.push("有一致性规则：不能靠一把大单");
-  if (p.cnUserStatus === "restricted") cons.push("中国用户可能受限");
+  if (rule.cnUserStatus === "restricted") cons.push("中国用户可能受限");
   if (maxMinDays >= 7) cons.push(`最少要交易 ${maxMinDays} 天`);
 
-  return { difficulty, newbie, payout, pros, cons };
+  return { difficulty, newbie, payout, pros, cons, cn: rule.cnUserStatus, lastVerifiedAt: rule.lastVerifiedAt };
 }
 
 interface PassLine { text: string; slug?: string }
 
-function passGuide(p: PfPlatform): PassLine[] {
-  const a = p.accountTypes[0];
+function passGuide(rule: PfPlatform): PassLine[] {
+  const a = rule.accountTypes[0];
   const lines: PassLine[] = [];
   if (a) {
     const dd: Record<string, string> = {
@@ -86,7 +90,15 @@ function passGuide(p: PfPlatform): PassLine[] {
   return lines;
 }
 
+// 没有规则数据时的通用「3 条红线」攻略。
+const GENERIC_PASS: PassLine[] = [
+  { text: "盯死回撤红线：先查清这家是日终还是实时回撤", slug: "drawdown-rules" },
+  { text: "别靠一把大单：很多平台有一致性规则", slug: "consistency-rule" },
+  { text: "收盘前平仓，别留隔夜仓", slug: "intraday-liquidation" },
+];
+
 export default function MyPlatform({ prefix }: { prefix: string }) {
+  const firms = useCategoryFirms();
   const [q, setQ] = useState("");
   const [sel, setSel] = useState<string | null>(null);
   const [openSlug, setOpenSlug] = useState<string | null>(null);
@@ -95,17 +107,18 @@ export default function MyPlatform({ prefix }: { prefix: string }) {
 
   const filtered = useMemo(() => {
     const k = q.trim().toLowerCase();
-    return k ? pfPlatforms.filter((p) => p.name.toLowerCase().includes(k) || p.slug.includes(k)) : pfPlatforms;
-  }, [q]);
+    return k ? firms.filter((f) => f.name.toLowerCase().includes(k) || f.slug.includes(k)) : firms;
+  }, [q, firms]);
 
-  const p = sel ? pfPlatforms.find((x) => x.slug === sel) ?? null : null;
-  const a = p ? assess(p) : null;
-  const lines = p ? passGuide(p) : [];
-
+  const firm: Firm | null = sel ? firms.find((f) => f.slug === sel) ?? null : null;
+  const rule = firm ? ruleFor(firm.slug) : undefined;
+  const a = rule ? assess(rule) : null;
+  const lines = rule ? passGuide(rule) : GENERIC_PASS;
+  const code = firm?.promoCode || "";
   const gc = (v: string) => (v === "低" ? "lo" : v === "中" ? "mid" : v === "好" || v === "中上" ? "good" : "hi");
 
-  const copyCode = async (code: string) => {
-    try { await navigator.clipboard?.writeText(code); setCopied(true); setTimeout(() => setCopied(false), 1600); } catch { /* ignore */ }
+  const copyCode = async (c: string) => {
+    try { await navigator.clipboard?.writeText(c); setCopied(true); setTimeout(() => setCopied(false), 1600); } catch { /* ignore */ }
   };
 
   return (
@@ -120,44 +133,52 @@ export default function MyPlatform({ prefix }: { prefix: string }) {
           onChange={(e) => setQ(e.target.value)}
         />
         <div className="mp-chips">
-          {filtered.map((x) => (
+          {filtered.slice(0, 24).map((f) => (
             <button
-              key={x.slug}
+              key={f.slug}
               type="button"
-              className={`mp-chip ${sel === x.slug ? "is-active" : ""}`}
-              onClick={() => { setSel(x.slug); setShowJoin(false); }}
+              className={`mp-chip ${sel === f.slug ? "is-active" : ""}`}
+              onClick={() => { setSel(f.slug); setShowJoin(false); }}
             >
-              {x.name}
+              {f.name}
             </button>
           ))}
-          {filtered.length === 0 && <span className="mp-empty">没找到这家？它可能还没收录，先看 <Link href={`${prefix}/all-prop-firms`}>全部公司</Link>。</span>}
+          {filtered.length === 0 && (
+            <span className="mp-empty">没找到这家？我们可能还没收录，先看 <Link href={`${prefix}/all-prop-firms`}>全部公司</Link>。</span>
+          )}
         </div>
       </div>
 
-      {p && a && (
+      {firm && (
         <div className="mp-detail">
           {/* 体检卡 */}
           <div className="mp-card">
             <div className="mp-card-top">
-              <div className="mp-name">{p.name}{p.rating != null && <span className="mp-rating">★ {p.rating}</span>}</div>
-              <span className="mp-cn">{CN_LABEL[p.cnUserStatus]}</span>
+              <div className="mp-name">{firm.name}{firm.rating != null && <span className="mp-rating">★ {firm.rating}</span>}</div>
+              {a && <span className="mp-cn">{CN_LABEL[a.cn]}</span>}
             </div>
-            <p className="mp-summary">{p.summary}</p>
-            <div className="mp-gauges">
-              <div className="mp-gauge"><span>新手友好度</span><strong className={`mp-g ${gc(a.newbie)}`}>{a.newbie}</strong></div>
-              <div className="mp-gauge"><span>考核难度</span><strong className={`mp-g ${gc(a.difficulty)}`}>{a.difficulty}</strong></div>
-              <div className="mp-gauge"><span>出金口碑</span><strong className={`mp-g ${gc(a.payout)}`}>{a.payout}</strong></div>
-            </div>
-            <div className="mp-proscons">
-              <ul className="mp-pros">{a.pros.map((s, i) => <li key={i}>✓ {s}</li>)}</ul>
-              <ul className="mp-cons">{a.cons.map((s, i) => <li key={i}>· {s}</li>)}</ul>
-            </div>
-            <div className="mp-verify">最后核验 {p.lastVerifiedAt || "—"}·规则/费用/地区限制以上游官网最新说明为准</div>
+            <p className="mp-summary">{firm.aiSummary || firm.offerDescription}</p>
+            {a ? (
+              <>
+                <div className="mp-gauges">
+                  <div className="mp-gauge"><span>新手友好度</span><strong className={`mp-g ${gc(a.newbie)}`}>{a.newbie}</strong></div>
+                  <div className="mp-gauge"><span>考核难度</span><strong className={`mp-g ${gc(a.difficulty)}`}>{a.difficulty}</strong></div>
+                  <div className="mp-gauge"><span>出金口碑</span><strong className={`mp-g ${gc(a.payout)}`}>{a.payout}</strong></div>
+                </div>
+                <div className="mp-proscons">
+                  <ul className="mp-pros">{a.pros.map((s, i) => <li key={i}>✓ {s}</li>)}</ul>
+                  <ul className="mp-cons">{a.cons.map((s, i) => <li key={i}>· {s}</li>)}</ul>
+                </div>
+                <div className="mp-verify">最后核验 {a.lastVerifiedAt || "—"}·规则/费用/地区限制以上游官网最新说明为准</div>
+              </>
+            ) : (
+              <div className="mp-verify">我们暂未录入这家的详细规则字段，过关要点见下方通用红线；具体规则、费用、地区限制以该平台官网最新说明为准。</div>
+            )}
           </div>
 
           {/* 针对该平台的过关攻略 */}
           <div className="mp-card">
-            <div className="mp-block-title">在「{p.name}」怎么过关</div>
+            <div className="mp-block-title">在「{firm.name}」怎么过关</div>
             <ul className="mp-pass">
               {lines.map((l, i) => (
                 <li key={i} className={l.slug ? "is-link" : ""}>
@@ -173,7 +194,7 @@ export default function MyPlatform({ prefix }: { prefix: string }) {
 
           {/* 我们的优惠码 + 福利 */}
           <div className="mp-card mp-offer">
-            {p.couponCode ? (
+            {code ? (
               <>
                 <div className="mp-block-title">用我们的码，不只是省钱</div>
                 <div className="mp-perks">
@@ -182,34 +203,32 @@ export default function MyPlatform({ prefix }: { prefix: string }) {
                 </div>
                 <div className="mp-code-row">
                   <span className="mp-code-label">专属优惠码</span>
-                  <code className="mp-code">{p.couponCode}</code>
-                  <button type="button" className="mp-copy" onClick={() => copyCode(p.couponCode!)}>{copied ? "已复制 ✓" : "复制"}</button>
+                  <code className="mp-code">{code}</code>
+                  {firm.promoPercent > 0 && <span className="mp-code-label">省 {firm.promoPercent}%</span>}
+                  <button type="button" className="mp-copy" onClick={() => copyCode(code)}>{copied ? "已复制 ✓" : "复制"}</button>
                 </div>
                 <div className="mp-offer-ctas">
-                  {(p.affiliateUrl || p.officialUrl) && (
-                    <a className="mp-cta" href={p.affiliateUrl || p.officialUrl!} target="_blank" rel="noreferrer nofollow sponsored">
-                      去 {p.name} 用这个码 →
-                    </a>
-                  )}
-                  <button type="button" className="mp-cta ghost" onClick={() => setShowJoin((v) => !v)}>
-                    我要参赛 / 领直播模板
-                  </button>
+                  <Link className="mp-cta" href={`/go/${firm.slug}`}>去 {firm.name} 用这个码 →</Link>
+                  <button type="button" className="mp-cta ghost" onClick={() => setShowJoin((v) => !v)}>我要参赛 / 领直播模板</button>
                 </div>
                 <div className="mp-rebate">含返佣链接，使用可能为本站带来佣金，不影响你的费用。下次报名 / 开新账户时填我们的码即可。</div>
               </>
             ) : (
               <>
-                <div className="mp-block-title">这家我们暂未拿到专属码</div>
-                <p className="mp-summary">先收藏关注；想要更划算、且能参赛 + 看实盘直播，可以看看下面已合作的公司。</p>
-                <Link className="mp-cta" href={`${prefix}/exclusive-offers`}>看有专属码的公司 →</Link>
+                <div className="mp-block-title">这家暂无我们的专属码</div>
+                <p className="mp-summary">想要更划算、且能参赛 + 看实盘直播，看看有专属码的公司。</p>
+                <div className="mp-offer-ctas">
+                  <Link className="mp-cta" href={`${prefix}/prop-firms/${firm.slug}`}>看这家详情 →</Link>
+                  <Link className="mp-cta ghost" href={`${prefix}/exclusive-offers`}>看有码的公司</Link>
+                </div>
               </>
             )}
 
-            {showJoin && (
+            {showJoin && code && (
               <div className="mp-join">
                 <div className="mp-join-title">参赛 & 领实盘直播模板 · 怎么做</div>
                 <ol className="mp-join-steps">
-                  <li>报名时填写我们的优惠码 <code>{p.couponCode}</code></li>
+                  <li>报名时填写我们的优惠码 <code>{code}</code></li>
                   <li>保存你的支付截图（含优惠码那一栏）</li>
                   <li>上传到本站核验（上传通道即将上线）</li>
                   <li>核验通过 → 获得参赛资格 + 实盘直播模板</li>
