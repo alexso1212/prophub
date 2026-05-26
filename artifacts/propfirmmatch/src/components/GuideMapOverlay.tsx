@@ -2,7 +2,6 @@ import { useState } from "react";
 import MarkdownLite from "./MarkdownLite";
 import { guides } from "../data/guides";
 import { guideMaps } from "../data/guideMaps";
-import "../styles/roadmap.css";
 
 /**
  * 攻略浮层：一句比喻 + 迷你导图节点（原则 B），可展开完整图文。

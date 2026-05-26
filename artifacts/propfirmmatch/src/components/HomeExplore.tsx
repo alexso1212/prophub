@@ -1,5 +1,5 @@
 import { useState } from "react";
-import RoadmapGraph from "./RoadmapGraph";
+import NewbieRoadmap from "./NewbieRoadmap";
 import MyPlatform from "./MyPlatform";
 
 /**
@@ -19,7 +19,7 @@ export default function HomeExplore({ prefix }: { prefix: string }) {
           🔎 我已经在做 · 查我的平台
         </button>
       </div>
-      {view === "roadmap" ? <RoadmapGraph prefix={prefix} /> : <MyPlatform prefix={prefix} />}
+      {view === "roadmap" ? <NewbieRoadmap prefix={prefix} /> : <MyPlatform prefix={prefix} />}
     </>
   );
 }
