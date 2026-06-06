@@ -1,0 +1,68 @@
+# src/pages/learn/WhatIsPropFirm.tsx
+
+- Futures Prop Firm（期货自营交易公司）是一种为交易员提供资金账户的服务商。 你不需要投入大量本金，而是通过支付挑战费用来获得一个评估账户—— 通过考验后，平台用
+- 真实资金
+- 支持你交易，你拿走大部分利润。
+- 核心逻辑
+- 两个账户阶段
+- 两种 Prop Firm 模式的核心差异
+- 风险须知
+- 重要风险提示
+- Prop Firm 挑战账户不是投资建议，不保证收益或出金。
+- 挑战失败会损失全部报名费，请仅投入可承受损失的金额。
+- 期货交易涉及重大风险，可能导致本金全部损失。
+- 什么是 Futures Prop Firm
+- 为交易员提供真实资金账户的期货自营交易公司
+- 基础概念
+- > {/* 区块 1: Hero 介绍段落 */} <p className=
+- > Futures Prop Firm（期货自营交易公司）是一种为交易员提供资金账户的服务商。 你不需要投入大量本金，而是通过支付挑战费用来获得一个评估账户—— 通过考验后，平台用<span className=
+- >真实资金</span>支持你交易，你拿走大部分利润。 </p> {/* 区块 2: ConceptMap 核心逻辑 */} <section> <div className=
+- >核心逻辑</h2> </div> <ConceptMap center={{ label:
+- 核心模型
+- 支付挑战费
+- 一次性报名费，获得评估资格
+- 模拟账户交易
+- 在仿真环境中验证策略
+- 达成盈利目标
+- 满足平台设定的盈利要求
+- 获得真实资金
+- 通过评估后平台注资
+- 70–100% 利润分成
+- 你保留大部分收益
+- 亏损平台承担
+- 失败仅损失报名费
+- , }, ]} /> </section> {/* 区块 3: CompareCards 双账户阶段 */} <section> <div className=
+- >两个账户阶段</h2> </div> <CompareCards layout=
+- 评估账户
+- 环境
+- 模拟交易
+- 目标
+- 约束
+- 遵守回撤规则
+- 满足一致性要求
+- 通过后
+- 解锁资金账户
+- 资金账户
+- 本金来源
+- 平台提供
+- 利润分成
+- 亏损
+- 由平台承担
+- >两种 Prop Firm 模式的核心差异</p> </div> <CompareCards layout=
+- 交易标的
+- 期货合约
+- 监管
+- 平台
+- 成本
+- 通常更低
+- 差价合约
+- 相对宽松
+- 点差成本
+- >风险须知</h2> </div> <div className=
+- >重要风险提示</h3> <ul className=
+- /> Prop Firm 挑战账户不是投资建议，不保证收益或出金。 </li> <li className=
+- /> 挑战失败会损失全部报名费，请仅投入可承受损失的金额。 </li> <li className=
+- Prop Firm 交易
+- Futures Prop Firm
+- Tradovate / Rithmic
+- CFD Prop Firm

@@ -1,0 +1,1234 @@
+# 软件、出金、新手路径与交互页内容
+
+## src/pages/BeginnerPath.tsx
+
+- 新手学习路径
+- 按照以下步骤，系统掌握 Prop Firm 交易知识
+- 完成以上步骤后，你就可以开始实战了
+- 记住：Prop Firm 不是快速致富的捷径，需要认真对待
+- 了解基础概念
+- 什么是 Prop Firm？和 CFD 有什么区别？
+- 开始学习
+- 5分钟
+- 理解核心规则
+- 回撤、一致性、日内平仓等关键规则
+- 查看规则
+- 10分钟
+- 选择合适平台
+- 根据你的经验和预算，找到最适合的平台
+- 去选平台
+- 配置交易软件
+- Tradovate 或 Rithmic 的连接教程
+- 软件教程
+- 15分钟
+- 了解出金流程
+- Wise、Rise 等出金方式提前了解
+- 出金指南
+- >新手学习路径</h2> <p className=
+- >按照以下步骤，系统掌握 Prop Firm 交易知识</p> </div> <div className=
+- >步骤 {step.id}</span> <h3 className=
+- /> 完成以上步骤后，你就可以开始实战了 </div> <p className=
+- /guides/what-is-futures-prop-firm
+- w-8 h-8 text-violet-300
+
+## src/pages/Disclosure.tsx
+
+- 风险披露与免责声明
+- 在使用本站服务前，请仔细阅读以下重要信息
+- 交易风险提示
+- 期货交易涉及高风险，可能导致您损失全部本金。
+- Prop Firm 挑战账户不是投资建议，不保证收益或出金。
+- 挑战失败将损失报名费，请只用可承受损失的资金参与。
+- 过往表现不代表未来结果，市场条件可能随时变化。
+- 返佣披露
+- 本站可能通过以下方式获得收益：
+- 部分平台链接包含联盟营销代码，用户通过链接注册可能产生佣金
+- 部分折扣码为联盟专属代码，使用可能为本站带来收益
+- 平台展示顺序可能受合作关系影响，但评分和评价保持独立客观
+- 本披露最后更新：2026年5月13日
+- 免责声明
+- 本站提供的所有信息仅供参考，不构成投资建议、交易建议或任何专业建议。
+- 我们不保证信息的准确性、完整性或及时性。平台规则可能随时变更，请以官方信息为准。
+- 用户应自行承担使用本站信息的风险，我们不对任何损失承担责任。
+- 本站不提供喊单、带单、代操服务，也不承诺"包过"或"稳赚"。
+- 数据更新说明
+- 我们努力保持平台信息的准确性，每个平台详情页都标注了最后核验日期。
+- 由于平台规则可能随时变更，建议用户在做出决策前：
+- 直接访问平台官网确认最新规则
+- 查看平台的官方文档和FAQ
+- 联系平台客服获取准确信息
+- 如发现信息有误或过时，欢迎通过纠错入口反馈，我们会尽快核实更新。
+- 继续使用本站即表示您已阅读并理解上述披露内容
+- > 风险披露与免责声明 </h1> <p className=
+- > 在使用本站服务前，请仔细阅读以下重要信息 </p> </motion.div> <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }} className=
+- >交易风险提示</h2> <div className=
+- > <p>期货交易涉及高风险，可能导致您损失全部本金。</p> <p>Prop Firm 挑战账户不是投资建议，不保证收益或出金。</p> <p>挑战失败将损失报名费，请只用可承受损失的资金参与。</p> <p>过往表现不代表未来结果，市场条件可能随时变化。</p> </div> </div> </div> </motion.div> <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} className=
+- >返佣披露</h2> <p className=
+- > 本站可能通过以下方式获得收益： </p> <ul className=
+- > <li>部分平台链接包含联盟营销代码，用户通过链接注册可能产生佣金</li> <li>部分折扣码为联盟专属代码，使用可能为本站带来收益</li> <li>平台展示顺序可能受合作关系影响，但评分和评价保持独立客观</li> </ul> <p className=
+- > 本披露最后更新：2026年5月13日 </p> </div> </div> </motion.div> <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className=
+- >免责声明</h2> <div className=
+- > <p> 本站提供的所有信息仅供参考，不构成投资建议、交易建议或任何专业建议。 </p> <p> 我们不保证信息的准确性、完整性或及时性。平台规则可能随时变更，请以官方信息为准。 </p> <p> 用户应自行承担使用本站信息的风险，我们不对任何损失承担责任。 </p> <p> 本站不提供喊单、带单、代操服务，也不承诺
+- 或
+- >数据更新说明</h2> <div className=
+- > <p> 我们努力保持平台信息的准确性，每个平台详情页都标注了最后核验日期。 </p> <p> 由于平台规则可能随时变更，建议用户在做出决策前： </p> <ul className=
+- > <li>直接访问平台官网确认最新规则</li> <li>查看平台的官方文档和FAQ</li> <li>联系平台客服获取准确信息</li> </ul> <p className=
+- > 如发现信息有误或过时，欢迎通过纠错入口反馈，我们会尽快核实更新。 </p> </div> </div> </div> </motion.div> <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }} className=
+
+## src/pages/GuideDetail.tsx
+
+- 指南未找到
+- 返回指南列表
+- 相关平台
+- 参考来源
+- >指南未找到</h1> <Link to=
+- > 返回指南列表 </Link> </div> </div> ); } const relatedFirms = firmsData.filter(f => guide.relatedFirms.includes(f.id)); const difficultyColor = { beginner:
+- 新手指南
+- 路径指南
+- 软件教程
+- 支付教程
+- 出金教程
+- /> 返回指南列表 </Link> <div className=
+- 入门
+- 进阶
+- 高级
+- /> <span>更新于 {guide.lastUpdatedAt}</span> </div> </div> </div> <div className=
+- /> 相关平台 </h3> <div className=
+- >参考来源</h3> <div className=
+- > {relatedFirms.map(firm => ( <Link key={firm.id} to={
+- > <img src={firm.logoUrl} alt={firm.name} className=
+- >{firm.name}</span> </Link> ))} </div> </div> )} {guide.sourceUrls && guide.sourceUrls.length > 0 && ( <div className=
+
+## src/pages/Guides.tsx
+
+- 学习中心
+- 新手指南
+- 从入门到精通，系统学习 Prop Firm 交易知识
+- 阅读
+- 还没找到答案？
+- 回到首页思维导图，按你的需求路径探索
+- 返回 MindMap 首页
+- 全部
+- 入门指南
+- 路径指南
+- 软件教程
+- 支付教程
+- 出金教程
+- 入门
+- 进阶
+- 高级
+- > 学习中心 </div> <h1 className=
+- > 新手指南 </h1> <p className=
+- > 从入门到精通，系统学习 Prop Firm 交易知识 </p> </div> {/* Category filter chips */} <div className=
+- >更新 {guide.lastUpdatedAt}</span> <div className=
+- > 阅读 <ChevronRight className=
+- >还没找到答案？</h3> <p className=
+- >回到首页思维导图，按你的需求路径探索</p> <Link to=
+- > 返回 MindMap 首页 <ArrowRight className=
+
+## src/pages/KnowledgeTree.tsx
+
+- 知识体系
+- 点击展开各主题，系统学习 Prop Firm 知识
+- 基础概念
+- 了解 Prop Firm 的基本运作模式
+- 什么是 Prop Firm
+- 期货自营交易公司的运作原理
+- 账户类型区别
+- 评估账户 vs 资金账户 vs 免考账户
+- 与 CFD Prop Firm 区别
+- 期货和差价合约的不同
+- 核心规则
+- 掌握必须通过的关键规则
+- 回撤规则详解
+- EOD、TDD、静态、追踪回撤
+- 一致性规则
+- 为什么有这个规则，如何避免违规
+- 日内平仓要求
+- 为什么必须日内平仓
+- 流程指南
+- 从注册到出金的完整流程
+- KYC 认证流程
+- 身份验证和地址证明
+- 低成本试错路径
+- 新手如何以最小成本开始
+- 风险提示
+- 了解潜在风险和避坑指南
+- 新手常见错误
+- 避免这些坑，提高通过率
+- 平台红旗信号
+- 哪些平台需要谨慎
+- >知识体系</h2> <p className=
+- >点击展开各主题，系统学习 Prop Firm 知识</p> </div> <div className=
+- what-is-futures-prop-firm
+- kyc
+- kyc-guide
+- w-8 h-8 text-violet-300
+
+## src/pages/MindMapHome.tsx
+
+- Prop Firm 导航
+- 中文期货自营交易知识库
+- 风险提示与免责声明
+- 开始
+- 选择你的需求
+- 我是新手
+- 从零开始了解
+- 第一次接触 Prop Firm？从这里开始了解基本概念
+- 我要选平台
+- 找到最适合的
+- 根据你的需求和条件，筛选推荐最适合的平台
+- 我要学规则
+- 掌握核心知识
+- 深入理解回撤、一致性、日内平仓等关键规则
+- 我要配软件
+- 连接交易平台
+- Tradovate、Rithmic 等平台连接配置教程
+- 我要出金
+- 资金回流指南
+- Wise、Rise、加密货币等多种出金方式详解
+- >Prop Firm 导航</h1> <p className=
+- >中文期货自营交易知识库</p> </motion.div> <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className=
+- /> 风险提示与免责声明 <ChevronRight className=
+- >开始</div> <div className=
+- >选择你的需求</div> </div> </div> </motion.div> <svg className=
+- w-8 h-8 mb-2
+
+## src/pages/PayoutFlow.tsx
+
+- 出金方式
+- 选择适合你的出金路径，提前了解流程
+- 重要提示
+- 已完成 KYC 验证
+- 出金账户姓名与 Prop Firm 注册姓名完全一致
+- 已达到最低出金门槛
+- 返回选择
+- 优点
+- 缺点
+- 适合中国用户，手续费低，支持多币种
+- 护照或身份证
+- 地址证明
+- 与 Prop Firm 姓名一致
+- 手续费低
+- 到账快
+- 支持人民币
+- 操作简单
+- 需要 KYC
+- 首次设置较繁琐
+- 注册 Wise 账户并完成 KYC
+- 获取美元账户信息
+- 在 Prop Firm 后台添加 Wise
+- 提交出金申请
+- 等待审核
+- 资金到达后提现
+- 专为自由职业者和交易员设计的支付平台
+- 身份证明
+- 专为出金设计
+- 支持多平台
+- 费率透明
+- 知名度较低
+- 部分地区受限
+- 注册 Rise 账户
+- 完成身份验证
+- 获取账户信息
+- 在 Prop Firm 添加出金方式
+- 申请出金
+- 资金到账后提现
+- 加密货币
+- USDT 等稳定币出金，速度快但波动风险
+- 加密货币钱包
+- 了解基本操作
+- 速度快
+- 24/7 可用
+- 隐私性好
+- 价格波动风险
+- 需要额外兑换
+- 操作复杂
+- 准备加密货币钱包
+- 获取钱包地址
+- 在 Prop Firm 选择加密出金
+- 提交钱包地址
+- 等待审核和转账
+- 在交易所出售换成法币
+- >出金方式</h2> <p className=
+- >选择适合你的出金路径，提前了解流程</p> </div> {!selectedMethod ? ( <div className=
+- >重要提示</p> <ul className=
+- > <li>已完成 KYC 验证</li> <li>出金账户姓名与 Prop Firm 注册姓名完全一致</li> <li>已达到最低出金门槛</li> </ul> </div> </motion.div> </div> ) : ( <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}> <button onClick={() => setSelectedMethod(null)} className=
+- /> 返回选择 </button> {(() => { const method = payoutMethods.find(m => m.id === selectedMethod)!; const Icon = method.icon; return ( <div className=
+- 操作步骤
+- 所需材料
+- 优缺点
+- >优点</h4> <div className=
+- >缺点</h4> <div className=
+- wise
+- Wise
+- rise
+- Rise
+- w-8 h-8 text-violet-300
+
+## src/pages/PlatformSelector.tsx
+
+- 选择最符合你情况的选项
+- ← 返回上一题
+- 为你推荐
+- 基于你的选择，这些平台最适合你
+- 重新选择条件
+- 你的交易经验如何？
+- 完全新手
+- 第一次接触期货或 Prop Firm
+- 有一些经验
+- 做过模拟盘或小额实盘
+- 经验丰富
+- 有稳定交易策略，寻求资金
+- 你的预算范围？
+- 想低成本试错
+- 标准预算
+- 追求大账户
+- 你偏好哪种交易软件？
+- 网页版，简单易用
+- 专业级，低延迟
+- 功能强大，桌面端
+- 都可以
+- 没有特别偏好
+- 你所在地区？
+- 中国大陆
+- 需要支持中国用户
+- 其他地区
+- 海外或港澳台
+- >选择最符合你情况的选项</p> </div> <div className=
+- >← 返回上一题</button> )} </motion.div> ) : ( <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }}> <div className=
+- >为你推荐</h2> <p className=
+- >基于你的选择，这些平台最适合你</p> </div> <div className=
+- >{firm.rating}分</span> </div> <p className=
+- tradovate
+- Tradovate
+- rithmic
+- Rithmic
+- ninjatrader
+- NinjaTrader
+- w-8 h-8 text-violet-300
+- w-8 h-8 text-emerald-400
+- > {getRecommendedFirms().map((firm, index) => ( <motion.div key={firm.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.15 }}> <Link to={
+- > <img src={firm.logoUrl} alt={firm.name} className=
+- >{firm.name}</h3> <span className=
+- >{firm.summary}</p> <div className=
+- > {firm.supportedPlatforms.slice(0, 3).map(p => <span key={p} className=
+
+## src/pages/RulesComparison.tsx
+
+- 规则对比
+- 横向对比各平台账户规则
+- 平台
+- 账户
+- 规模
+- 费用
+- 利润目标
+- 最大回撤
+- 日损
+- 回撤类型
+- 最小交易日
+- 一致性
+- 分成
+- 最低出金
+- 数据最后更新: 2026-05-12
+- * 规则可能随时变化，请以官方最新公告为准
+- >规则对比</h1> <p className=
+- >横向对比各平台账户规则</p> </div> <div className=
+- >平台</th> <th className=
+- >账户</th> <th className=
+- >规模</th> <th className=
+- >费用</th> <th className=
+- >利润目标</th> <th className=
+- >最大回撤</th> <th className=
+- >日损</th> <th className=
+- >回撤类型</th> <th className=
+- >最小交易日</th> <th className=
+- >一致性</th> <th className=
+- >分成</th> <th className=
+- >最低出金</th> </tr> </thead> <tbody> {comparisonData.map((row, idx) => ( <tr key={
+- 是
+- 否
+- > <p>数据最后更新: 2026-05-12</p> <p className=
+- ; interface ComparisonRow { firmName: string; account: AccountType; } export default function RulesComparison() { const [selectedFirms, setSelectedFirms] = useState<string[]>([]); const comparisonData: ComparisonRow[] = useMemo(() => { const firms = selectedFirms.length > 0 ? firmsData.filter(f => selectedFirms.includes(f.id)) : firmsData.slice(0, 5); return firms.flatMap(firm => firm.accountTypes.map(account => ({ firmName: firm.name, account })) ); }, [selectedFirms]); const toggleFirm = (firmId: string) => { setSelectedFirms(prev => prev.includes(firmId) ? prev.filter(id => id !== firmId) : [...prev, firmId] ); }; return ( <div className=
+- > {firmsData.map(firm => ( <button key={firm.id} onClick={() => toggleFirm(firm.id)} className={
+- } > {firm.name} </button> ))} </div> <div className=
+- eod
+- tdd
+
+## src/pages/Software.tsx
+
+- 交易软件教程
+- 主流 Prop Firm 支持的交易平台使用指南
+- 查看教程
+- 入门
+- 进阶
+- 高级
+- > 交易软件教程 </h1> <p className=
+- > 主流 Prop Firm 支持的交易平台使用指南 </p> </motion.div> <div className=
+- > 查看教程 <ArrowRight className=
+
+## src/pages/SoftwareGuide.tsx
+
+- 交易软件配置
+- 选择你使用的平台，按步骤完成配置
+- 返回选择
+- 配置进度
+- 配置步骤
+- 基于网页的交易平台，无需安装，支持多家 Prop Firm
+- 网页端直接交易
+- 简洁直观的界面
+- 支持多家 Prop Firm
+- 免费模拟账户
+- 访问 tradovate.com 注册账户
+- 使用 Prop Firm 提供的登录凭据
+- 首次登录设置 2FA 验证
+- 熟悉界面布局
+- 开始交易或练习
+- 专业级数据服务，低延迟执行，适合有经验的交易员
+- 低延迟市场数据
+- 专业级执行速度
+- 支持 NinjaTrader/Quantower
+- 稳定的连接
+- 通过 Prop Firm 获取 Rithmic 账户
+- 下载 Rithmic 客户端
+- 签署数据使用协议
+- 配置连接参数
+- 测试连接并开始交易
+- 功能强大的桌面交易软件，适合专业交易员
+- 强大的图表功能
+- 自动化交易支持
+- 丰富的技术指标
+- 深度市场数据
+- 下载并安装 NinjaTrader
+- 配置 Rithmic 连接
+- 设置工作区和图表
+- 导入或创建策略
+- 连接并开始交易
+- 入门
+- 进阶
+- 高级
+- >交易软件配置</h2> <p className=
+- >选择你使用的平台，按步骤完成配置</p> </div> {!selectedSoftware ? ( <div className=
+- /> 返回选择 </button> {(() => { const software = softwareList.find(s => s.id === selectedSoftware)!; const completed = completedSteps[software.id] || 0; const progress = (completed / software.steps.length) * 100; return ( <div className=
+- >配置进度</span> <span className=
+- >配置步骤</h4> <div className=
+- tradovate
+- Tradovate
+- rithmic
+- Rithmic
+- ninjatrader
+- NinjaTrader
+- w-8 h-8 text-violet-300
+
+## src/pages/learn/ConsistencyRule.tsx
+
+- 一致性规则（Consistency Rule）是 Prop Firm 用来
+- 筛选"赌徒"和"交易员"
+- 的重要机制。 理解它，你就知道为什么"靠一笔大单通过挑战"行不通。
+- 规则形式
+- 两种常见的一致性约束
+- 设计动机
+- 为什么 Prop Firm 要这个规则
+- 实战
+- 4 步避免违规
+- 例外
+- 哪些平台不设一致性规则
+- 不设一致性规则的平台
+- 适合有成熟策略、回撤管理过硬的交易员。代表平台：
+- 。 这类平台不限制单笔或单日盈利占比，策略灵活度更高，但对整体风控要求同样严格。
+- 一致性规则解析
+- 为什么平台要求交易一致性，以及如何避免违规
+- 核心规则
+- > {/* 区块 1: Hero 导语 */} <p className=
+- > 一致性规则（Consistency Rule）是 Prop Firm 用来<span className=
+- >筛选
+- 和
+- </span>的重要机制。 理解它，你就知道为什么
+- 行不通。 </p> {/* 区块 2: 规则形式 */} <section> <div className=
+- >规则形式</span> <h2 className=
+- >两种常见的一致性约束</h2> </div> <CompareCards layout=
+- 单笔规则
+- 阈值
+- 单笔盈利 ≤ 总盈利 30–50%
+- 含义
+- 不能靠一笔大单通过挑战
+- 单日规则
+- 单日盈利 ≤ 总盈利 40%
+- 不能在一个交易日内大爆发
+- >设计动机</span> <h2 className=
+- >为什么 Prop Firm 要这个规则</h2> </div> <ConceptMap center={{ label:
+- 一致性规则
+- 风险控制
+- 防止靠运气通过挑战
+- 可持续性
+- 确保策略可复制
+- 筛选机制
+- 淘汰过度冒险的交易员
+- , }, ]} /> </section> {/* 区块 4: 实战 */} <section> <div className=
+- >实战</span> <h2 className=
+- >4 步避免违规</h2> </div> <FlowSteps steps={[ { id:
+- 分批建仓
+- 不要重仓博一把
+- 同方向分 2-3 次进场
+- 减少单笔成败的极端结果
+- 分批平仓
+- 盈利分批兑现
+- 到目标后部分止盈
+- 剩余仓位移止损保利
+- 降低单笔利润占比
+- 保持交易频率稳定
+- 每日交易笔数不要忽多忽少
+- 每日 3-5 笔比
+- 健康得多
+- 稳定频率让一致性指标自然达标
+- 记录每日盈利分布
+- 用日志追踪一致性指标
+- 每周复盘单笔/单日占比
+- 发现某笔过大要主动减少后续仓位
+- , }, ]} /> </section> {/* 区块 5: 例外 */} <section> <div className=
+- >例外</span> <h2 className=
+- >哪些平台不设一致性规则</h2> </div> <div className=
+- >不设一致性规则的平台</h3> <p className=
+- > 适合有成熟策略、回撤管理过硬的交易员。代表平台： <span className=
+
+## src/pages/learn/DrawdownRules.tsx
+
+- 回撤规则是 Prop Firm 评估中
+- 最重要
+- 的风险控制指标。 理解 4 种回撤机制，决定你能否通过挑战。
+- Section · 一句话总览
+- 4 种回撤类型
+- Section · 详细对比
+- 逐项细看
+- Section · 实战
+- 4 步应对策略
+- Section · 提醒
+- 风险须知
+- 重要风险提示
+- 回撤规则一旦触发即终止评估，报名费不予退还。
+- 本文示例为简化数值，请以平台官方规则为准。
+- 回撤规则详解
+- EOD / TDD / 静态 / 追踪，4 种回撤机制对比
+- 核心规则
+- > {/* 区块 1: Hero 导语 */} <p className=
+- > 回撤规则是 Prop Firm 评估中<span className=
+- >最重要</span>的风险控制指标。 理解 4 种回撤机制，决定你能否通过挑战。 </p> {/* 区块 2: ConceptMap 放射对照 */} <section> <div className=
+- >Section · 一句话总览</span> <h2 className=
+- >4 种回撤类型</h2> </div> <ConceptMap center={{ label:
+- 核心约束
+- EOD（日终回撤）
+- 基于每日收盘权益
+- TDD（日内回撤）
+- 实时计算，触及即违规
+- 静态回撤
+- 固定初始权益，不随盈利变化
+- 追踪回撤
+- 随最高权益移动
+- , }, ]} /> </section> {/* 区块 3: CompareCards 4 列对比 */} <section> <div className=
+- >Section · 详细对比</span> <h2 className=
+- >逐项细看</h2> </div> <CompareCards layout=
+- EOD 回撤
+- End of Day · 日终
+- 定义
+- 触发
+- 收盘后权益低于阈值
+- 示例
+- $50K 账户，回撤 $2.5K，日内可跌至 $45K，收盘需 ≥ $47.5K
+- 适合
+- 日内交易策略
+- TDD 回撤
+- Trailing Daily · 日内
+- 基于日内最高权益的实时回撤
+- 日内权益跌幅超限即违规
+- 跟随最高权益点移动，最严格
+- 保守策略，严控浮亏
+- 固定初始权益的回撤限制
+- 权益跌破固定线
+- $50K 初始，回撤 $2.5K，盈利后回撤线仍在 $47.5K
+- 盈利后宽容度增加
+- 回撤线随最高权益移动
+- 回撤空间始终保持固定
+- 盈利到 $55K，回撤线移至 $52.5K，永远保留 $2.5K 空间
+- 需稳定持续盈利
+- >Section · 实战</span> <h2 className=
+- >4 步应对策略</h2> </div> <FlowSteps numbered={true} steps={[ { id:
+- 了解你的回撤类型
+- 不同平台规则差异巨大，签约前必查
+- 查看官方规则文档
+- 比较 EOD vs TDD vs Trailing 的具体阈值
+- 注意
+- 是否改变规则
+- 设置硬止损
+- 永远不要无止损交易
+- 每笔单立刻挂止损
+- 止损位由账户回撤反推
+- 不允许
+- 分散风险
+- 单笔交易风险控制在 1-2%
+- 总风险敞口拆分
+- 不要 all-in 一笔
+- 记录每日已用风险额度
+- 避开高波动时段
+- 新闻发布前后谨慎交易
+- NFP、FOMC、CPI 前后 30 分钟避免开仓
+- CME 收盘前 15 分钟减仓
+- 主力合约切换时段降低杠杆
+- , }, ]} /> </section> {/* 区块 5: 风险须知 */} <section> <div className=
+- >Section · 提醒</span> <h2 className=
+- >风险须知</h2> </div> <div className=
+- >重要风险提示</h3> <ul className=
+- /> 回撤规则一旦触发即终止评估，报名费不予退还。 </li> <li className=
+- eod
+- tdd
+
+## src/pages/learn/IntradayLiquidation.tsx
+
+- 绝大多数 Futures Prop Firm 要求交易员在
+- 收盘前平仓所有头寸
+- 。 不是为了为难你，而是平台保护自身和你的双重风控。
+- 原因
+- 为什么必须日内平仓
+- 例外
+- 允许隔夜的平台
+- 少数平台允许隔夜持仓
+- ，但通常有附加要求
+- 更高的账户规模
+- 额外的保证金要求
+- 限制持仓品种
+- 实战
+- 3 步搭好你的交易节奏
+- 日内平仓要求
+- 为什么收盘前必须清仓，以及如何安排交易节奏
+- 核心规则
+- > {/* 区块 1: Hero */} <p className=
+- > 绝大多数 Futures Prop Firm 要求交易员在<span className=
+- >收盘前平仓所有头寸</span>。 不是为了为难你，而是平台保护自身和你的双重风控。 </p> {/* 区块 2: 两大原因 */} <section> <div className=
+- >原因</span> <h2 className=
+- >为什么必须日内平仓</h2> </div> <CompareCards layout=
+- 风险控制
+- 保护双方资金安全
+- 风险点
+- 避免隔夜跳空
+- 防止重大新闻事件冲击
+- 保护平台和你的本金
+- 运营成本
+- 降低保证金占用
+- 隔夜持仓需更高保证金
+- 降低平台资金占用成本
+- >例外</span> <h2 className=
+- >允许隔夜的平台</h2> </div> <div className=
+- > <strong>少数平台允许隔夜持仓</strong>，但通常有附加要求 </h3> <ul className=
+- /> 更高的账户规模 </li> <li className=
+- /> 额外的保证金要求 </li> <li className=
+- /> 限制持仓品种 </li> </ul> </div> </div> </div> </section> {/* 区块 4: 实战节奏 */} <section> <div className=
+- >实战</span> <h2 className=
+- >3 步搭好你的交易节奏</h2> </div> <FlowSteps steps={[ { id:
+- 规划交易时间
+- 收盘前 1 小时停止开新仓
+- 美东时间 16:00 是常见结算点
+- 提前 60 分钟进入
+- 模式
+- 不要试图最后 15 分钟搏一把
+- 设置提醒
+- 用平台或软件自动提醒
+- Tradovate / NinjaTrader 都支持时间提醒
+- 手机加一个 15:00 钟，给自己缓冲
+- 选择合适的交易时段
+- 专注流动性最好的时段
+- 美股开盘后 1 小时（22:30-23:30 北京时间）流动性最佳
+- 亚洲时段流动性差，慎入
+- 欧美重叠时段（21:00-23:00 北京）波动加机会多
+
+## src/pages/learn/KycGuide.tsx
+
+- KYC（Know Your Customer）是
+- 出金前的必要步骤
+- 。提前准备好材料，能避免出金时被卡。
+- 材料清单
+- 3 类必备材料
+- 本地化
+- 中国用户特别提示
+- 中国用户在 KYC 过程中遇到的高频问题
+- 证件选择
+- 地址证明
+- 常见拒绝原因
+- 实战
+- 3 个最佳实践
+- KYC 流程指南
+- 身份验证全流程 + 中国用户特别提示
+- 流程指南
+- > {/* 区块 1: Hero */} <p className=
+- > KYC（Know Your Customer）是<span className=
+- >出金前的必要步骤</span>。提前准备好材料，能避免出金时被卡。 </p> {/* 区块 2: 3 类必备材料 */} <section> <div className=
+- >材料清单</span> <h2 className=
+- >3 类必备材料</h2> </div> <CompareCards layout=
+- 身份证明
+- 可选证件
+- 护照（推荐）/ 身份证
+- 清晰度
+- 姓名、照片、有效期可读
+- 注意
+- 不要遮挡、不要反光、不要过期
+- 可接受
+- 水电账单 / 银行对账单
+- 时效
+- 3 个月内开具
+- 要素
+- 需显示姓名和完整地址
+- 支付验证
+- 何时需要
+- 部分平台要求
+- 材料
+- 信用卡 / 银行账户对账单
+- 一致性
+- 持卡人姓名与 KYC 一致
+- >本地化</span> <h2 className=
+- >中国用户特别提示</h2> </div> <div className=
+- >中国用户在 KYC 过程中遇到的高频问题</p> <div className=
+- > {/* 卡 A */} <div className=
+- >证件选择</h3> <ul className=
+- 护照通常比身份证更容易通过
+- 所有信息清晰可读
+- 拼音与平台注册一致
+- /> {item} </li> ))} </ul> </div> {/* 卡 B */} <div className=
+- >地址证明</h3> <ul className=
+- 信用卡账单（如有）
+- 水电费电子账单
+- 部分平台接受中文文件
+- /> {item} </li> ))} </ul> </div> {/* 卡 C */} <div className=
+- >常见拒绝原因</h3> <ul className=
+- 姓名拼音不一致
+- 地址翻译问题
+- 文件格式不符合要求（建议 PDF/JPG）
+- /> {item} </li> ))} </ul> </div> </div> </div> </section> {/* 区块 4: 最佳实践 */} <section> <div className=
+- >实战</span> <h2 className=
+- >3 个最佳实践</h2> </div> <FlowSteps steps={[ { id:
+- 提前准备
+- 注册时就准备好所有文件
+- 不要等到出金时才扫描
+- 一次性准备 ID + 地址 + 支付
+- 高清扫描
+- 确保文件清晰、完整、无遮挡
+- 手机拍照分辨率 ≥ 1080P
+- 避开反光，正面平铺拍摄
+- PDF 格式优于截图
+- 及时响应
+- 平台要求补充材料时尽快处理
+- 24 小时内回复
+- 问题不清楚要主动问 support
+- 保留邮件记录
+
+## src/pages/learn/LowCostPath.tsx
+
+- Prop Firm 不是快速致富的捷径。这条路径告诉你
+- 从 $0 到 funded account 应该怎么走
+- ， 每一步的成本、目标、时间都摊开。
+- 路径
+- 3 阶段 · 从 $0 到 funded
+- 原则
+- 4 条铁律
+- 期望管理
+- 时间预期 + 心态准备
+- 时间预期
+- 学习阶段
+- ：1-3 个月
+- 通过挑战
+- ：因人而异，可能需要多次尝试
+- 稳定盈利
+- ：6-12 个月或更长
+- 重要提示
+- Prop Firm 不是快速致富的捷径
+- 。 它是一份需要认真对待的专业活动，把它当兼职甚至主业来对待，不要把它当彩票买。
+- 第一阶段
+- 免费模拟
+- 2-4 周
+- 熟悉平台和规则，零风险摸底
+- 注册 Tradovate 免费模拟账户
+- 练习期货基础操作
+- 了解合约规格和保证金
+- 第二阶段
+- 小账户试水
+- 1-2 个月
+- 体验真实挑战环境，做好损失全部报名费的准备
+- Purdia $49 Micro 账户
+- Alpha Futures $99 Basic 账户
+- 严守风控，培养纪律
+- 第三阶段
+- 标准账户
+- 3 个月起
+- 通过挑战，获得真实资金账户
+- Topstep $165/月
+- Lucid Trading $149 起
+- 稳定交易频率，建立长期复盘
+- 只投可承受损失的资金
+- 永远不要投入身家
+- 先学习，再实战
+- 基础没打好就上桌等于送钱
+- 记录复盘
+- 每笔交易都写日志
+- 不要追逐
+- 承诺
+- 稳赚承诺一律拉黑
+- 低成本试错路径
+- 3 阶段 · 从免费模拟到资金账户
+- 路径指南
+- > {/* 区块 1: Hero 介绍段落 */} <p className=
+- > Prop Firm 不是快速致富的捷径。这条路径告诉你 <span className=
+- >从 $0 到 funded account 应该怎么走</span>， 每一步的成本、目标、时间都摊开。 </p> {/* 区块 2: 3 阶段路径 */} <section> <div className=
+- >路径</span> <h2 className=
+- > 3 阶段 · 从 $0 到 funded </h2> </div> <TimelineFlow stages={stages} /> </section> {/* 区块 3: 4 条铁律 */} <section> <div className=
+- >原则</span> <h2 className=
+- >4 条铁律</h2> </div> <ConceptMap center={{ label:
+- 不可逾越的底线
+- >期望管理</span> <h2 className=
+- > 时间预期 + 心态准备 </h2> </div> <div className=
+- >时间预期</h3> <ul className=
+- >学习阶段</span>：1-3 个月 </span> </li> <li className=
+- >通过挑战</span>：因人而异，可能需要多次尝试 </span> </li> <li className=
+- >稳定盈利</span>：6-12 个月或更长 </span> </li> </ul> </div> <div className=
+- >重要提示</h3> <p className=
+
+## src/pages/learn/RithmicGuide.tsx
+
+- Rithmic 是期货行业的
+- 低延迟数据和执行基础设施
+- ，被多家 Prop Firm 采用。它本身不是界面软件，而是底层数据服务。
+- 基础
+- Rithmic 是什么
+- Rithmic 提供什么
+- 低延迟市场数据
+- — 行业级标准，毫秒级
+- 订单路由和执行
+- — 直连 CME 等交易所
+- 多平台支持
+- — 可对接 NinjaTrader / Quantower / ATAS / 自定义 API
+- 生态
+- 支持的软件
+- 此外还支持自定义 API 应用接入
+- 实操
+- 连接配置
+- 排障
+- 故障排查
+- 桌面应用
+- 强大的图表
+- 自动化策略
+- 多资产交易
+- 现代化 UI
+- 多 broker
+- 订单流分析
+- Footprint 图表
+- 量化交易
+- Rithmic 连接指南
+- 专业级期货数据 / 执行服务的配置教程
+- 软件教程
+- > {/* 区块 1: Hero */} <p className=
+- > Rithmic 是期货行业的<span className=
+- >低延迟数据和执行基础设施</span>，被多家 Prop Firm 采用。它本身不是界面软件，而是底层数据服务。 </p> {/* 区块 2: Rithmic 是什么 */} <section> <div className=
+- >基础</span> <h2 className=
+- >Rithmic 是什么</h2> </div> <div className=
+- >Rithmic 提供什么</h3> <div className=
+- >低延迟市场数据</span> — 行业级标准，毫秒级 </p> </div> <div className=
+- >订单路由和执行</span> — 直连 CME 等交易所 </p> </div> <div className=
+- >多平台支持</span> — 可对接 NinjaTrader / Quantower / ATAS / 自定义 API </p> </div> </div> </div> </section> {/* 区块 3: 支持的软件 */} <section> <div className=
+- >生态</span> <h2 className=
+- >支持的软件</h2> </div> <div className=
+- >此外还支持自定义 API 应用接入</p> </section> {/* 区块 4: 连接配置 */} <section> <div className=
+- >实操</span> <h2 className=
+- >连接配置</h2> </div> <CompareCards layout=
+- 桌面端配置
+- 步骤 1
+- 打开 Connections > Configure
+- 步骤 2
+- 添加 Rithmic 连接
+- 步骤 3
+- 输入账户信息
+- 步骤 4
+- 测试连接 → 开始交易
+- 现代化平台
+- 打开 Connections
+- 选择 Rithmic
+- 输入登录信息
+- >排障</span> <h2 className=
+- >故障排查</h2> </div> <CompareCards layout=
+- 连接失败
+- 检查
+- 账户状态是否激活
+- 数据订阅是否有效
+- 防火墙是否拦截
+- 数据延迟
+- 尝试
+- 切换数据服务器
+- 网络质量
+- 联系
+- Prop Firm 技术支持
+- NinjaTrader
+- Quantower
+- ATAS
+
+## src/pages/learn/TradovateGuide.tsx
+
+- Tradovate 是目前
+- 支持最多 Prop Firm 的交易平台
+- ， 基于网页，无需安装，是新手最常用的入门工具。
+- 为什么用它
+- 3 大核心特性
+- 上手
+- 4 步开始交易
+- 效率
+- 常用快捷键
+- 排障
+- 常见问题
+- 网页端
+- 无需安装
+- 跨平台
+- 自动更新
+- 多平台支持
+- 免费模拟
+- 注册即用
+- 真实行情
+- 练习无成本
+- 注册账户
+- 访问 tradovate.com 注册
+- 或使用 Prop Firm 提供的登录凭据
+- 免费账户即可练习
+- 设置 2FA
+- 首次登录强制启用二次验证
+- 推荐 Google Authenticator
+- 保存好 backup codes
+- 熟悉界面布局
+- 左侧报价 · 中间图表 · 右侧订单簿 · 底部账户
+- 工作区可自定义
+- 支持多屏幕
+- 开始交易
+- 从模拟练习到真实下单
+- 先用模拟练熟下单流程
+- 熟悉市价/限价/止损单
+- 新建图表
+- 查找合约
+- 取消选中订单
+- 关闭弹窗
+- Tradovate 使用教程
+- 最常用的 Prop Firm 网页交易平台
+- 软件教程
+- > {/* 区块 1: Hero */} <p className=
+- > Tradovate 是目前<span className=
+- >支持最多 Prop Firm 的交易平台</span>， 基于网页，无需安装，是新手最常用的入门工具。 </p> {/* 区块 2: 核心特性 */} <section> <div className=
+- >为什么用它</span> <h2 className=
+- >3 大核心特性</h2> </div> <div className=
+- /> {b} </li> ))} </ul> </div> ))} </div> </section> {/* 区块 3: 4 步流程 */} <section> <div className=
+- >上手</span> <h2 className=
+- >4 步开始交易</h2> </div> <FlowSteps steps={steps} /> </section> {/* 区块 4: 快捷键 */} <section> <div className=
+- >效率</span> <h2 className=
+- >常用快捷键</h2> </div> <div className=
+- >{s.desc}</span> </div> ))} </div> </div> </section> {/* 区块 5: 常见问题 */} <section> <div className=
+- >排障</span> <h2 className=
+- >常见问题</h2> </div> <CompareCards layout=
+- 连接问题
+- 检查
+- 网络连接是否正常
+- 尝试
+- 清除浏览器缓存
+- 推荐
+- 使用 Chrome 浏览器
+- 数据延迟
+- 确认
+- 订阅了正确的数据流
+- 操作
+- 刷新页面重新连接
+- 联系
+- 联系 Prop Firm 支持
+
+## src/pages/learn/W8FormGuide.tsx
+
+- W-8BEN 是美国国税局（IRS）的税务表格，用于证明你是
+- 非美国税务居民
+- 。 填错或不填，平台会预扣 30% 美国税款。
+- 动机
+- 为什么要填 W-8BEN
+- 3 个理由
+- 避免 30% 预扣税
+- — 如不提交，IRS 默认按最高税率扣
+- 符合中美税收协定
+- — 部分收入可免税或减税
+- 出金必经步骤
+- — 平台合规要求
+- 字段
+- 3 个 Part 速查
+- 提交
+- 两种提交方式
+- 细节
+- 常见问题与提醒
+- ⚠️ 常见拒绝原因
+- 签名不是手写（纸质提交时）
+- 信息不完整
+- 地址格式不正确
+- 📌 重要提醒
+- 有效期 3 年
+- — 到期需重新提交
+- 如实填写
+- — 虚假信息有法律风险
+- 保留副本
+- — 提交记录留存
+- W-8BEN 表格填写指南
+- 非美国税务居民必填的税务表格
+- 支付教程
+- > {/* 区块 1: Hero 介绍段落 */} <p className=
+- > W-8BEN 是美国国税局（IRS）的税务表格，用于证明你是<span className=
+- >非美国税务居民</span>。 填错或不填，平台会预扣 30% 美国税款。 </p> {/* 区块 2: 为什么要填 */} <section> <div className=
+- >动机</span> <h2 className=
+- >为什么要填 W-8BEN</h2> </div> <div className=
+- >3 个理由</h3> <ul className=
+- >避免 30% 预扣税</span> — 如不提交，IRS 默认按最高税率扣</span> </li> <li className=
+- >符合中美税收协定</span> — 部分收入可免税或减税</span> </li> <li className=
+- >出金必经步骤</span> — 平台合规要求</span> </li> </ul> </div> </section> {/* 区块 3: 3 个 Part 字段对照 */} <section> <div className=
+- >字段</span> <h2 className=
+- >3 个 Part 速查</h2> </div> <CompareCards layout=
+- Beneficial Owner · 个人信息
+- 护照英文姓名
+- 中国地址（拼音）
+- 留空
+- 身份证号
+- Tax Treaty · 协定优惠
+- 勾选 Yes
+- Article 14（独立劳务）
+- Certification · 签字
+- 手写签名（电子签名也可）
+- 填写当天日期
+- 注意
+- 签字必须本人
+- >提交</span> <h2 className=
+- >两种提交方式</h2> </div> <CompareCards layout=
+- 电子提交
+- Online · 推荐
+- 平台支持
+- 大多数平台支持在线填写
+- 签名
+- 电子签名即可
+- 速度
+- 即时生效
+- 纸质提交
+- PDF · 备用
+- 流程
+- 打印 → 手写签名 → 扫描上传
+- 必须手写（关键）
+- 需 1-3 个工作日审核
+- >细节</span> <h2 className=
+- >常见问题与提醒</h2> </div> {/* 5a: 常见拒绝原因 */} <div className=
+- >⚠️ 常见拒绝原因</h3> <ul className=
+- /> 签名不是手写（纸质提交时） </li> <li className=
+- /> 信息不完整 </li> <li className=
+- /> 地址格式不正确 </li> </ul> </div> {/* 5b: 注意事项 */} <div className=
+- >📌 重要提醒</h3> <ul className=
+- >有效期 3 年</span> — 到期需重新提交</span> </li> <li className=
+- >如实填写</span> — 虚假信息有法律风险</span> </li> <li className=
+
+## src/pages/learn/WhatIsPropFirm.tsx
+
+- Futures Prop Firm（期货自营交易公司）是一种为交易员提供资金账户的服务商。 你不需要投入大量本金，而是通过支付挑战费用来获得一个评估账户—— 通过考验后，平台用
+- 真实资金
+- 支持你交易，你拿走大部分利润。
+- 核心逻辑
+- 两个账户阶段
+- 两种 Prop Firm 模式的核心差异
+- 风险须知
+- 重要风险提示
+- Prop Firm 挑战账户不是投资建议，不保证收益或出金。
+- 挑战失败会损失全部报名费，请仅投入可承受损失的金额。
+- 期货交易涉及重大风险，可能导致本金全部损失。
+- 什么是 Futures Prop Firm
+- 为交易员提供真实资金账户的期货自营交易公司
+- 基础概念
+- > {/* 区块 1: Hero 介绍段落 */} <p className=
+- > Futures Prop Firm（期货自营交易公司）是一种为交易员提供资金账户的服务商。 你不需要投入大量本金，而是通过支付挑战费用来获得一个评估账户—— 通过考验后，平台用<span className=
+- >真实资金</span>支持你交易，你拿走大部分利润。 </p> {/* 区块 2: ConceptMap 核心逻辑 */} <section> <div className=
+- >核心逻辑</h2> </div> <ConceptMap center={{ label:
+- 核心模型
+- 支付挑战费
+- 一次性报名费，获得评估资格
+- 模拟账户交易
+- 在仿真环境中验证策略
+- 达成盈利目标
+- 满足平台设定的盈利要求
+- 获得真实资金
+- 通过评估后平台注资
+- 70–100% 利润分成
+- 你保留大部分收益
+- 亏损平台承担
+- 失败仅损失报名费
+- , }, ]} /> </section> {/* 区块 3: CompareCards 双账户阶段 */} <section> <div className=
+- >两个账户阶段</h2> </div> <CompareCards layout=
+- 评估账户
+- 环境
+- 模拟交易
+- 目标
+- 约束
+- 遵守回撤规则
+- 满足一致性要求
+- 通过后
+- 解锁资金账户
+- 资金账户
+- 本金来源
+- 平台提供
+- 利润分成
+- 亏损
+- 由平台承担
+- >两种 Prop Firm 模式的核心差异</p> </div> <CompareCards layout=
+- 交易标的
+- 期货合约
+- 监管
+- 平台
+- 成本
+- 通常更低
+- 差价合约
+- 相对宽松
+- 点差成本
+- >风险须知</h2> </div> <div className=
+- >重要风险提示</h3> <ul className=
+- /> Prop Firm 挑战账户不是投资建议，不保证收益或出金。 </li> <li className=
+- /> 挑战失败会损失全部报名费，请仅投入可承受损失的金额。 </li> <li className=
+- Prop Firm 交易
+- Futures Prop Firm
+- Tradovate / Rithmic
+- CFD Prop Firm
+
+## src/pages/learn/WisePayout.tsx
+
+- Wise（原 TransferWise）是许多 Prop Firm 支持的出金方式，
+- 特别适合中国用户
+- 。 手续费低，到账快，操作简单。
+- 流程
+- 6 步完成首次出金
+- 成本
+- 费用拆解
+- 细节
+- 4 大注意事项
+- 备选
+- 如果 Wise 不可用
+- 部分用户因地区或验证问题无法使用 Wise，可以考虑：
+- 注册 Wise
+- 访问 wise.com，邮箱注册
+- 完成身份验证（KYC）
+- 获取美元账户信息
+- 获取账户信息
+- 在 Wise dashboard 找到美元接收账户详情
+- ⚠️ 姓名必须与 Prop Firm 完全一致
+- 在 Prop Firm 添加出金方式
+- 登录后台 → Payout / Withdrawal 选项
+- 选择 Bank Transfer / ACH
+- 输入 Wise 提供的账户信息
+- 保存并验证
+- 提交出金申请
+- 达到最低出金门槛后申请
+- 首次出金可能需要额外验证
+- 保留申请截图
+- 等待审核
+- 通常 1-3 个工作日
+- 审核期间不要重复申请
+- 关注邮件通知
+- 资金到账
+- Wise 账户收到 USD
+- 可保留 USD 或换汇
+- 提现到国内银行有汇率差
+- 接收 ACH
+- 入账费用
+- 费用
+- 通常免费
+- 到账
+- 1-3 工作日
+- 货币转换
+- 约 0.5%
+- 汇率
+- Wise 中间价
+- 建议
+- 汇率好时再换
+- 提现到国内
+- Wise → 银行
+- 固定费用 + 汇率差
+- 通常 1-2 工作日
+- 注意
+- 受外汇额度限制
+- 姓名一致
+- 与 Prop Firm 注册姓名完全一致
+- 账户验证
+- 确保 Wise 已完成 KYC
+- 税务表格
+- 部分平台需 W-8BEN
+- 出金周期
+- 了解平台处理时间
+- 类似服务
+- 新兴选项
+- 自由职业者友好
+- 加密货币
+- USDT 出金（速度快但需自换汇）
+- Wise 出金教程
+- 从注册到资金到账的完整流程
+- 出金指南
+- > {/* 区块 1: Hero */} <p className=
+- > Wise（原 TransferWise）是许多 Prop Firm 支持的出金方式， <span className=
+- >特别适合中国用户</span>。 手续费低，到账快，操作简单。 </p> {/* 区块 2: 完整流程 */} <section> <div className=
+- >流程</span> <h2 className=
+- >6 步完成首次出金</h2> </div> <FlowSteps steps={steps} /> </section> {/* 区块 3: 费用说明 */} <section> <div className=
+- >成本</span> <h2 className=
+- >费用拆解</h2> </div> <CompareCards layout=
+- columns={feeColumns} /> </section> {/* 区块 4: 注意事项 */} <section> <div className=
+- >细节</span> <h2 className=
+- >4 大注意事项</h2> </div> <ConceptMap center={{ label:
+- 出金关键细节
+- >备选</span> <h2 className=
+- >如果 Wise 不可用</h2> </div> <div className=
+- > 部分用户因地区或验证问题无法使用 Wise，可以考虑： </p> <div className=
+- Rise
+
+## src/components/Footer.tsx
+
+- 关于本站
+- 中文 Prop Firm 规则导航站，提供平台对比、规则解析和入门指南。帮助交易员做出明智选择。
+- 快速导航
+- 首页
+- 平台库
+- 规则对比
+- 新手指南
+- 资源
+- 软件教程
+- 支付指南
+- 出金教程
+- 风险披露
+- 社群
+- 风险提示
+- Prop Firm 挑战账户不是投资建议，不保证收益或出金。挑战失败会损失报名费。交易期货涉及重大风险，可能导致本金全部损失。请确保您充分理解相关风险。
+- 返佣披露
+- 本站可能通过部分平台的推荐链接或折扣码获得佣金。这不会影响您的费用，但会支持我们持续更新内容。我们承诺所有评价基于独立调研，不受佣金影响。
+- 关于我们
+- 免责声明
+- >关于本站</h3> <p className=
+- > 中文 Prop Firm 规则导航站，提供平台对比、规则解析和入门指南。帮助交易员做出明智选择。 </p> </div> <div> <h3 className=
+- >快速导航</h3> <ul className=
+- >首页</Link></li> <li><Link to=
+- >平台库</Link></li> <li><Link to=
+- >规则对比</Link></li> <li><Link to=
+- >新手指南</Link></li> </ul> </div> <div> <h3 className=
+- >资源</h3> <ul className=
+- >软件教程</Link></li> <li><Link to=
+- >支付指南</Link></li> <li><Link to=
+- >出金教程</Link></li> <li><Link to=
+- >风险披露</Link></li> </ul> </div> <div> <h3 className=
+- >社群</h3> <div className=
+- ></i> 风险提示 </h4> <p className=
+- > Prop Firm 挑战账户不是投资建议，不保证收益或出金。挑战失败会损失报名费。交易期货涉及重大风险，可能导致本金全部损失。请确保您充分理解相关风险。 </p> </div> <div className=
+- ></i> 返佣披露 </h4> <p className=
+- > 本站可能通过部分平台的推荐链接或折扣码获得佣金。这不会影响您的费用，但会支持我们持续更新内容。我们承诺所有评价基于独立调研，不受佣金影响。 </p> </div> <div className=
+- > <p>&copy; {currentYear} Prop Firm 中文导航. 保留所有权利.</p> <div className=
+- >关于我们</Link> <Link to=
+
+## src/components/Header.tsx
+
+- Prop Firm 导航
+- 首页
+- 平台库
+- 规则对比
+- 新手指南
+- 软件教程
+- 出金/支付
+- 风险披露
+- >Prop Firm 导航</span> </Link> <nav className=
+- w-8 h-8 bg-gradient-to-br from-violet-500 to-violet-700 shadow-[0_0_20px_rgba(139,92,246,0.4)] rounded-lg flex items-center justify-center

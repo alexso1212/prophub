@@ -1,0 +1,71 @@
+# src/pages/PayoutFlow.tsx
+
+- 出金方式
+- 选择适合你的出金路径，提前了解流程
+- 重要提示
+- 已完成 KYC 验证
+- 出金账户姓名与 Prop Firm 注册姓名完全一致
+- 已达到最低出金门槛
+- 返回选择
+- 优点
+- 缺点
+- 适合中国用户，手续费低，支持多币种
+- 护照或身份证
+- 地址证明
+- 与 Prop Firm 姓名一致
+- 手续费低
+- 到账快
+- 支持人民币
+- 操作简单
+- 需要 KYC
+- 首次设置较繁琐
+- 注册 Wise 账户并完成 KYC
+- 获取美元账户信息
+- 在 Prop Firm 后台添加 Wise
+- 提交出金申请
+- 等待审核
+- 资金到达后提现
+- 专为自由职业者和交易员设计的支付平台
+- 身份证明
+- 专为出金设计
+- 支持多平台
+- 费率透明
+- 知名度较低
+- 部分地区受限
+- 注册 Rise 账户
+- 完成身份验证
+- 获取账户信息
+- 在 Prop Firm 添加出金方式
+- 申请出金
+- 资金到账后提现
+- 加密货币
+- USDT 等稳定币出金，速度快但波动风险
+- 加密货币钱包
+- 了解基本操作
+- 速度快
+- 24/7 可用
+- 隐私性好
+- 价格波动风险
+- 需要额外兑换
+- 操作复杂
+- 准备加密货币钱包
+- 获取钱包地址
+- 在 Prop Firm 选择加密出金
+- 提交钱包地址
+- 等待审核和转账
+- 在交易所出售换成法币
+- >出金方式</h2> <p className=
+- >选择适合你的出金路径，提前了解流程</p> </div> {!selectedMethod ? ( <div className=
+- >重要提示</p> <ul className=
+- > <li>已完成 KYC 验证</li> <li>出金账户姓名与 Prop Firm 注册姓名完全一致</li> <li>已达到最低出金门槛</li> </ul> </div> </motion.div> </div> ) : ( <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}> <button onClick={() => setSelectedMethod(null)} className=
+- /> 返回选择 </button> {(() => { const method = payoutMethods.find(m => m.id === selectedMethod)!; const Icon = method.icon; return ( <div className=
+- 操作步骤
+- 所需材料
+- 优缺点
+- >优点</h4> <div className=
+- >缺点</h4> <div className=
+- wise
+- Wise
+- rise
+- Rise
+- w-8 h-8 text-violet-300

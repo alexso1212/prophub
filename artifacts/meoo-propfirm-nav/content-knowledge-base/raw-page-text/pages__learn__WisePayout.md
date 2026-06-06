@@ -1,0 +1,87 @@
+# src/pages/learn/WisePayout.tsx
+
+- Wise（原 TransferWise）是许多 Prop Firm 支持的出金方式，
+- 特别适合中国用户
+- 。 手续费低，到账快，操作简单。
+- 流程
+- 6 步完成首次出金
+- 成本
+- 费用拆解
+- 细节
+- 4 大注意事项
+- 备选
+- 如果 Wise 不可用
+- 部分用户因地区或验证问题无法使用 Wise，可以考虑：
+- 注册 Wise
+- 访问 wise.com，邮箱注册
+- 完成身份验证（KYC）
+- 获取美元账户信息
+- 获取账户信息
+- 在 Wise dashboard 找到美元接收账户详情
+- ⚠️ 姓名必须与 Prop Firm 完全一致
+- 在 Prop Firm 添加出金方式
+- 登录后台 → Payout / Withdrawal 选项
+- 选择 Bank Transfer / ACH
+- 输入 Wise 提供的账户信息
+- 保存并验证
+- 提交出金申请
+- 达到最低出金门槛后申请
+- 首次出金可能需要额外验证
+- 保留申请截图
+- 等待审核
+- 通常 1-3 个工作日
+- 审核期间不要重复申请
+- 关注邮件通知
+- 资金到账
+- Wise 账户收到 USD
+- 可保留 USD 或换汇
+- 提现到国内银行有汇率差
+- 接收 ACH
+- 入账费用
+- 费用
+- 通常免费
+- 到账
+- 1-3 工作日
+- 货币转换
+- 约 0.5%
+- 汇率
+- Wise 中间价
+- 建议
+- 汇率好时再换
+- 提现到国内
+- Wise → 银行
+- 固定费用 + 汇率差
+- 通常 1-2 工作日
+- 注意
+- 受外汇额度限制
+- 姓名一致
+- 与 Prop Firm 注册姓名完全一致
+- 账户验证
+- 确保 Wise 已完成 KYC
+- 税务表格
+- 部分平台需 W-8BEN
+- 出金周期
+- 了解平台处理时间
+- 类似服务
+- 新兴选项
+- 自由职业者友好
+- 加密货币
+- USDT 出金（速度快但需自换汇）
+- Wise 出金教程
+- 从注册到资金到账的完整流程
+- 出金指南
+- > {/* 区块 1: Hero */} <p className=
+- > Wise（原 TransferWise）是许多 Prop Firm 支持的出金方式， <span className=
+- >特别适合中国用户</span>。 手续费低，到账快，操作简单。 </p> {/* 区块 2: 完整流程 */} <section> <div className=
+- >流程</span> <h2 className=
+- >6 步完成首次出金</h2> </div> <FlowSteps steps={steps} /> </section> {/* 区块 3: 费用说明 */} <section> <div className=
+- >成本</span> <h2 className=
+- >费用拆解</h2> </div> <CompareCards layout=
+- columns={feeColumns} /> </section> {/* 区块 4: 注意事项 */} <section> <div className=
+- >细节</span> <h2 className=
+- >4 大注意事项</h2> </div> <ConceptMap center={{ label:
+- 出金关键细节
+- >备选</span> <h2 className=
+- >如果 Wise 不可用</h2> </div> <div className=
+- > 部分用户因地区或验证问题无法使用 Wise，可以考虑： </p> <div className=
+- Rise

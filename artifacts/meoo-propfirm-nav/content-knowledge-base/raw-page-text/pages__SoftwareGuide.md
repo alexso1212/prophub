@@ -1,0 +1,52 @@
+# src/pages/SoftwareGuide.tsx
+
+- 交易软件配置
+- 选择你使用的平台，按步骤完成配置
+- 返回选择
+- 配置进度
+- 配置步骤
+- 基于网页的交易平台，无需安装，支持多家 Prop Firm
+- 网页端直接交易
+- 简洁直观的界面
+- 支持多家 Prop Firm
+- 免费模拟账户
+- 访问 tradovate.com 注册账户
+- 使用 Prop Firm 提供的登录凭据
+- 首次登录设置 2FA 验证
+- 熟悉界面布局
+- 开始交易或练习
+- 专业级数据服务，低延迟执行，适合有经验的交易员
+- 低延迟市场数据
+- 专业级执行速度
+- 支持 NinjaTrader/Quantower
+- 稳定的连接
+- 通过 Prop Firm 获取 Rithmic 账户
+- 下载 Rithmic 客户端
+- 签署数据使用协议
+- 配置连接参数
+- 测试连接并开始交易
+- 功能强大的桌面交易软件，适合专业交易员
+- 强大的图表功能
+- 自动化交易支持
+- 丰富的技术指标
+- 深度市场数据
+- 下载并安装 NinjaTrader
+- 配置 Rithmic 连接
+- 设置工作区和图表
+- 导入或创建策略
+- 连接并开始交易
+- 入门
+- 进阶
+- 高级
+- >交易软件配置</h2> <p className=
+- >选择你使用的平台，按步骤完成配置</p> </div> {!selectedSoftware ? ( <div className=
+- /> 返回选择 </button> {(() => { const software = softwareList.find(s => s.id === selectedSoftware)!; const completed = completedSteps[software.id] || 0; const progress = (completed / software.steps.length) * 100; return ( <div className=
+- >配置进度</span> <span className=
+- >配置步骤</h4> <div className=
+- tradovate
+- Tradovate
+- rithmic
+- Rithmic
+- ninjatrader
+- NinjaTrader
+- w-8 h-8 text-violet-300

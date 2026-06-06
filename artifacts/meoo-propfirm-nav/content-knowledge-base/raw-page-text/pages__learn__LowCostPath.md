@@ -1,0 +1,69 @@
+# src/pages/learn/LowCostPath.tsx
+
+- Prop Firm 不是快速致富的捷径。这条路径告诉你
+- 从 $0 到 funded account 应该怎么走
+- ， 每一步的成本、目标、时间都摊开。
+- 路径
+- 3 阶段 · 从 $0 到 funded
+- 原则
+- 4 条铁律
+- 期望管理
+- 时间预期 + 心态准备
+- 时间预期
+- 学习阶段
+- ：1-3 个月
+- 通过挑战
+- ：因人而异，可能需要多次尝试
+- 稳定盈利
+- ：6-12 个月或更长
+- 重要提示
+- Prop Firm 不是快速致富的捷径
+- 。 它是一份需要认真对待的专业活动，把它当兼职甚至主业来对待，不要把它当彩票买。
+- 第一阶段
+- 免费模拟
+- 2-4 周
+- 熟悉平台和规则，零风险摸底
+- 注册 Tradovate 免费模拟账户
+- 练习期货基础操作
+- 了解合约规格和保证金
+- 第二阶段
+- 小账户试水
+- 1-2 个月
+- 体验真实挑战环境，做好损失全部报名费的准备
+- Purdia $49 Micro 账户
+- Alpha Futures $99 Basic 账户
+- 严守风控，培养纪律
+- 第三阶段
+- 标准账户
+- 3 个月起
+- 通过挑战，获得真实资金账户
+- Topstep $165/月
+- Lucid Trading $149 起
+- 稳定交易频率，建立长期复盘
+- 只投可承受损失的资金
+- 永远不要投入身家
+- 先学习，再实战
+- 基础没打好就上桌等于送钱
+- 记录复盘
+- 每笔交易都写日志
+- 不要追逐
+- 承诺
+- 稳赚承诺一律拉黑
+- 低成本试错路径
+- 3 阶段 · 从免费模拟到资金账户
+- 路径指南
+- > {/* 区块 1: Hero 介绍段落 */} <p className=
+- > Prop Firm 不是快速致富的捷径。这条路径告诉你 <span className=
+- >从 $0 到 funded account 应该怎么走</span>， 每一步的成本、目标、时间都摊开。 </p> {/* 区块 2: 3 阶段路径 */} <section> <div className=
+- >路径</span> <h2 className=
+- > 3 阶段 · 从 $0 到 funded </h2> </div> <TimelineFlow stages={stages} /> </section> {/* 区块 3: 4 条铁律 */} <section> <div className=
+- >原则</span> <h2 className=
+- >4 条铁律</h2> </div> <ConceptMap center={{ label:
+- 不可逾越的底线
+- >期望管理</span> <h2 className=
+- > 时间预期 + 心态准备 </h2> </div> <div className=
+- >时间预期</h3> <ul className=
+- >学习阶段</span>：1-3 个月 </span> </li> <li className=
+- >通过挑战</span>：因人而异，可能需要多次尝试 </span> </li> <li className=
+- >稳定盈利</span>：6-12 个月或更长 </span> </li> </ul> </div> <div className=
+- >重要提示</h3> <p className=

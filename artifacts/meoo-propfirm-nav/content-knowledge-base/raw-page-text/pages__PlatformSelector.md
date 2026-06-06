@@ -1,0 +1,47 @@
+# src/pages/PlatformSelector.tsx
+
+- 选择最符合你情况的选项
+- ← 返回上一题
+- 为你推荐
+- 基于你的选择，这些平台最适合你
+- 重新选择条件
+- 你的交易经验如何？
+- 完全新手
+- 第一次接触期货或 Prop Firm
+- 有一些经验
+- 做过模拟盘或小额实盘
+- 经验丰富
+- 有稳定交易策略，寻求资金
+- 你的预算范围？
+- 想低成本试错
+- 标准预算
+- 追求大账户
+- 你偏好哪种交易软件？
+- 网页版，简单易用
+- 专业级，低延迟
+- 功能强大，桌面端
+- 都可以
+- 没有特别偏好
+- 你所在地区？
+- 中国大陆
+- 需要支持中国用户
+- 其他地区
+- 海外或港澳台
+- >选择最符合你情况的选项</p> </div> <div className=
+- >← 返回上一题</button> )} </motion.div> ) : ( <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }}> <div className=
+- >为你推荐</h2> <p className=
+- >基于你的选择，这些平台最适合你</p> </div> <div className=
+- >{firm.rating}分</span> </div> <p className=
+- tradovate
+- Tradovate
+- rithmic
+- Rithmic
+- ninjatrader
+- NinjaTrader
+- w-8 h-8 text-violet-300
+- w-8 h-8 text-emerald-400
+- > {getRecommendedFirms().map((firm, index) => ( <motion.div key={firm.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.15 }}> <Link to={
+- > <img src={firm.logoUrl} alt={firm.name} className=
+- >{firm.name}</h3> <span className=
+- >{firm.summary}</p> <div className=
+- > {firm.supportedPlatforms.slice(0, 3).map(p => <span key={p} className=

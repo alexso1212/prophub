@@ -1,0 +1,83 @@
+# src/pages/learn/W8FormGuide.tsx
+
+- W-8BEN 是美国国税局（IRS）的税务表格，用于证明你是
+- 非美国税务居民
+- 。 填错或不填，平台会预扣 30% 美国税款。
+- 动机
+- 为什么要填 W-8BEN
+- 3 个理由
+- 避免 30% 预扣税
+- — 如不提交，IRS 默认按最高税率扣
+- 符合中美税收协定
+- — 部分收入可免税或减税
+- 出金必经步骤
+- — 平台合规要求
+- 字段
+- 3 个 Part 速查
+- 提交
+- 两种提交方式
+- 细节
+- 常见问题与提醒
+- ⚠️ 常见拒绝原因
+- 签名不是手写（纸质提交时）
+- 信息不完整
+- 地址格式不正确
+- 📌 重要提醒
+- 有效期 3 年
+- — 到期需重新提交
+- 如实填写
+- — 虚假信息有法律风险
+- 保留副本
+- — 提交记录留存
+- W-8BEN 表格填写指南
+- 非美国税务居民必填的税务表格
+- 支付教程
+- > {/* 区块 1: Hero 介绍段落 */} <p className=
+- > W-8BEN 是美国国税局（IRS）的税务表格，用于证明你是<span className=
+- >非美国税务居民</span>。 填错或不填，平台会预扣 30% 美国税款。 </p> {/* 区块 2: 为什么要填 */} <section> <div className=
+- >动机</span> <h2 className=
+- >为什么要填 W-8BEN</h2> </div> <div className=
+- >3 个理由</h3> <ul className=
+- >避免 30% 预扣税</span> — 如不提交，IRS 默认按最高税率扣</span> </li> <li className=
+- >符合中美税收协定</span> — 部分收入可免税或减税</span> </li> <li className=
+- >出金必经步骤</span> — 平台合规要求</span> </li> </ul> </div> </section> {/* 区块 3: 3 个 Part 字段对照 */} <section> <div className=
+- >字段</span> <h2 className=
+- >3 个 Part 速查</h2> </div> <CompareCards layout=
+- Beneficial Owner · 个人信息
+- 护照英文姓名
+- 中国地址（拼音）
+- 留空
+- 身份证号
+- Tax Treaty · 协定优惠
+- 勾选 Yes
+- Article 14（独立劳务）
+- Certification · 签字
+- 手写签名（电子签名也可）
+- 填写当天日期
+- 注意
+- 签字必须本人
+- >提交</span> <h2 className=
+- >两种提交方式</h2> </div> <CompareCards layout=
+- 电子提交
+- Online · 推荐
+- 平台支持
+- 大多数平台支持在线填写
+- 签名
+- 电子签名即可
+- 速度
+- 即时生效
+- 纸质提交
+- PDF · 备用
+- 流程
+- 打印 → 手写签名 → 扫描上传
+- 必须手写（关键）
+- 需 1-3 个工作日审核
+- >细节</span> <h2 className=
+- >常见问题与提醒</h2> </div> {/* 5a: 常见拒绝原因 */} <div className=
+- >⚠️ 常见拒绝原因</h3> <ul className=
+- /> 签名不是手写（纸质提交时） </li> <li className=
+- /> 信息不完整 </li> <li className=
+- /> 地址格式不正确 </li> </ul> </div> {/* 5b: 注意事项 */} <div className=
+- >📌 重要提醒</h3> <ul className=
+- >有效期 3 年</span> — 到期需重新提交</span> </li> <li className=
+- >如实填写</span> — 虚假信息有法律风险</span> </li> <li className=
