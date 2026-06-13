@@ -1,0 +1,42 @@
+# src/pages/FirmsList.tsx
+
+- 平台库
+- Prop Firm 平台
+- 筛选
+- 清空筛选
+- 中国用户
+- 费用模式
+- 交易软件
+- 回撤类型
+- 没有符合筛选条件的平台，试试调整筛选项
+- 支持
+- 受限
+- 未知
+- > 平台库 </div> <h1 className=
+- > Prop Firm 平台 </h1> <p className=
+- > 对比 {firmsData.length} 家期货自营交易公司 </p> </div> {/* Filter panel */} <div className=
+- >筛选</span> {hasActiveFilters && ( <button onClick={clearFilters} className=
+- /> 清空筛选 </button> )} </div> <div className=
+- >中国用户</span> </div> <div className=
+- >费用模式</span> </div> <div className=
+- >交易软件</span> </div> <div className=
+- >回撤类型</span> </div> <div className=
+- > 共 {filteredFirms.length} 个平台 </div> {filteredFirms.length === 0 && ( <div className=
+- >没有符合筛选条件的平台，试试调整筛选项</span> </div> )} <div className=
+- 低风险
+- 中风险
+- 高风险
+- ; import type { Firm, FilterState } from
+- }; export default function FirmsList() { const [filters, setFilters] = useState<FilterState>({ cnUserStatus: [], feeType: [], platforms: [], drawdownType: [] }); const filteredFirms = useMemo(() => { return firmsData.filter((firm: Firm) => { if (filters.cnUserStatus.length > 0 && !filters.cnUserStatus.includes(firm.cnUserStatus)) return false; if (filters.platforms.length > 0 && !filters.platforms.some(p => firm.supportedPlatforms.includes(p))) return false; if (filters.feeType.length > 0 && !firm.accountTypes.some(a => filters.feeType.includes(a.feeType))) return false; if (filters.drawdownType.length > 0 && !firm.accountTypes.some(a => filters.drawdownType.includes(a.drawdownType))) return false; return true; }); }, [filters]); const hasActiveFilters = filters.cnUserStatus.length > 0 || filters.feeType.length > 0 || filters.platforms.length > 0 || filters.drawdownType.length > 0; const clearFilters = () => setFilters({ cnUserStatus: [], feeType: [], platforms: [], drawdownType: [] }); const toggleFilter = (key: keyof FilterState, value: string) => { setFilters(prev => { const current = prev[key] as string[]; const updated = current.includes(value) ? current.filter(v => v !== value) : [...current, value]; return { ...prev, [key]: updated }; }); }; return ( <div className=
+- > {filteredFirms.map((firm: Firm, idx: number) => ( <motion.div key={firm.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2, delay: idx * 0.05 }} > <Link to={
+- > <img src={firm.logoUrl} alt={firm.name} className=
+- > {firm.name} </h3> <div className=
+- text-[10px] px-1.5 py-0.5 rounded-full border ${ cnStatusOptions.find(s => s.value === firm.cnUserStatus)?.color ||
+- }> {cnStatusOptions.find(s => s.value === firm.cnUserStatus)?.label} </span> <span className={
+- }> {firm.riskLevel ===
+- : firm.riskLevel ===
+- > {firm.summary} </p> <div className=
+- > {firm.supportedPlatforms.slice(0, 3).map(p => ( <span key={p} className=
+- > {p} </span> ))} {firm.supportedPlatforms.length > 3 && ( <span className=
+- > +{firm.supportedPlatforms.length - 3} </span> )} </div> <div className=
+- >{firm.rating}</span> <span className=

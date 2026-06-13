@@ -1,0 +1,72 @@
+# src/pages/learn/TradovateGuide.tsx
+
+- Tradovate 是目前
+- 支持最多 Prop Firm 的交易平台
+- ， 基于网页，无需安装，是新手最常用的入门工具。
+- 为什么用它
+- 3 大核心特性
+- 上手
+- 4 步开始交易
+- 效率
+- 常用快捷键
+- 排障
+- 常见问题
+- 网页端
+- 无需安装
+- 跨平台
+- 自动更新
+- 多平台支持
+- 免费模拟
+- 注册即用
+- 真实行情
+- 练习无成本
+- 注册账户
+- 访问 tradovate.com 注册
+- 或使用 Prop Firm 提供的登录凭据
+- 免费账户即可练习
+- 设置 2FA
+- 首次登录强制启用二次验证
+- 推荐 Google Authenticator
+- 保存好 backup codes
+- 熟悉界面布局
+- 左侧报价 · 中间图表 · 右侧订单簿 · 底部账户
+- 工作区可自定义
+- 支持多屏幕
+- 开始交易
+- 从模拟练习到真实下单
+- 先用模拟练熟下单流程
+- 熟悉市价/限价/止损单
+- 新建图表
+- 查找合约
+- 取消选中订单
+- 关闭弹窗
+- Tradovate 使用教程
+- 最常用的 Prop Firm 网页交易平台
+- 软件教程
+- > {/* 区块 1: Hero */} <p className=
+- > Tradovate 是目前<span className=
+- >支持最多 Prop Firm 的交易平台</span>， 基于网页，无需安装，是新手最常用的入门工具。 </p> {/* 区块 2: 核心特性 */} <section> <div className=
+- >为什么用它</span> <h2 className=
+- >3 大核心特性</h2> </div> <div className=
+- /> {b} </li> ))} </ul> </div> ))} </div> </section> {/* 区块 3: 4 步流程 */} <section> <div className=
+- >上手</span> <h2 className=
+- >4 步开始交易</h2> </div> <FlowSteps steps={steps} /> </section> {/* 区块 4: 快捷键 */} <section> <div className=
+- >效率</span> <h2 className=
+- >常用快捷键</h2> </div> <div className=
+- >{s.desc}</span> </div> ))} </div> </div> </section> {/* 区块 5: 常见问题 */} <section> <div className=
+- >排障</span> <h2 className=
+- >常见问题</h2> </div> <CompareCards layout=
+- 连接问题
+- 检查
+- 网络连接是否正常
+- 尝试
+- 清除浏览器缓存
+- 推荐
+- 使用 Chrome 浏览器
+- 数据延迟
+- 确认
+- 订阅了正确的数据流
+- 操作
+- 刷新页面重新连接
+- 联系
+- 联系 Prop Firm 支持

@@ -1,0 +1,28 @@
+# src/pages/MindMapHome.tsx
+
+- Prop Firm 导航
+- 中文期货自营交易知识库
+- 风险提示与免责声明
+- 开始
+- 选择你的需求
+- 我是新手
+- 从零开始了解
+- 第一次接触 Prop Firm？从这里开始了解基本概念
+- 我要选平台
+- 找到最适合的
+- 根据你的需求和条件，筛选推荐最适合的平台
+- 我要学规则
+- 掌握核心知识
+- 深入理解回撤、一致性、日内平仓等关键规则
+- 我要配软件
+- 连接交易平台
+- Tradovate、Rithmic 等平台连接配置教程
+- 我要出金
+- 资金回流指南
+- Wise、Rise、加密货币等多种出金方式详解
+- >Prop Firm 导航</h1> <p className=
+- >中文期货自营交易知识库</p> </motion.div> <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className=
+- /> 风险提示与免责声明 <ChevronRight className=
+- >开始</div> <div className=
+- >选择你的需求</div> </div> </div> </motion.div> <svg className=
+- w-8 h-8 mb-2

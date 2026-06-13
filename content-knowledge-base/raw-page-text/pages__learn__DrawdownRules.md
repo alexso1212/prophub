@@ -1,0 +1,89 @@
+# src/pages/learn/DrawdownRules.tsx
+
+- 回撤规则是 Prop Firm 评估中
+- 最重要
+- 的风险控制指标。 理解 4 种回撤机制，决定你能否通过挑战。
+- Section · 一句话总览
+- 4 种回撤类型
+- Section · 详细对比
+- 逐项细看
+- Section · 实战
+- 4 步应对策略
+- Section · 提醒
+- 风险须知
+- 重要风险提示
+- 回撤规则一旦触发即终止评估，报名费不予退还。
+- 本文示例为简化数值，请以平台官方规则为准。
+- 回撤规则详解
+- EOD / TDD / 静态 / 追踪，4 种回撤机制对比
+- 核心规则
+- > {/* 区块 1: Hero 导语 */} <p className=
+- > 回撤规则是 Prop Firm 评估中<span className=
+- >最重要</span>的风险控制指标。 理解 4 种回撤机制，决定你能否通过挑战。 </p> {/* 区块 2: ConceptMap 放射对照 */} <section> <div className=
+- >Section · 一句话总览</span> <h2 className=
+- >4 种回撤类型</h2> </div> <ConceptMap center={{ label:
+- 核心约束
+- EOD（日终回撤）
+- 基于每日收盘权益
+- TDD（日内回撤）
+- 实时计算，触及即违规
+- 静态回撤
+- 固定初始权益，不随盈利变化
+- 追踪回撤
+- 随最高权益移动
+- , }, ]} /> </section> {/* 区块 3: CompareCards 4 列对比 */} <section> <div className=
+- >Section · 详细对比</span> <h2 className=
+- >逐项细看</h2> </div> <CompareCards layout=
+- EOD 回撤
+- End of Day · 日终
+- 定义
+- 触发
+- 收盘后权益低于阈值
+- 示例
+- $50K 账户，回撤 $2.5K，日内可跌至 $45K，收盘需 ≥ $47.5K
+- 适合
+- 日内交易策略
+- TDD 回撤
+- Trailing Daily · 日内
+- 基于日内最高权益的实时回撤
+- 日内权益跌幅超限即违规
+- 跟随最高权益点移动，最严格
+- 保守策略，严控浮亏
+- 固定初始权益的回撤限制
+- 权益跌破固定线
+- $50K 初始，回撤 $2.5K，盈利后回撤线仍在 $47.5K
+- 盈利后宽容度增加
+- 回撤线随最高权益移动
+- 回撤空间始终保持固定
+- 盈利到 $55K，回撤线移至 $52.5K，永远保留 $2.5K 空间
+- 需稳定持续盈利
+- >Section · 实战</span> <h2 className=
+- >4 步应对策略</h2> </div> <FlowSteps numbered={true} steps={[ { id:
+- 了解你的回撤类型
+- 不同平台规则差异巨大，签约前必查
+- 查看官方规则文档
+- 比较 EOD vs TDD vs Trailing 的具体阈值
+- 注意
+- 是否改变规则
+- 设置硬止损
+- 永远不要无止损交易
+- 每笔单立刻挂止损
+- 止损位由账户回撤反推
+- 不允许
+- 分散风险
+- 单笔交易风险控制在 1-2%
+- 总风险敞口拆分
+- 不要 all-in 一笔
+- 记录每日已用风险额度
+- 避开高波动时段
+- 新闻发布前后谨慎交易
+- NFP、FOMC、CPI 前后 30 分钟避免开仓
+- CME 收盘前 15 分钟减仓
+- 主力合约切换时段降低杠杆
+- , }, ]} /> </section> {/* 区块 5: 风险须知 */} <section> <div className=
+- >Section · 提醒</span> <h2 className=
+- >风险须知</h2> </div> <div className=
+- >重要风险提示</h3> <ul className=
+- /> 回撤规则一旦触发即终止评估，报名费不予退还。 </li> <li className=
+- eod
+- tdd

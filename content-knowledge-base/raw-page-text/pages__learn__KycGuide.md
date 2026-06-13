@@ -1,0 +1,78 @@
+# src/pages/learn/KycGuide.tsx
+
+- KYC（Know Your Customer）是
+- 出金前的必要步骤
+- 。提前准备好材料，能避免出金时被卡。
+- 材料清单
+- 3 类必备材料
+- 本地化
+- 中国用户特别提示
+- 中国用户在 KYC 过程中遇到的高频问题
+- 证件选择
+- 地址证明
+- 常见拒绝原因
+- 实战
+- 3 个最佳实践
+- KYC 流程指南
+- 身份验证全流程 + 中国用户特别提示
+- 流程指南
+- > {/* 区块 1: Hero */} <p className=
+- > KYC（Know Your Customer）是<span className=
+- >出金前的必要步骤</span>。提前准备好材料，能避免出金时被卡。 </p> {/* 区块 2: 3 类必备材料 */} <section> <div className=
+- >材料清单</span> <h2 className=
+- >3 类必备材料</h2> </div> <CompareCards layout=
+- 身份证明
+- 可选证件
+- 护照（推荐）/ 身份证
+- 清晰度
+- 姓名、照片、有效期可读
+- 注意
+- 不要遮挡、不要反光、不要过期
+- 可接受
+- 水电账单 / 银行对账单
+- 时效
+- 3 个月内开具
+- 要素
+- 需显示姓名和完整地址
+- 支付验证
+- 何时需要
+- 部分平台要求
+- 材料
+- 信用卡 / 银行账户对账单
+- 一致性
+- 持卡人姓名与 KYC 一致
+- >本地化</span> <h2 className=
+- >中国用户特别提示</h2> </div> <div className=
+- >中国用户在 KYC 过程中遇到的高频问题</p> <div className=
+- > {/* 卡 A */} <div className=
+- >证件选择</h3> <ul className=
+- 护照通常比身份证更容易通过
+- 所有信息清晰可读
+- 拼音与平台注册一致
+- /> {item} </li> ))} </ul> </div> {/* 卡 B */} <div className=
+- >地址证明</h3> <ul className=
+- 信用卡账单（如有）
+- 水电费电子账单
+- 部分平台接受中文文件
+- /> {item} </li> ))} </ul> </div> {/* 卡 C */} <div className=
+- >常见拒绝原因</h3> <ul className=
+- 姓名拼音不一致
+- 地址翻译问题
+- 文件格式不符合要求（建议 PDF/JPG）
+- /> {item} </li> ))} </ul> </div> </div> </div> </section> {/* 区块 4: 最佳实践 */} <section> <div className=
+- >实战</span> <h2 className=
+- >3 个最佳实践</h2> </div> <FlowSteps steps={[ { id:
+- 提前准备
+- 注册时就准备好所有文件
+- 不要等到出金时才扫描
+- 一次性准备 ID + 地址 + 支付
+- 高清扫描
+- 确保文件清晰、完整、无遮挡
+- 手机拍照分辨率 ≥ 1080P
+- 避开反光，正面平铺拍摄
+- PDF 格式优于截图
+- 及时响应
+- 平台要求补充材料时尽快处理
+- 24 小时内回复
+- 问题不清楚要主动问 support
+- 保留邮件记录

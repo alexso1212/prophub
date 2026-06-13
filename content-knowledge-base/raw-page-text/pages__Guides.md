@@ -1,0 +1,26 @@
+# src/pages/Guides.tsx
+
+- 学习中心
+- 新手指南
+- 从入门到精通，系统学习 Prop Firm 交易知识
+- 阅读
+- 还没找到答案？
+- 回到首页思维导图，按你的需求路径探索
+- 返回 MindMap 首页
+- 全部
+- 入门指南
+- 路径指南
+- 软件教程
+- 支付教程
+- 出金教程
+- 入门
+- 进阶
+- 高级
+- > 学习中心 </div> <h1 className=
+- > 新手指南 </h1> <p className=
+- > 从入门到精通，系统学习 Prop Firm 交易知识 </p> </div> {/* Category filter chips */} <div className=
+- >更新 {guide.lastUpdatedAt}</span> <div className=
+- > 阅读 <ChevronRight className=
+- >还没找到答案？</h3> <p className=
+- >回到首页思维导图，按你的需求路径探索</p> <Link to=
+- > 返回 MindMap 首页 <ArrowRight className=

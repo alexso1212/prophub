@@ -1,0 +1,23 @@
+# src/pages/GuideDetail.tsx
+
+- 指南未找到
+- 返回指南列表
+- 相关平台
+- 参考来源
+- >指南未找到</h1> <Link to=
+- > 返回指南列表 </Link> </div> </div> ); } const relatedFirms = firmsData.filter(f => guide.relatedFirms.includes(f.id)); const difficultyColor = { beginner:
+- 新手指南
+- 路径指南
+- 软件教程
+- 支付教程
+- 出金教程
+- /> 返回指南列表 </Link> <div className=
+- 入门
+- 进阶
+- 高级
+- /> <span>更新于 {guide.lastUpdatedAt}</span> </div> </div> </div> <div className=
+- /> 相关平台 </h3> <div className=
+- >参考来源</h3> <div className=
+- > {relatedFirms.map(firm => ( <Link key={firm.id} to={
+- > <img src={firm.logoUrl} alt={firm.name} className=
+- >{firm.name}</span> </Link> ))} </div> </div> )} {guide.sourceUrls && guide.sourceUrls.length > 0 && ( <div className=
